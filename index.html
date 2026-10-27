@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});</script>
-<script src="net.js" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027220103';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027220103" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -311,6 +311,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .main-acts .btn{width:100%;min-width:0;padding-inline:10px}
 .main-acts #btnPlay{grid-column:1/-1;min-height:66px;font-size:28px}
 .main-acts #btnRush{grid-column:1/-1}
+.upd-bar{width:100%;white-space:normal;line-height:1.2}
 .side{position:fixed;inset:0;z-index:30}
 .side-dim{position:absolute;inset:0;background:rgba(8,5,3,.62);opacity:0;transition:opacity .22s}
 .side.open .side-dim{opacity:1}
@@ -671,6 +672,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       <button id="btnDaily" class="btn" type="button">Défi du jour <span class="count" id="dailyTag"></span></button>
       <button id="btnRush" class="btn" type="button">Rush des boss <span class="count" id="rushTag"></span></button>
     </div>
+    <button class="btn glow upd-bar" id="updBar" type="button" hidden>Nouvelle version du jeu ! Touche ici pour mettre à jour</button>
     <p class="coop-status ok giftmsg" id="giftDayMsg" role="status" hidden></p>
     <p class="coop-status ok" id="cloudNote" hidden></p>
    </div>
@@ -711,6 +713,12 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       <span class="track" aria-hidden="true"></span>
       <span class="tlabel"><b>Graphismes légers</b><small>Moins d'effets, pour les téléphones qui rament.</small></span>
     </label>
+    </div>
+    <div class="slab coopbox" id="updBox" hidden>
+      <p class="small-h">Version du jeu</p>
+      <p class="coop-text" id="verTxt"></p>
+      <button class="btn" id="btnUpdate" type="button">Mettre à jour le jeu</button>
+      <p class="coop-note">Ta progression, ton or et tes amis ne seront pas perdus.</p>
     </div>
   </div>
 </section>
@@ -5587,9 +5595,28 @@ $('sideClose').addEventListener('click',()=>closeMenu());
 $('sideDim').addEventListener('click',()=>closeMenu());
 $('sideList').addEventListener('click',e=>{const b=e.target.closest('.side-item');if(b)closeMenu(true);},true);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen()){closeMenu();e.preventDefault();}});
-$('btnSettings').addEventListener('click',()=>{state='settings';clearOverlays();show('scrSettings');pauseBtn.hidden=true;syncToggles();$('scrSettings').scrollTop=0;});
+$('btnSettings').addEventListener('click',()=>{state='settings';clearOverlays();show('scrSettings');pauseBtn.hidden=true;syncToggles();syncVer();checkUpdate();$('scrSettings').scrollTop=0;});
 $('btnHelp').addEventListener('click',()=>{state='help';clearOverlays();show('scrHelp');pauseBtn.hidden=true;$('scrHelp').scrollTop=0;});
 $('setBack').addEventListener('click',goTitle);
+/* ---- installed version: get the newest version of the game ---- */
+let NEWVER='';
+function verLabel(v){v=String(v||'');return v.length>=12?v.slice(6,8)+'/'+v.slice(4,6)+' à '+v.slice(8,10)+'h'+v.slice(10,12):'inconnue';}
+async function forceUpdate(){
+  for(const id of['btnUpdate','updBar']){const b=$(id);b.disabled=true;b.textContent='Mise à jour…';}
+  try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();for(const r of rs)await r.unregister();}}catch(e){}
+  try{if(window.caches){for(const k of await caches.keys())if(k.startsWith('bestiolins-')||k.startsWith('cryptobetes-'))await caches.delete(k);}}catch(e){}
+  location.replace(location.pathname+'?u='+Date.now());
+}
+async function checkUpdate(){
+  if(!CB_SA||!navigator.onLine)return;
+  try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json();
+    if(j&&typeof j.v==='string'&&/^\d{14}$/.test(j.v)&&j.v>String(window.CB_VER||'')){NEWVER=j.v;$('updBar').hidden=false;syncVer();}}catch(e){}
+}
+function syncVer(){if(!CB_SA)return;$('updBox').hidden=false;$('verTxt').textContent='Ta version : '+verLabel(window.CB_VER)+(NEWVER?'. Une nouvelle version est prête !':". C'est la plus récente que je connais.");}
+$('btnUpdate').addEventListener('click',forceUpdate);
+$('updBar').addEventListener('click',forceUpdate);
+if(CB_SA){try{if(/[?&]u=/.test(location.search))history.replaceState(null,'',location.pathname);}catch(e){}
+  setTimeout(checkUpdate,1500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate();});}
 $('helpBack').addEventListener('click',goTitle);
 let quitArmed=false,quitTimer=null;
 $('btnQuit').addEventListener('click',()=>{
