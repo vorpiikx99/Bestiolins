@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261027230251';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261027230251" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027232750';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027232750" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -562,6 +562,11 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .eq-next{margin:0;font-size:15px;color:var(--bone-dim)}
 .eq-next:empty{display:none}
 .sheet .actions .btn{flex:1 1 140px}
+#eqSheet{z-index:37}
+.loot-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.loot-in{animation:lootIn .35s ease-out both}
+@keyframes lootIn{from{opacity:0;transform:scale(.5) rotate(-8deg)}to{opacity:1;transform:none}}
+.loot-wow{box-shadow:0 0 14px rgba(255,220,140,.55)}
 .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .scard{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;background:var(--stone);border:2px solid var(--stone-edge);border-radius:9px;padding:10px 8px;min-width:0}
 .scard canvas{width:68px;height:68px}
@@ -618,6 +623,15 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
     <p class="eq-next" id="eqNext"></p>
     <p class="eq-next" id="eqCur"></p>
     <div class="actions" id="eqActs"></div>
+  </div>
+</div>
+<div id="lootSheet" class="sheet" role="dialog" aria-label="Coffres ouverts" hidden>
+  <div class="sheet-dim" id="lootDim"></div>
+  <div class="sheet-panel">
+    <div class="sheet-head"><div class="me-info"><p class="eq-name" id="lootTitle"></p><p class="eq-rar" id="lootSub"></p></div><button class="side-x" id="lootClose" type="button" aria-label="Fermer">✕</button></div>
+    <p class="coop-note">Touche un équipement pour le voir ou l'équiper.</p>
+    <div class="eq-grid loot-grid" id="lootGrid"></div>
+    <div class="actions"><button class="btn primary" id="lootOk" type="button">Super !</button><button class="btn" id="lootHero" type="button">Voir Mon perso</button></div>
   </div>
 </div>
 <div id="giftSheet" class="sheet" role="dialog" aria-label="Offrir à un ami" hidden>
@@ -930,6 +944,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
     <div class="tabs" role="tablist"><button class="tab on" id="tabBag" type="button" role="tab">Mon sac</button><button class="tab" id="tabFuse" type="button" role="tab">Fusion</button></div>
     <p class="sub" id="heroHint"></p>
     <div class="eq-filt" id="eqFilt" hidden></div>
+    <div class="eq-filt" id="eqSellBox" hidden><button class="btn sm ghost" id="btnSellCommons" type="button"></button></div>
     <div class="eq-grid" id="eqGrid"></div>
     <div class="fuse-bar" id="fuseBar" hidden><span id="fuseInfo"></span><button class="btn primary" id="btnFuse" type="button">Fusionner</button></div>
   </div>
@@ -1459,22 +1474,23 @@ function widenGrid(g,cols,seed,type){
 
 /* ================= equipment: hats, amulets, rings, boots and charms worn by your creatures ================= */
 const EQ_SLOTS=[
-  {id:'hat',name:'Chapeau',plural:'Chapeaux',names:['Bonnet de laine','Chapeau de paille','Chapeau de mage',"Couronne d'or",'Couronne royale']},
-  {id:'amu',name:'Amulette',plural:'Amulettes',names:['Collier de perles','Amulette de jade','Pendentif de lune','Amulette du phénix',"Cœur d'étoile"]},
-  {id:'ring',name:'Bague',plural:'Bagues',names:['Anneau de fer',"Bague d'argent",'Bague de rubis','Anneau de feu','Anneau du dragon']},
-  {id:'boots',name:'Bottes',plural:'Bottes',names:['Sandales','Bottes de cuir','Bottes ailées','Bottes du vent',"Bottes de l'éclair"]},
-  {id:'charm',name:'Porte-bonheur',plural:'Porte-bonheur',names:['Trèfle','Trèfle à 4 feuilles',"Étoile d'argent","Étoile d'or",'Étoile filante']}
+  {id:'hat',name:'Chapeau',plural:'Chapeaux',names:['Bonnet de laine','Chapeau de paille','Chapeau de mage',"Couronne d'or",'Couronne royale','Couronne divine','Couronne des galaxies']},
+  {id:'amu',name:'Amulette',plural:'Amulettes',names:['Collier de perles','Amulette de jade','Pendentif de lune','Amulette du phénix',"Cœur d'étoile",'Amulette sacrée','Œil du cosmos']},
+  {id:'ring',name:'Bague',plural:'Bagues',names:['Anneau de fer',"Bague d'argent",'Bague de rubis','Anneau de feu','Anneau du dragon','Anneau des anges','Anneau galactique']},
+  {id:'boots',name:'Bottes',plural:'Bottes',names:['Sandales','Bottes de cuir','Bottes ailées','Bottes du vent',"Bottes de l'éclair",'Bottes célestes','Bottes de la comète']},
+  {id:'charm',name:'Porte-bonheur',plural:'Porte-bonheur',names:['Trèfle','Trèfle à 4 feuilles',"Étoile d'argent","Étoile d'or",'Étoile filante','Soleil doré','Galaxie']}
 ];
-const RAR=[{n:'Commun',c:'#cfc4b2',d:'#857a6a'},{n:'Rare',c:'#5aa9ff',d:'#2a64a8'},{n:'Épique',c:'#b77cff',d:'#6c3cb6'},{n:'Légendaire',c:'#f5c542',d:'#a87a12'},{n:'Mythique',c:'#ff5f7a',d:'#a82442'}];
-const EQ_MAX_L=10,EQ_BAG=60,EQ_PRICE=[60,160,400,900,2000];
-const CHESTS=[{name:'Coffre en bois',price:90,w:[70,25,5,0,0],col:'#9a6232'},{name:'Coffre en fer',price:260,w:[0,60,30,10,0],col:'#8c97a3'},{name:'Coffre en or',price:700,w:[0,0,60,35,5],col:'#e6b13a'}];
+const RAR=[{n:'Commun',c:'#cfc4b2',d:'#857a6a'},{n:'Rare',c:'#5aa9ff',d:'#2a64a8'},{n:'Épique',c:'#b77cff',d:'#6c3cb6'},{n:'Légendaire',c:'#f5c542',d:'#a87a12'},{n:'Mythique',c:'#ff5f7a',d:'#a82442'},{n:'Divin',c:'#fff1b8',d:'#c99a1e'},{n:'Cosmique',c:'#6ef3ff',d:'#5b2bd6'}];
+const RMAX=RAR.length-1;
+const EQ_MAX_L=10,EQ_BAG=100,EQ_PRICE=[60,160,400,900,2000,4500,9000];
+const CHESTS=[{name:'Coffre en bois',price:90,w:[70,25,5,0,0,0,0],col:'#9a6232'},{name:'Coffre en fer',price:260,w:[0,60,30,10,0,0,0],col:'#8c97a3'},{name:'Coffre en or',price:700,w:[0,0,60,32,7,1,0],col:'#e6b13a'},{name:'Coffre de diamant',price:2000,w:[0,0,0,50,35,12,3],col:'#7fe3ff'}];
 function cleanEqState(o){
   const st={inv:[],on:[null,null,null,null,null],n:1,shop:{d:'',b:[]}};
   if(!o||typeof o!=='object')return st;
   const ids=new Set();
   if(Array.isArray(o.inv))for(const it of o.inv){
     if(!it||typeof it!=='object')continue;const sl=Math.floor(+it.s),r=Math.floor(+it.r),l=Math.floor(+it.l);
-    if(!(sl>=0&&sl<5&&r>=0&&r<5&&l>=1&&l<=EQ_MAX_L))continue;
+    if(!(sl>=0&&sl<5&&r>=0&&r<RAR.length&&l>=1&&l<=EQ_MAX_L))continue;
     const i=typeof it.i==='string'&&/^e\d{1,9}$/.test(it.i)&&!ids.has(it.i)?it.i:null;if(!i)continue;
     ids.add(i);st.inv.push({i,s:sl,r,l});if(st.inv.length>=EQ_BAG+30)break;
   }
@@ -4794,7 +4810,7 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
-  closeMenu(true);closeEqSheet();closeGiftSheet();updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();updFrBadge();if(soInvite)setTimeout(showInvite,400);
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
@@ -5548,9 +5564,12 @@ $('heroNext').addEventListener('click',()=>heroStep(1));
 $('tabBag').addEventListener('click',()=>setEqTab('bag'));
 $('tabFuse').addEventListener('click',()=>setEqTab('fuse'));
 $('btnFuse').addEventListener('click',doFuse);
+$('btnSellCommons').addEventListener('click',()=>{audioUnlock();if(eqArm!=='sellc'){eqArm='sellc';renderEqGrid();return;}eqArm='';
+  const L=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it));const v=L.reduce((t,it)=>t+eqSellVal(it),0);save.eq.inv=save.eq.inv.filter(it=>!L.includes(it));save.gold=(save.gold||0)+v;persist();sfx('coin');frMsg(L.length+' Communs vendus : +'+v+' or','ok');renderHero();});
 $('eqClose').addEventListener('click',closeEqSheet);
 $('eqSheetDim').addEventListener('click',closeEqSheet);
 $('giftClose').addEventListener('click',closeGiftSheet);
+$('lootClose').addEventListener('click',closeLoot);$('lootDim').addEventListener('click',closeLoot);$('lootOk').addEventListener('click',closeLoot);$('lootHero').addEventListener('click',()=>{closeLoot();openHero();});
 $('giftSheetDim').addEventListener('click',closeGiftSheet);
 addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('eqSheet').hidden){closeEqSheet();e.preventDefault();}else if(!$('giftSheet').hidden){closeGiftSheet();e.preventDefault();}});
 $('ipNo').addEventListener('click',()=>{soInvite=null;hideInvite();updFrBadge();});
@@ -5929,7 +5948,7 @@ let soGifts=[];
 function giftOk(g){
   const d=g&&g.data;if(!d||typeof d!=='object')return false;
   if(d.t==='gold')return typeof d.day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.day)&&g.d.startsWith('bestiolins-gold-'+d.day+'-');
-  if(d.t==='eq'){const it=d.it;return !!it&&Number.isInteger(it.s)&&it.s>=0&&it.s<5&&Number.isInteger(it.r)&&it.r>=0&&it.r<5&&g.d.startsWith('bestiolins-gift-');}
+  if(d.t==='eq'){const it=d.it;return !!it&&Number.isInteger(it.s)&&it.s>=0&&it.s<5&&Number.isInteger(it.r)&&it.r>=0&&it.r<RAR.length&&g.d.startsWith('bestiolins-gift-');}
   return false;
 }
 function myGifts(){if(!soReady)return[];const F=new Set(soFriends());return soGifts.filter(g=>F.has(g.pk)&&!SOC.claimed[g.key]&&giftOk(g));}
@@ -5976,19 +5995,21 @@ function eqSellVal(it){return(it.r+1)*(10+5*it.l);}
 function eqUpCost(it){return(it.r+1)*25*it.l;}
 function eqGive(sl,r){if(save.eq.inv.length>=EQ_BAG){const g=(r+1)*15;save.gold=(save.gold||0)+g;return{gold:g};}return{it:eqNew(sl,r,1)};}
 function myEqBonus(){const b=[0,0,0,0,0];for(let k=0;k<5;k++){const it=eqById(save.eq.on[k]);if(it)b[k]+=eqVal(it.s,it.r,it.l);}return b;}
-function cleanEqBonus(a){const mx=[8,60,60,60,60];if(!Array.isArray(a))return[0,0,0,0,0];return mx.map((m,i)=>Math.max(0,Math.min(m,Math.floor(+a[i])||0)));}
+function cleanEqBonus(a){const mx=[10,84,84,84,84];if(!Array.isArray(a))return[0,0,0,0,0];return mx.map((m,i)=>Math.max(0,Math.min(m,Math.floor(+a[i])||0)));}
 function applyEq(p,b){if(!p||!b)return;if(b[0]){p.maxHp=Math.min(24,p.maxHp+b[0]);p.hp=p.maxHp;}if(b[1])p.fireDelay/=1+b[1]/100;if(b[2])p.dmg*=1+b[2]/100;if(b[3])p.speed*=1+b[3]/200;if(b[4])p.goldMul+=b[4]/100;}
 function rollRar(w){let t=0;for(const x of w)t+=x;let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<0)return i;}return 0;}
-function lootWeights(f){f=Math.max(0,f|0);return[Math.max(12,62-9*f),30,8+5*f,2+2*f,f>=4?f-2:0];}
+function lootWeights(f){f=Math.max(0,f|0);return[Math.max(12,62-9*f),30,8+5*f,2+2*f,f>=4?f-2:0,f>=6?1:0,0];}
 /* drawing: every piece is drawn in a box from -1 to 1 */
 function eqShape(c,sl,r){
-  const R0=RAR[r],col=R0.c,dk=R0.d;c.lineJoin='round';c.lineCap='round';c.lineWidth=0.09;c.strokeStyle=INK;
+  const R0=RAR[r],dk=R0.d;let col=R0.c;
+  if(r===6){const g=c.createLinearGradient(-1,-1,1,1);g.addColorStop(0,'#ff6ad5');g.addColorStop(0.5,'#8a5cff');g.addColorStop(1,'#46e6ff');col=g;}
+  c.lineJoin='round';c.lineCap='round';c.lineWidth=0.09;c.strokeStyle=INK;
   const fs2=f=>{c.fillStyle=f;c.fill();c.stroke();};
   const shine=(x,y,rr)=>{c.beginPath();c.arc(x,y,rr,0,TAU);c.fillStyle='rgba(255,255,255,.65)';c.fill();};
   if(sl===0){
     if(r>=3){c.beginPath();c.moveTo(-0.82,0.5);c.lineTo(-0.82,-0.3);c.lineTo(-0.42,0.08);c.lineTo(0,-0.62);c.lineTo(0.42,0.08);c.lineTo(0.82,-0.3);c.lineTo(0.82,0.5);c.closePath();fs2(col);
       c.beginPath();c.rect(-0.82,0.3,1.64,0.2);fs2(dk);
-      for(const[x,g] of[[-0.45,'#ff4d6d'],[0,'#5ad1ff'],[0.45,'#7ee07e']]){c.beginPath();c.arc(x,0.1,0.11,0,TAU);fs2(r===4?'#ff4d6d':g);}
+      for(const[x,g] of[[-0.45,'#ff4d6d'],[0,'#5ad1ff'],[0.45,'#7ee07e']]){c.beginPath();c.arc(x,0.1,0.11,0,TAU);fs2(r>=4?['#ff4d6d','#ffffff','#46e6ff'][r-4]:g);}
       for(const x of[-0.82,0,0.82]){c.beginPath();c.arc(x,x?-0.32:-0.64,0.08,0,TAU);fs2('#fff3c4');}}
     else{c.beginPath();c.ellipse(0,0.48,0.92,0.24,0,0,TAU);fs2(dk);
       c.beginPath();c.moveTo(-0.52,0.46);c.quadraticCurveTo(-0.3,-0.25,r===2?0.32:0.05,r===2?-0.9:-0.55);c.quadraticCurveTo(r===2?0.25:0.4,-0.1,0.52,0.46);c.closePath();fs2(col);
@@ -5998,7 +6019,7 @@ function eqShape(c,sl,r){
   }else if(sl===1){
     c.beginPath();c.moveTo(-0.62,-0.85);c.quadraticCurveTo(-0.45,0.05,0,0.12);c.quadraticCurveTo(0.45,0.05,0.62,-0.85);c.strokeStyle=INK;c.lineWidth=0.2;c.stroke();c.strokeStyle=r>=3?'#f5c542':'#d9cdb8';c.lineWidth=0.09;c.stroke();
     c.strokeStyle=INK;c.lineWidth=0.09;
-    if(r===4){c.beginPath();c.moveTo(0,0.95);c.bezierCurveTo(-0.85,0.45,-0.55,-0.05,0,0.3);c.bezierCurveTo(0.55,-0.05,0.85,0.45,0,0.95);fs2(col);}
+    if(r===4||r===6){c.beginPath();c.moveTo(0,0.95);c.bezierCurveTo(-0.85,0.45,-0.55,-0.05,0,0.3);c.bezierCurveTo(0.55,-0.05,0.85,0.45,0,0.95);fs2(col);}
     else{c.beginPath();c.arc(0,0.45,0.42,0,TAU);fs2(dk);c.beginPath();c.arc(0,0.45,0.3,0,TAU);fs2(col);}
     shine(-0.12,0.32,0.08);
   }else if(sl===2){
@@ -6010,17 +6031,29 @@ function eqShape(c,sl,r){
     c.beginPath();c.rect(-0.5,0.56,1.3,0.18);fs2(dk);
     c.beginPath();c.rect(-0.5,-0.8,0.62,0.2);fs2(dk);
     if(r>=2){c.beginPath();c.moveTo(-0.5,-0.4);c.quadraticCurveTo(-1.05,-0.55,-0.95,-0.05);c.quadraticCurveTo(-0.8,-0.15,-0.5,-0.05);c.closePath();fs2('#fbf6ea');}
-    if(r===4){c.beginPath();c.moveTo(0.4,-0.6);c.lineTo(0.2,-0.2);c.lineTo(0.42,-0.2);c.lineTo(0.25,0.1);c.strokeStyle='#ffe066';c.lineWidth=0.08;c.stroke();}
+    if(r>=4){c.beginPath();c.moveTo(0.4,-0.6);c.lineTo(0.2,-0.2);c.lineTo(0.42,-0.2);c.lineTo(0.25,0.1);c.strokeStyle='#ffe066';c.lineWidth=0.08;c.stroke();}
   }else{
     if(r<2){const g=r===0?'#6cc25a':'#3fbf6a';const n=r===0?3:4;for(let k=0;k<n;k++){const a=k/n*TAU-Math.PI/2;c.beginPath();c.arc(Math.cos(a)*0.32,Math.sin(a)*0.32-0.12,0.3,0,TAU);fs2(g);}
       c.beginPath();c.moveTo(0,0.05);c.quadraticCurveTo(0.1,0.5,0.35,0.8);c.lineWidth=0.12;c.strokeStyle='#3d7a2c';c.stroke();}
+    else if(r===5){for(let k=0;k<12;k++){const a=k/12*TAU;c.beginPath();c.moveTo(Math.cos(a)*0.55,Math.sin(a)*0.55);c.lineTo(Math.cos(a)*0.92,Math.sin(a)*0.92);c.strokeStyle=k%2?'#ffd34d':'#fff6c8';c.lineWidth=0.12;c.stroke();}
+      c.strokeStyle=INK;c.lineWidth=0.09;c.beginPath();c.arc(0,0,0.48,0,TAU);fs2('#ffd34d');shine(-0.15,-0.15,0.1);}
+    else if(r===6){c.beginPath();c.ellipse(0,0,0.95,0.42,-0.4,0,TAU);fs2(col);for(let k=0;k<2;k++){c.beginPath();c.arc(0,0,0.25+k*0.28,k*2+0.4,k*2+2.6);c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=0.08;c.stroke();}
+      c.beginPath();c.arc(0,0,0.16,0,TAU);c.fillStyle='#fff';c.fill();}
     else{c.beginPath();for(let k=0;k<10;k++){const a=k/10*TAU-Math.PI/2,rr=k%2?0.38:0.85;c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr+0.05);}c.closePath();fs2(r===2?'#dfe6ee':col);shine(-0.18,-0.12,0.1);
       if(r===4){c.beginPath();c.moveTo(0.55,0.5);c.lineTo(0.95,0.95);c.strokeStyle='rgba(255,224,102,.8)';c.lineWidth=0.1;c.stroke();}}
   }
+  if(r>=5){/* little sparkles around the rarest pieces */
+    for(const[x,y,z] of[[-0.88,-0.72,0.17],[0.86,-0.6,0.12],[0.78,0.82,0.14]]){c.beginPath();c.moveTo(x,y-z);c.quadraticCurveTo(x,y,x+z,y);c.quadraticCurveTo(x,y,x,y+z);c.quadraticCurveTo(x,y,x-z,y);c.quadraticCurveTo(x,y,x,y-z);c.fillStyle=r===6?'#b8f7ff':'#fffbe6';c.fill();}
+  }
 }
 function eqTileBg(c,n,r){
-  const g=c.createRadialGradient(n/2,n*0.42,n*0.05,n/2,n/2,n*0.7);g.addColorStop(0,r>=3?'#4a3720':'#3a2a20');g.addColorStop(1,'#140d09');c.fillStyle=g;c.fillRect(0,0,n,n);
-  c.strokeStyle=RAR[r].c;c.lineWidth=n*0.05;c.strokeRect(n*0.025,n*0.025,n*0.95,n*0.95);
+  const g=c.createRadialGradient(n/2,n*0.42,n*0.05,n/2,n/2,n*0.7);
+  if(r===6){g.addColorStop(0,'#3b2a7a');g.addColorStop(1,'#0a0718');}else if(r===5){g.addColorStop(0,'#7a5a1a');g.addColorStop(1,'#1a1208');}else{g.addColorStop(0,r>=3?'#4a3720':'#3a2a20');g.addColorStop(1,'#140d09');}
+  c.fillStyle=g;c.fillRect(0,0,n,n);
+  if(r===5){c.save();c.translate(n/2,n/2);c.globalAlpha=0.22;c.fillStyle='#fff1b8';for(let k=0;k<8;k++){c.rotate(TAU/8);c.beginPath();c.moveTo(0,0);c.lineTo(-n*0.08,-n*0.75);c.lineTo(n*0.08,-n*0.75);c.closePath();c.fill();}c.restore();c.globalAlpha=1;}
+  if(r===6){for(let k=0;k<14;k++){const x=((k*37)%97)/97*n,y=((k*61)%89)/89*n;c.fillStyle='rgba(255,255,255,'+(0.35+0.4*((k*13)%5)/5)+')';c.fillRect(x,y,n*0.02,n*0.02);}}
+  if(r===6){const b=c.createLinearGradient(0,0,n,n);b.addColorStop(0,'#ff6ad5');b.addColorStop(0.5,'#8a5cff');b.addColorStop(1,'#46e6ff');c.strokeStyle=b;}else c.strokeStyle=RAR[r].c;
+  c.lineWidth=n*0.05;c.strokeRect(n*0.025,n*0.025,n*0.95,n*0.95);
   if(r>=2){c.fillStyle=RAR[r].c;c.globalAlpha=0.18;c.fillRect(0,n*0.8,n,n*0.2);c.globalAlpha=1;}
 }
 function drawEqIcon(cv,sl,r,bg){const c=cv.getContext('2d'),n=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,n,n);if(bg)eqTileBg(c,n,r);c.translate(n/2,n/2);c.scale(n*0.32,n*0.32);eqShape(c,sl,r);c.setTransform(1,0,0,1,0,0);}
@@ -6080,13 +6113,16 @@ function renderEqGrid(){
     :'Touche un équipement pour le voir, le mettre, l\'améliorer ou le vendre. Tous tes équipements marchent avec toutes tes bestioles.';
   const f=$('eqFilt');f.hidden=fuse||eqFilterS<0;f.textContent='';
   if(!f.hidden){const t=document.createElement('span');t.className='coop-note';t.textContent='Seulement : '+EQ_SLOTS[eqFilterS].plural;f.append(t,mkBtn('Tout voir','ghost',()=>{eqFilterS=-1;renderHero();}));}
+  {const n=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it)).length,b=$('btnSellCommons');$('eqSellBox').hidden=fuse||n<2;
+    const v=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it)).reduce((t,it)=>t+eqSellVal(it),0);
+    b.textContent=eqArm==='sellc'?'Touche encore pour vendre '+n+' Communs (+'+v+' or)':'Vendre tous les Communs non portés ('+n+')';b.classList.toggle('danger',eqArm==='sellc');}
   let L=save.eq.inv.slice();if(!fuse&&eqFilterS>=0)L=L.filter(it=>it.s===eqFilterS);
   L.sort((a,b)=>(eqIsOn(b)-eqIsOn(a))||(b.r-a.r)||(b.l-a.l)||(a.s-b.s));
   const fr=fuseSel.length?eqById(fuseSel[0]).r:-1;
   if(!L.length){const p=document.createElement('p');p.className='coop-empty eq-empty';p.textContent=save.eq.inv.length?'Rien de ce type dans ton sac.':"Ton sac est vide. Bats des boss pour gagner des équipements, ou achète-en à la Boutique (dans le Menu).";g.append(p);}
   for(const it of L){
     const b=document.createElement('button');b.type='button';b.className='eqt';
-    const on=eqIsOn(it),blocked=fuse&&(on||it.r>=4||(fr>=0&&it.r!==fr&&!fuseSel.includes(it.i)));
+    const on=eqIsOn(it),blocked=fuse&&(on||it.r>=RMAX||(fr>=0&&it.r!==fr&&!fuseSel.includes(it.i)));
     if(fuse&&fuseSel.includes(it.i))b.classList.add('sel');if(blocked)b.classList.add('dim');
     b.style.borderColor=RAR[it.r].c;
     const cv=document.createElement('canvas');cv.width=cv.height=Math.round(70*dpr);drawEqIcon(cv,it.s,it.r,true);
@@ -6097,16 +6133,16 @@ function renderEqGrid(){
       if(!fuse){openEqSheet(it.i);return;}
       if(fuseSel.includes(it.i)){fuseSel=fuseSel.filter(x=>x!==it.i);renderEqGrid();return;}
       if(on){frMsg("Retire d'abord cet équipement pour le fusionner.",'bad');return;}
-      if(it.r>=4){frMsg('Les équipements mythiques sont déjà au maximum !','bad');return;}
+      if(it.r>=RMAX){frMsg('Les équipements cosmiques sont déjà au maximum !','bad');return;}
       if(fr>=0&&it.r!==fr){frMsg('Choisis 3 équipements de la même rareté ('+RAR[fr].n+').','bad');return;}
       if(fuseSel.length>=3)return;fuseSel.push(it.i);sfx('coin');renderEqGrid();});
     g.append(b);
   }
   const fb=$('fuseBar');fb.hidden=!fuse;
-  if(fuse){const n=fuseSel.length;$('fuseInfo').textContent=n?n+'/3 '+RAR[fr].n.toLowerCase()+(n>1?'s':'')+' → 1 '+RAR[Math.min(4,fr+1)].n.toLowerCase():'Choisis 3 équipements';$('btnFuse').disabled=n<3;}
+  if(fuse){const n=fuseSel.length;$('fuseInfo').textContent=n?n+'/3 '+RAR[fr].n.toLowerCase()+(n>1?'s':'')+' → 1 '+RAR[Math.min(RMAX,fr+1)].n.toLowerCase():'Choisis 3 équipements';$('btnFuse').disabled=n<3;}
 }
 function doFuse(){
-  if(fuseSel.length!==3)return;const its=fuseSel.map(eqById);if(its.some(x=>!x||eqIsOn(x))||its.some(x=>x.r!==its[0].r)||its[0].r>=4)return;
+  if(fuseSel.length!==3)return;const its=fuseSel.map(eqById);if(its.some(x=>!x||eqIsOn(x))||its.some(x=>x.r!==its[0].r)||its[0].r>=RMAX)return;
   const sl=its[0].s,r=its[0].r+1;save.eq.inv=save.eq.inv.filter(x=>!fuseSel.includes(x.i));fuseSel=[];
   const it=eqNew(sl,r,1);persist();sfx('item');renderHero();openEqSheet(it.i,true);
 }
@@ -6142,7 +6178,7 @@ function openStore(){audioUnlock();storeArm='';state='store';clearOverlays();sho
 function canGift(){return CB_SOC&&soReady&&soFriends().length>0;}
 function renderStore(){
   $('storeGold').textContent=save.gold||0;const gift=canGift();
-  const card=(drawFn,name,tag,tagCol,eff,price,key,sold,onBuy,onGift)=>{
+  const card=(drawFn,name,tag,tagCol,eff,price,key,sold,onBuy,onGift,extra)=>{
     const d=document.createElement('div');d.className='scard'+(sold?' sold':'');
     const cv=document.createElement('canvas');cv.width=cv.height=Math.round(68*dpr);drawFn(cv);
     const nm=document.createElement('span');nm.className='nm';nm.textContent=name;
@@ -6152,6 +6188,7 @@ function renderStore(){
     const bt=document.createElement('div');bt.className='btns';
     if(sold){const s=document.createElement('span');s.className='coop-note';s.textContent="Déjà acheté aujourd'hui";bt.append(s);}
     else{const arm=storeArm===key;bt.append(mkBtn(arm?'Touche encore pour acheter':'Acheter',arm?'primary glow':'primary',()=>{if((save.gold||0)<price){frMsg("Pas assez d'or : il te faut "+price+' or.','bad');return;}if(save.eq.inv.length>=EQ_BAG){frMsg('Ton sac est plein : vends ou fusionne des équipements dans « Mon perso ».','bad');return;}if(!arm){storeArm=key;renderStore();return;}storeArm='';onBuy();}));
+      if(extra)bt.append(extra());
       if(gift)bt.append(mkBtn('Offrir à un ami','',()=>{storeArm='';onGift();}));}
     d.append(cv,nm,tg,ef,pr,bt);return d;
   };
@@ -6160,7 +6197,13 @@ function renderStore(){
     const odds=C.w.map((w,i)=>w?RAR[i].n+' '+w+' %':'').filter(Boolean).join(' · ');
     ch.append(card(cv=>drawChestIcon(cv,k),C.name,'Équipement au hasard','#e8d9bf',odds,C.price,'c'+k,false,
       ()=>{save.gold-=C.price;const it=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();sfx('chest');renderStore();openEqSheet(it.i,true);},
-      ()=>openGiftSheet({kind:'c',k})));
+      ()=>openGiftSheet({kind:'c',k}),
+      ()=>{const key='c'+k+'x',arm=storeArm===key,p10=C.price*9,gr=chestGuarantee(C.w);
+        return mkBtn(arm?'Touche encore : 10 coffres pour '+p10+' or':'Acheter ×10 · '+p10+' or',arm?'primary glow':'',()=>{
+          if((save.gold||0)<p10){frMsg("Pas assez d'or : il te faut "+p10+' or.','bad');return;}
+          const free=EQ_BAG-save.eq.inv.length;if(free<10){frMsg('Il te faut 10 places libres dans ton sac (tu en as '+Math.max(0,free)+'). Vends ou fusionne dans « Mon perso ».','bad');return;}
+          if(!arm){storeArm=key;renderStore();frMsg('10 coffres pour le prix de 9, avec au moins 1 '+RAR[gr].n+' garanti !');return;}
+          storeArm='';buyChest10(k);});}));
   });
   const dy=$('storeDay');dy.textContent='';
   storeDay().forEach((o,i)=>{
@@ -6170,6 +6213,25 @@ function renderStore(){
       ()=>openGiftSheet({kind:'d',i,s:o.s,r:o.r})));
   });
 }
+function chestGuarantee(w){const nz=w.map((x,i)=>x>0?i:-1).filter(i=>i>=0);return nz[1]!=null?nz[1]:nz[0];}
+function buyChest10(k){
+  const C=CHESTS[k],p10=C.price*9,gr=chestGuarantee(C.w);
+  if((save.gold||0)<p10||EQ_BAG-save.eq.inv.length<10)return;
+  save.gold-=p10;const rs=[];for(let i=0;i<10;i++)rs.push(rollRar(C.w));
+  if(!rs.some(r=>r>=gr))rs[Math.floor(Math.random()*10)]=gr;
+  const got=rs.map(r=>eqNew(Math.floor(Math.random()*5),r,1));persist();sfx('chest');renderStore();showLoot(got,C.name+' ×10');
+}
+function showLoot(list,title){
+  const L=list.slice().sort((a,b)=>b.r-a.r||a.s-b.s),best=L[0];
+  $('lootTitle').textContent=list.length+' équipements !';
+  $('lootSub').textContent=title+' · Le meilleur : '+eqName(best)+' ('+RAR[best.r].n+')';$('lootSub').style.color=RAR[best.r].c;
+  const g=$('lootGrid');g.textContent='';
+  L.forEach((it,i)=>{const b=document.createElement('button');b.type='button';b.className='eqt loot-in'+(it.r>=4?' loot-wow':'');b.style.borderColor=RAR[it.r].c;b.style.animationDelay=(i*90)+'ms';
+    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(70*dpr);drawEqIcon(cv,it.s,it.r,true);b.append(cv);
+    b.setAttribute('aria-label',eqName(it)+', '+RAR[it.r].n);b.addEventListener('click',()=>openEqSheet(it.i));g.append(b);});
+  $('frSnack').hidden=true;$('lootSheet').hidden=false;if(best.r>=4)setTimeout(()=>sfx('level'),L.length*90);
+}
+function closeLoot(){$('lootSheet').hidden=true;}
 function giftPrice(g){return g.kind==='c'?CHESTS[g.k].price:EQ_PRICE[g.r];}
 function openGiftSheet(g){
   giftWhat=g;const price=giftPrice(g);
