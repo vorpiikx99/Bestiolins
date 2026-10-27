@@ -455,6 +455,42 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 }
 .swipehint{display:none;margin:0;font-size:13px;color:var(--bone-dim);text-align:right}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.btn.sm{min-height:44px;padding:6px 14px;font-size:17px;min-width:0}
+.btn.sm.primary{min-width:0}
+.fr-item{flex-wrap:wrap}
+.fr-item canvas{cursor:pointer}
+.fr-open{flex:1;min-width:120px;background:none;border:0;padding:0;margin:0;text-align:left;color:inherit;font:inherit;cursor:pointer;display:flex;flex-direction:column}
+.fr-open .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr-btns{display:flex;gap:8px;margin-left:auto}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#6b5a4c;margin-right:6px;vertical-align:1px}
+.dot.on{background:#5fd068;box-shadow:0 0 6px #5fd068}
+.me-card,.card-hero{display:flex;gap:16px;align-items:center}
+.me-card canvas{flex:none;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+.card-hero canvas{flex:none;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+.me-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.me-name{font-family:var(--font-display);font-weight:900;font-size:30px;line-height:1.05;color:var(--torch);overflow-wrap:anywhere}
+.me-lbl{margin:6px 0 0}
+.frcode{font:700 26px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em;color:var(--bone);-webkit-user-select:text;user-select:text}
+.card-sub{font-size:16px;color:var(--bone-dim)}
+.fr-acts{display:flex;flex-wrap:wrap;gap:10px}
+.fr-acts .btn{flex:1 1 140px}
+.codebox.nick{font-size:20px;text-align:center}
+.statgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--stone);border:2px solid var(--stone-edge);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--font-display);font-size:30px;font-weight:900;color:var(--torch);line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--bone-dim)}
+.card-crit{display:flex;flex-wrap:wrap;gap:8px}
+.card-crit canvas{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+.card-crit canvas.off{opacity:.5}
+.invite-pop{position:fixed;left:0;right:0;margin:0 auto;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:40;width:min(420px,calc(100vw - 24px));box-sizing:border-box;background:rgba(26,18,13,.97);border:2px solid var(--torch);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 18px rgba(242,162,58,.35);animation:pop2 .25s ease-out}
+.ip-row{display:flex;gap:12px;align-items:center}
+.ip-row canvas{flex:none;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+.ip-txt{margin:0;font-size:19px;color:var(--bone)}
+.ip-txt b{color:var(--torch)}
+.ip-btns{display:flex;gap:10px}
+.ip-btns .btn{flex:1}
+.fr-snack{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:41;width:max-content;max-width:calc(100vw - 32px);background:rgba(26,18,13,.96);border:2px solid var(--torch);border-radius:8px;padding:10px 16px;font-size:17px;color:var(--bone);text-align:center;animation:pop2 .2s ease-out}
+.fr-snack.bad{border-color:var(--ember)}
 </style>
 </head>
 <body>
@@ -475,6 +511,11 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 <div id="toast" role="status" hidden><div class="t1"></div><div class="t2"></div></div>
 <div id="tip" role="status" hidden><span class="tl">Astuce</span><span class="tt"></span></div>
 <div id="chatMenu" hidden></div>
+<div id="invitePop" class="invite-pop" role="dialog" aria-label="Invitation" hidden>
+  <div class="ip-row"><canvas id="ipCv" width="112" height="112"></canvas><p class="ip-txt"><b id="ipName"></b> t'invite à jouer à deux !</p></div>
+  <div class="ip-btns"><button class="btn primary" id="ipJoin" type="button">Rejoindre</button><button class="btn ghost" id="ipNo" type="button">Non merci</button></div>
+</div>
+<div id="frSnack" class="fr-snack" role="status" hidden></div>
 <div id="probe" aria-hidden="true"></div>
 
 <section id="scrTitle" class="screen">
@@ -496,6 +537,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       <button id="btnBest" class="btn" type="button">Bestiaire <span class="count" id="bestCount"></span></button>
       <button id="btnAch" class="btn" type="button">Succès <span class="count" id="achCount"></span></button>
       <button id="btnQuest" class="btn" type="button">Quêtes <span class="qbadge" id="questCount" hidden></span></button>
+      <button id="btnFriends" class="btn" type="button" hidden>Amis <span class="qbadge" id="frBadge" hidden></span></button>
       <button id="btnRank" class="btn" type="button">Classement</button>
       <button id="btnSave" class="btn" type="button">Sauvegarde</button>
       <button id="btnGiftOpen" class="btn" type="button">Code cadeau</button>
@@ -609,6 +651,10 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
         <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="14" cy="22" r="8" fill="none" stroke="#f2a23a" stroke-width="3.5"/><path d="M22 22h17M33 22v7M38 22v5" fill="none" stroke="#f2a23a" stroke-width="3.5" stroke-linecap="round"/></svg>
         <span class="info"><span class="nm">Avec un code</span><span class="ds">Tape le code d'un ami, ou crée une partie privée.</span></span>
       </button>
+      <button class="mode" id="modeFriend" type="button" hidden>
+        <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 37C12 30 6 24 6 16.5 6 11.8 9.6 8 14.2 8c3.3 0 6 1.9 7.8 4.7C23.8 9.9 26.5 8 29.8 8 34.4 8 38 11.8 38 16.5 38 24 32 30 22 37z" fill="none" stroke="#f2a23a" stroke-width="3.5" stroke-linejoin="round"/></svg>
+        <span class="info"><span class="nm">Avec un ami</span><span class="ds">Invite un ami de ta liste d'amis.</span></span>
+      </button>
     </div>
     <div id="coopFriends" class="slab coopbox" hidden>
       <p class="small-h">Entre amis</p>
@@ -643,6 +689,63 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       </div>
     </div>
     <p class="coop-note" id="coopAccess"></p>
+  </div>
+</section>
+
+<section id="scrFriends" class="screen" hidden>
+  <div class="panel">
+    <div class="hdr"><button class="back" id="frBack" type="button">← Retour</button><h2>Amis</h2></div>
+    <div id="frSetup" class="slab coopbox" hidden>
+      <p class="small-h">Ton pseudo</p>
+      <p class="coop-note">C'est le nom que tes amis verront. N'écris pas ton vrai nom.</p>
+      <input id="nickIn" class="codebox nick" type="text" maxlength="16" placeholder="Ton pseudo" autocomplete="off" spellcheck="false" aria-label="Ton pseudo" enterkeyhint="done">
+      <div class="actions"><button class="btn primary" id="btnNick" type="button">Valider</button><button class="btn ghost" id="btnNickCancel" type="button" hidden>Annuler</button></div>
+      <p class="coop-status" id="nickMsg" role="status"></p>
+    </div>
+    <div id="frMain" class="coopbox">
+      <div class="slab me-card">
+        <canvas id="frMe" width="128" height="128"></canvas>
+        <div class="me-info">
+          <span class="me-name" id="frMeName"></span>
+          <span class="small-h me-lbl">Ton code ami</span>
+          <span class="frcode" id="frMeCode"></span>
+        </div>
+      </div>
+      <div class="fr-acts">
+        <button class="btn primary" id="btnShareCode" type="button">Envoyer mon code</button>
+        <button class="btn" id="btnMyCard" type="button">Ma fiche</button>
+        <button class="btn ghost" id="btnNickEdit" type="button">Changer de pseudo</button>
+      </div>
+      <p class="coop-note" id="frNet" hidden></p>
+      <div class="slab coopbox">
+        <p class="small-h">Ajouter un ami</p>
+        <p class="coop-note">Demande son code ami à ton ami : il le trouve ici, dans « Amis ». Tape-le dans la case, puis touche « Chercher ».</p>
+        <div class="coderow"><input id="frCodeIn" class="codebox gift" type="text" maxlength="9" placeholder="Code ami" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code ami" enterkeyhint="search"><button class="btn primary" id="btnFrFind" type="button">Chercher</button></div>
+        <p class="coop-status" id="frFindMsg" role="status"></p>
+        <div class="coop-list" id="frFound"></div>
+      </div>
+      <div id="frReqBox" class="coopbox" hidden><p class="small-h">Demandes reçues</p><div class="coop-list" id="frReqList"></div></div>
+      <div class="coopbox"><p class="small-h" id="frListH">Mes amis</p><div class="coop-list" id="frList"></div></div>
+      <div id="frSentBox" class="coopbox" hidden><p class="small-h">Demandes envoyées</p><div class="coop-list" id="frSentList"></div></div>
+      <div id="frRecentBox" class="coopbox" hidden><p class="small-h">Joueurs rencontrés</p><div class="coop-list" id="frRecentList"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="scrCard" class="screen" hidden>
+  <div class="panel">
+    <div class="hdr"><button class="back" id="cardBack" type="button">← Retour</button><h2 id="cardTitle">Fiche</h2></div>
+    <div class="slab card-hero">
+      <canvas id="cardCv" width="192" height="192"></canvas>
+      <div class="me-info"><span class="me-name" id="cardName"></span><span class="card-sub" id="cardSub"></span></div>
+    </div>
+    <div class="statgrid" id="cardStats"></div>
+    <div class="coopbox"><p class="small-h" id="cardCritH">Bestioles</p><div class="card-crit" id="cardCrit"></div></div>
+    <div class="slab coopbox">
+      <p class="small-h">Meilleure partie</p><p class="coop-text" id="cardBest"></p>
+      <p class="small-h">Familier</p><p class="coop-text" id="cardPet"></p>
+    </div>
+    <div class="actions" id="cardActs"></div>
   </div>
 </section>
 
@@ -810,7 +913,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 (function(){
 'use strict';
 /* the installed version (own website) has no Claude: no online play, no leaderboard, save stays on the phone */
-const CB_SA=!!window.CB_STANDALONE,CB_P2P=!!window.CB_P2P,NETK=CB_P2P?2.5:1;
+const CB_SA=!!window.CB_STANDALONE,CB_P2P=!!window.CB_P2P,CB_SOC=!!window.CB_SOCIAL,NETK=CB_P2P?2.5:1;
 /* ================= constants & utils ================= */
 const TAU=Math.PI*2;
 const TS=32, ROWS=9, RH=ROWS*TS, WALL=24, DOOR_W=48;
@@ -1162,8 +1265,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0))};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,myBest:null};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -2304,6 +2407,7 @@ function makePlayer(sid){
     abil:{},shield:false,shieldT:0,orbA:0,goldMul:1,xpMul:1,magnet:45,isPl:true,skinI:mySkinI(sid),down:false,hurtSeq:0,bombs:1,active:null,charge:0,ironT:0,shopCd:0};
 }
 function newRun(sid,opts){
+  if(SIDS.includes(sid))bump('pl_'+sid);hideInvite();
   run={starter:sid,rush:(opts&&opts.rush)?1:0,rushI:0,rushBeat:0,daily:(opts&&opts.daily)?dateKey():'',diff:(opts&&opts.daily)?1:clamp(save.diff==null?1:save.diff|0,0,3),floor:0,kills:0,time:0,newEntries:[],pool:shuffle(Object.keys(ITEMS)),shots:[],eshots:[],enemies:[],parts:[],
     flow:null,flowT:0,trans:null,dead:false,deadT:0,won:false,endT:0,doorsOpen:true,bossIntro:0,roomActive:false,map:null,room:null,
     lvl:1,xp:0,pendingLv:0,fx:[],floats:[],motes:[],hurtFx:0,freeze:0,slow:0,doorAnim:1,gold:0,goldFrac:0,bombs:[],frozen:0,ch:null,actPool:shuffle(ACTIVE_IDS.slice())};
@@ -4420,7 +4524,7 @@ function renderTitle(){
 }
 
 /* ================= UI ================= */
-const SCREENS=['scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
+const SCREENS=['scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 function show(id){for(const s of SCREENS)$(s).hidden=s!==id;}
 let toastQ=[],toastT=0,bannerT=0,bossCardT=0;
 function showBossCard(id,label){const el=$('bossCard');drawPortrait($('bossCv'),id,1.2,false);el.querySelector('.bc1').textContent=label;el.querySelector('.bc2').textContent=SPECIES[id].name;
@@ -4462,6 +4566,7 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
+  updFrBadge();if(soInvite)setTimeout(showInvite,400);
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
@@ -4559,6 +4664,7 @@ function showOver(won,quit){
   if(NET){if(NET.role==='guest'&&quit)netLeave();else{const n=NET;setTimeout(()=>{if(NET===n)netLeave();},6000);}}
   const reached=floorNo(),rush=!!run.rush;
   if(!rush&&reached>(save.best||0))save.best=reached;
+  save.stats.maxLv=Math.max(save.stats.maxLv|0,run.lvl|0);setTimeout(soProfileSoon,300);
   if(won&&!run.winCounted&&!rush){run.winCounted=true;save.wins=(save.wins||0)+1;}
   const score=Math.round((reached*1000+(run.kills|0)*10+(run.lvl|0)*50+(won?2000:0))*DF().score);
   $('ovScore').textContent='Score : '+score+' points · '+DF().name;
@@ -4676,7 +4782,7 @@ function b64uDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+=
 function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(save.seen[id])mask|=1<<i;});
-  const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||''];
+  const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0];
   const p=b64uEnc(JSON.stringify(d));return 'CB1.'+p+'.'+fnv(p);
 }
 function readSaveCode(txt){
@@ -4696,7 +4802,8 @@ function readSaveCode(txt){
   const unlocked={};if(Array.isArray(d[11]))for(const k of d[11])if(typeof k==='string'&&STARTERS[k]&&STARTERS[k].price)unlocked[k]=true;
   const pets={};if(Array.isArray(d[12]))for(const t of d[12]){const a=String(t).split(':');if(PET_IDS.includes(a[0]))pets[a[0]]=clamp(parseInt(a[1],10)||1,1,PET_MAX);}
   const petSel=typeof d[13]==='string'&&pets[d[13]]?d[13]:'';
-  return{gold:num(d[1],1e8),up,seen,kills,best:num(d[5],999),wins:num(d[6],1e6),gifts,bag,skins,skin,unlocked,pets,petSel};
+  const soc=Array.isArray(d[14])&&isPk(d[14][0])?{sk:d[14][0],nick:cleanNick(d[14][1])}:null;
+  return{gold:num(d[1],1e8),up,seen,kills,best:num(d[5],999),wins:num(d[6],1e6),gifts,bag,skins,skin,unlocked,pets,petSel,soc};
 }
 function saveFacts(s){
   const ups=UPGRADES.reduce((n,u)=>n+Math.min(u.max,s.up[u.id]||0),0),seen=ORDER.filter(id=>s.seen[id]).length;
@@ -4731,6 +4838,7 @@ function loadSaveCode(){
     return;
   }
   save.gold=c.gold;save.up=c.up;save.seen=c.seen;save.kills=c.kills;save.best=c.best;save.wins=c.wins;save.gifts=c.gifts;save.bag=c.bag;save.skins=c.skins||{};save.skin=c.skin||{};save.unlocked=Object.assign({},save.unlocked||{},c.unlocked||{});save.pets=c.pets||{};save.petSel=c.petSel||'';persist();
+  if(c.soc&&CB_SOC)soAdopt(c.soc.sk,c.soc.nick);
   audioUnlock();sfx('item');resetLoadBtn();$('saveIn').value='';
   $('saveSummary').textContent='Sur cet appareil : '+saveFacts(save)+'.';$('saveOut').value=makeSaveCode();
   setMsg('loadMsg','C\'est fait ! Tu as maintenant '+(save.gold||0)+' or et tes améliorations.','ok');
@@ -5169,6 +5277,20 @@ $('navUp').addEventListener('click',()=>{try{$('upgrades').scrollIntoView({behav
 $('navPet').addEventListener('click',()=>{try{$('petsH').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
 $('navSkin').addEventListener('click',()=>{try{$('skinsH').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
 $('btnQuest').addEventListener('click',()=>{audioUnlock();openQuests();});
+$('btnFriends').addEventListener('click',()=>{audioUnlock();openFriends('title');});
+$('modeFriend').addEventListener('click',()=>{audioUnlock();openFriends('coop');});
+$('frBack').addEventListener('click',()=>{nickEdit=false;if(frFrom==='coop')openCoop();else goTitle();});
+$('cardBack').addEventListener('click',backFromCard);
+$('btnNick').addEventListener('click',saveNick);
+$('nickIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
+$('btnNickCancel').addEventListener('click',()=>{nickEdit=false;renderFriends();});
+$('btnNickEdit').addEventListener('click',()=>{nickEdit=true;$('nickIn').value=SOC.nick;setMsg('nickMsg','');renderFriends();$('scrFriends').scrollTop=0;});
+$('btnShareCode').addEventListener('click',shareCode);
+$('btnMyCard').addEventListener('click',()=>openCard('me','friends'));
+$('btnFrFind').addEventListener('click',frFind);
+$('frCodeIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();frFind();}});
+$('ipJoin').addEventListener('click',acceptInvite);
+$('ipNo').addEventListener('click',()=>{soInvite=null;hideInvite();updFrBadge();});
 $('questBack').addEventListener('click',goTitle);
 $('achBack').addEventListener('click',goTitle);
 $('btnRank').addEventListener('click',()=>{audioUnlock();openRank();});
@@ -5178,6 +5300,7 @@ $('tabDay').addEventListener('click',()=>setRankTab('day'));
 $('btnDaily').addEventListener('click',()=>{audioUnlock();goPickDaily();});
 $('btnGiftDay').addEventListener('click',openDailyGift);
 if(CB_SA){$('btnRank').hidden=true;if(!CB_P2P)$('btnCoop').hidden=true;}
+if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
 /* Android: offer to install the game as an app when the browser allows it */
 {let ip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('btnInstall').hidden=false;});
   $('btnInstall').addEventListener('click',async()=>{if(!ip)return;ip.prompt();try{await ip.userChoice;}catch(e){}ip=null;$('btnInstall').hidden=true;});
@@ -5233,6 +5356,260 @@ async function initRoom(){
   roomReady=true;
   if(state==='coop')renderCoop(true);
   announceScores();
+}
+/* ================= friends (installed version): pseudo, friend code, requests, cards, invites =================
+   Data goes through public Nostr relays (see net.js). Everything received is untrusted: cleaned before use, shown with textContent. */
+const SOC_KEY='bestiolins-social',CODE_AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const isPk=p=>typeof p==='string'&&/^[0-9a-f]{64}$/.test(p);
+function cleanNick(v){return String(v==null?'':v).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩]/g,'').replace(/\s+/g,' ').trim().slice(0,16);}
+function soLoad(){
+  try{const o=JSON.parse(localStorage.getItem(SOC_KEY)||'null');
+    if(o&&typeof o==='object')return{sk:isPk(o.sk)?o.sk:'',nick:cleanNick(o.nick),out:Array.isArray(o.out)?o.out.filter(isPk):[],ign:(o.ign&&typeof o.ign==='object')?o.ign:{},
+      recent:Array.isArray(o.recent)?o.recent.filter(r=>r&&isPk(r.pk)).slice(0,8):[],cache:(o.cache&&typeof o.cache==='object')?o.cache:{},inc:Array.isArray(o.inc)?o.inc.filter(x=>x&&isPk(x.pk)):[],dirty:!!o.dirty};}catch(e){}
+  return{sk:'',nick:'',out:[],ign:{},recent:[],cache:{},inc:[],dirty:false};
+}
+let SOC=soLoad(),SO=null,soReady=false,soNet='',soInvite=null,frFound=null,cardPk=null,cardFrom='friends',frFrom='title',inviteTo=null,nickEdit=false,cardArm=0,soPubAt=0,soRefP=null;
+function soPersist(){try{localStorage.setItem(SOC_KEY,JSON.stringify(SOC));}catch(e){}}
+function fmtCode(c){return c?c.slice(0,4)+'-'+c.slice(4):'';}
+function normCode(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
+function soU(){return soReady&&SOC.nick?[SO.pk,SOC.nick]:0;}
+function favStarter(){let b=null,bn=0;for(const id of SIDS){const n=save.stats['pl_'+id]|0;if(n>bn){bn=n;b=id;}}return b||(save.myBest&&SIDS.includes(save.myBest.st)?save.myBest.st:'braisot');}
+function gamesPlayed(){let n=0;for(const id of SIDS)n+=save.stats['pl_'+id]|0;return n;}
+function myCard(){
+  const fav=favStarter(),mb=save.myBest;
+  return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
+    a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
+    pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
+    mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
+}
+function cleanCard(o){
+  if(!o||typeof o!=='object')return null;
+  const N=(v,m)=>Math.max(0,Math.min(m,Math.floor(+v)||0));
+  const st=SIDS.includes(o.st)?o.st:'braisot';
+  const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
+  const pi=Array.isArray(o.pt)?Math.floor(+o.pt[0]):-1,pt=pi>=0&&pi<PETS.length?[pi,Math.max(1,N(o.pt[1],PET_MAX))]:null;
+  return{n:cleanNick(o.n)||'Joueur',st,sk:N(o.sk,SKINS[st]?SKINS[st].length:0),f:N(o.f,999),lv:N(o.lv,999),w:N(o.w,1e6),k:N(o.k,1e8),b:N(o.b,ORDER.length),a:N(o.a,ACHS.length),
+    r:N(o.r,RUSH.length),g:N(o.g,9999),u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
+}
+function cardOf(pk){const c=SOC.cache[pk];const p=c&&cleanCard(c.p);return p?{p,at:+c.at||0}:null;}
+function nameOf(pk){const c=cardOf(pk);if(c)return c.p.n;const r=SOC.recent.find(x=>x.pk===pk);return(r&&r.n)||'Joueur';}
+const soIncSet=()=>new Set(SOC.inc.map(x=>x.pk));
+function relOf(pk){const o=SOC.out.includes(pk),i=soIncSet().has(pk);return o&&i?'friend':o?'sent':i&&!SOC.ign[pk]?'req':'none';}
+function soFriends(){const I=soIncSet();return SOC.out.filter(p=>I.has(p));}
+function soRequests(){const O=new Set(SOC.out);return SOC.inc.filter(x=>!O.has(x.pk)&&!SOC.ign[x.pk]).map(x=>x.pk);}
+function soSent(){const I=soIncSet();return SOC.out.filter(p=>!I.has(p));}
+function seenTxt(at){if(!at)return'Pas encore vu en ligne';const sec=Date.now()/1000-at;if(sec<300)return'En ligne';if(sec<3600)return'Vu il y a '+Math.max(1,Math.round(sec/60))+' min';if(sec<86400)return'Vu il y a '+Math.round(sec/3600)+' h';const d=Math.round(sec/86400);return'Vu il y a '+d+(d>1?' jours':' jour');}
+async function initSocial(){
+  if(!CB_SOC)return;
+  try{SO=await Promise.race([window.CB_SOCIAL,new Promise(r=>setTimeout(()=>r(null),8000))]);}catch(e){SO=null;}
+  if(!SO)return;
+  try{if(!SOC.sk){SOC.sk=SO.newKey();soPersist();}SO.setKey(SOC.sk);}catch(e){SO=null;return;}
+  soReady=true;SO.onEvent(soLive);
+  if(SOC.nick)soStart();
+  if(state==='friends')renderFriends();
+  updFrBadge();
+  setInterval(()=>{if(soInvite&&Date.now()/1000-soInvite.at>180){soInvite=null;hideInvite();updFrBadge();}},4000);
+}
+function soStart(){
+  if(!soReady||!SOC.nick||soStart.on)return;soStart.on=true;
+  try{SO.listen();}catch(e){}
+  if(!SOC.out.length)SO.myFriendList().then(l=>{if(l&&l.length&&!SOC.out.length){SOC.out=l.filter(p=>!SOC.ign[p]);soPersist();soRefresh();}}).catch(()=>{});
+  if(SOC.dirty)soPublishList().catch(()=>{});
+  soPublishProfile(true);soRefresh();
+  setInterval(()=>{if(document.visibilityState==='visible'){soPublishProfile();if(state==='friends'||state==='card')soRefresh();}},120000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){soPublishProfile();soRefresh();}});
+}
+function soAdopt(sk,nick){
+  if(!isPk(sk)||sk===SOC.sk)return;
+  SOC={sk,nick:cleanNick(nick),out:[],ign:{},recent:[],cache:{},inc:[],dirty:false};soPersist();
+  if(!soReady)return;
+  try{SO.setKey(sk);}catch(e){return;}
+  soStart.on=false;soStart();
+}
+function soPublishProfile(force){
+  if(!soReady||!SOC.nick)return;const now=Date.now();if(!force&&now-soPubAt<20000)return;soPubAt=now;
+  SO.publishProfile(myCard()).then(()=>{soNet='ok';},()=>{soNet='off';soPubAt=0;if(state==='friends')renderFriends();});
+}
+function soProfileSoon(){if(soReady&&SOC.nick)soPublishProfile(true);}
+function soPublishList(){
+  if(!soReady)return Promise.reject(new Error('off'));
+  SOC.dirty=true;soPersist();
+  return SO.publishFriends(SOC.out).then(()=>{SOC.dirty=false;soPersist();});
+}
+function soRefresh(){
+  if(!soReady||!SOC.nick)return Promise.resolve();
+  if(soRefP)return soRefP;
+  soRefP=(async()=>{
+    try{
+      SOC.inc=(await SO.incoming()).filter(x=>isPk(x.pk));
+      const pks=[...new Set([...SOC.out,...SOC.inc.map(x=>x.pk),...SOC.recent.map(r=>r.pk),...(frFound?[frFound]:[]),...(isPk(cardPk)?[cardPk]:[])])];
+      const ps=await SO.profiles(pks);
+      for(const x of ps)if(x.p)SOC.cache[x.pk]={p:x.p,at:x.at};
+      for(const k in SOC.cache)if(!pks.includes(k))delete SOC.cache[k];
+      soPersist();soNet='ok';
+    }catch(e){soNet='off';}
+    soRefP=null;updFrBadge();
+    if(state==='friends')renderFriends();else if(state==='card')renderCard();
+  })();
+  return soRefP;
+}
+function soLive(ev){
+  if(!ev||!isPk(ev.pk))return;
+  if(ev.type==='friends'){clearTimeout(soLive.t);soLive.t=setTimeout(soRefresh,1200);return;}
+  if(ev.type==='invite'){
+    const d=ev.data;if(!d||typeof d.c!=='string'||!/^[A-Z0-9]{4}$/.test(d.c))return;
+    if(Date.now()/1000-ev.at>180||!SOC.out.includes(ev.pk)||SOC.ign[ev.pk])return;
+    soInvite={pk:ev.pk,code:d.c,st:SIDS.includes(d.st)?d.st:'braisot',n:cleanNick(d.n)||nameOf(ev.pk),at:ev.at};
+    showInvite();updFrBadge();
+  }
+}
+function soMet(u){
+  if(!Array.isArray(u)||!isPk(u[0])||!soReady||u[0]===SO.pk)return;
+  SOC.recent=[{pk:u[0],n:cleanNick(u[1])||'Joueur',at:Date.now()},...SOC.recent.filter(r=>r.pk!==u[0])].slice(0,8);soPersist();
+}
+function updFrBadge(){
+  const n=soRequests().length+(soInvite?1:0),b=$('frBadge');
+  b.hidden=!n;b.textContent=n?String(n):'';$('btnFriends').classList.toggle('glow',!!soInvite);
+}
+/* ---- invite popup ---- */
+function showInvite(){
+  const v=soInvite;if(!v)return;
+  if(Date.now()/1000-v.at>180){soInvite=null;hideInvite();updFrBadge();return;}
+  if(run&&state!=='over')return; /* during a game: wait until the player is back in the menus */
+  const cv=$('ipCv');drawPortrait(cv,v.st,1.2,false,null);
+  $('ipName').textContent=v.n;$('invitePop').hidden=false;sfx('coin');
+}
+function hideInvite(){$('invitePop').hidden=true;}
+function acceptInvite(){
+  const v=soInvite;soInvite=null;hideInvite();updFrBadge();if(!v)return;
+  audioUnlock();netLeave();stopSearch();lastCoop=true;lastLocal=false;
+  goPickCoop('join',v.code);$('pickSub').textContent='Choisis ta créature pour jouer avec '+v.n+'.';
+}
+function inviteFriend(pk){
+  if(!isPk(pk))return;inviteTo=pk;netLeave();stopSearch();lastCoop=true;lastLocal=false;
+  goPickCoop('invite',null);$('pickSub').textContent='Choisis ta créature pour jouer avec '+nameOf(pk)+'. Ton ami recevra une invitation.';
+}
+/* ---- friends screen ---- */
+function openFriends(from){
+  frFrom=from||'title';state='friends';clearOverlays();show('scrFriends');pauseBtn.hidden=true;$('scrFriends').scrollTop=0;
+  nickEdit=false;setMsg('frFindMsg','');$('nickIn').value=SOC.nick;setMsg('nickMsg','');
+  renderFriends();soRefresh();
+}
+function frMsg(t,kind){const el=$('frSnack');el.textContent=t;el.className='fr-snack'+(kind?' '+kind:'');el.hidden=false;clearTimeout(frMsg.t);frMsg.t=setTimeout(()=>{el.hidden=true;},2800);}
+function saveNick(){
+  const n=cleanNick($('nickIn').value);
+  if(!/^[\p{L}\p{N} _.'-]{2,16}$/u.test(n)){setMsg('nickMsg','Ton pseudo doit avoir entre 2 et 16 lettres ou chiffres.','bad');return;}
+  SOC.nick=n;soPersist();nickEdit=false;setMsg('nickMsg','');sfx('coin');
+  if(soReady){soStart();soPublishProfile(true);}
+  renderFriends();$('scrFriends').scrollTop=0;
+}
+function shareCode(){
+  if(!soReady)return;
+  const code=fmtCode(SO.code),txt='Ajoute-moi en ami sur Bestiolins ! Mon code ami : '+code+' · Le jeu : https://vorpiikx99.github.io/Bestiolins/';
+  const copy=()=>{try{navigator.clipboard.writeText(txt).then(()=>frMsg('Code copié ! Colle-le dans un message pour ton ami.','ok'),()=>frMsg('Appuie longtemps sur ton code pour le copier.'));}catch(e){frMsg('Appuie longtemps sur ton code pour le copier.');}};
+  try{if(navigator.share){navigator.share({text:txt}).catch(err=>{if(!err||err.name!=='AbortError')copy();});return;}}catch(e){}
+  copy();
+}
+function mkBtn(txt,cls,fn){const b=document.createElement('button');b.type='button';b.className='btn sm'+(cls?' '+cls:'');b.textContent=txt;b.addEventListener('click',e=>{e.stopPropagation();audioUnlock();fn(b);});return b;}
+function frRow(pk,ds,btns,dot){
+  const c=cardOf(pk),st=c?c.p.st:'braisot';
+  const row=document.createElement('div');row.className='coop-item fr-item';
+  const cv=document.createElement('canvas');cv.width=cv.height=Math.round(48*dpr);drawPortrait(cv,st,1.2,!c,c?skinPal(st,c.p.sk):null);
+  cv.addEventListener('click',()=>openCard(pk,'friends'));
+  const info=document.createElement('button');info.type='button';info.className='info fr-open';
+  const nm=document.createElement('span');nm.className='nm';nm.textContent=nameOf(pk);
+  const d=document.createElement('span');d.className='ds';
+  if(dot!=null){const i=document.createElement('i');i.className='dot'+(dot?' on':'');d.append(i);}
+  d.append(document.createTextNode(ds));info.append(nm,d);
+  info.addEventListener('click',()=>{audioUnlock();openCard(pk,'friends');});
+  row.append(cv,info);
+  if(btns&&btns.length){const b=document.createElement('div');b.className='fr-btns';for(const x of btns)b.append(x);row.append(b);}
+  return row;
+}
+function relBtns(pk){
+  const r=relOf(pk);
+  if(r==='friend')return[mkBtn('Inviter','primary',()=>inviteFriend(pk))];
+  if(r==='sent')return[mkBtn('Annuler','ghost',()=>frCancel(pk))];
+  if(r==='req')return[mkBtn('Accepter','primary',()=>frAdd(pk,'Vous êtes amis !')),mkBtn('Refuser','ghost',()=>frRefuse(pk))];
+  return[mkBtn('Ajouter','primary',()=>frAdd(pk,'Demande envoyée !'))];
+}
+function fill(id,rows,empty){const el=$(id);el.textContent='';if(!rows.length&&empty){const p=document.createElement('p');p.className='coop-empty';p.textContent=empty;el.append(p);}for(const r of rows)el.append(r);}
+function renderFound(){
+  const el=$('frFound');el.textContent='';if(!frFound)return;
+  const c=cardOf(frFound),r=relOf(frFound);
+  const ds=r==='friend'?'Déjà ton ami':r==='sent'?'Demande déjà envoyée':r==='req'?'Il veut être ton ami':(c?'Étage le plus loin : '+c.p.f:'');
+  el.append(frRow(frFound,ds,r==='none'?[mkBtn('Envoyer la demande','primary',()=>{frAdd(frFound,'Demande envoyée !');})]:r==='req'?relBtns(frFound):[]));
+}
+function renderFriends(){
+  const setup=!SOC.nick||nickEdit;
+  $('frSetup').hidden=!setup;$('frMain').hidden=setup;$('btnNickCancel').hidden=!SOC.nick;
+  if(setup){if(!$('nickIn').value)$('nickIn').value=SOC.nick;return;}
+  const fav=favStarter();drawPortrait($('frMe'),fav,1.2,false,skinPal(fav,mySkinI(fav)));
+  $('frMeName').textContent=SOC.nick;$('frMeCode').textContent=soReady?fmtCode(SO.code):'…';
+  const net=$('frNet');
+  net.textContent=!soReady?'Connexion…':(!navigator.onLine||soNet==='off')?"Pas de connexion internet : ta liste d'amis n'est peut-être pas à jour.":'';
+  net.hidden=!net.textContent;
+  renderFound();
+  const req=soRequests();$('frReqBox').hidden=!req.length;
+  fill('frReqList',req.map(pk=>frRow(pk,'Veut être ton ami',relBtns(pk))));
+  const fr=soFriends().map(pk=>({pk,c:cardOf(pk)})).sort((a,b)=>((b.c&&b.c.at)||0)-((a.c&&a.c.at)||0));
+  $('frListH').textContent='Mes amis'+(fr.length?' ('+fr.length+')':'');
+  fill('frList',fr.map(x=>{const t=seenTxt(x.c&&x.c.at);return frRow(x.pk,t,relBtns(x.pk),t==='En ligne');}),"Pas encore d'amis. Touche « Envoyer mon code » pour le donner à un ami, ou tape son code au-dessus.");
+  const sent=soSent();$('frSentBox').hidden=!sent.length;
+  fill('frSentList',sent.map(pk=>frRow(pk,'En attente de réponse',relBtns(pk))));
+  const rec=SOC.recent.filter(r=>relOf(r.pk)==='none'&&!SOC.ign[r.pk]);$('frRecentBox').hidden=!rec.length;
+  fill('frRecentList',rec.map(r=>frRow(r.pk,'Vous avez joué ensemble',relBtns(r.pk))));
+}
+async function frFind(){
+  if(!soReady){setMsg('frFindMsg','Connexion… réessaie dans un instant.','bad');return;}
+  const code=normCode($('frCodeIn').value);
+  if(code.length!==8||[...code].some(ch=>!CODE_AL.includes(ch))){setMsg('frFindMsg','Un code ami a 8 lettres et chiffres, par exemple ABCD-2345.','bad');return;}
+  if(code===SO.code){setMsg('frFindMsg',"C'est ton propre code ! Tape celui de ton ami.",'bad');return;}
+  frFound=null;renderFound();setMsg('frFindMsg','Recherche…');
+  try{
+    const r=await SO.findCode(code);if(normCode($('frCodeIn').value)!==code)return;
+    if(!r||!cleanCard(r.p)){setMsg('frFindMsg','Personne trouvée avec ce code. Vérifie-le avec ton ami : il doit avoir choisi son pseudo dans « Amis ».','bad');return;}
+    SOC.cache[r.pk]={p:r.p,at:r.at};frFound=r.pk;setMsg('frFindMsg','');renderFound();soRefresh();
+  }catch(e){setMsg('frFindMsg','Pas de connexion internet. Réessaie plus tard.','bad');}
+}
+function soSaveList(okMsg){
+  updFrBadge();if(state==='friends')renderFriends();else if(state==='card')renderCard();
+  soPublishList().then(()=>{if(okMsg)frMsg(okMsg,'ok');soRefresh();},()=>frMsg("Pas de connexion : ce sera envoyé quand tu auras internet.",'bad'));
+}
+function frAdd(pk,msg){if(!isPk(pk)||(soReady&&pk===SO.pk))return;if(!SOC.out.includes(pk))SOC.out.push(pk);delete SOC.ign[pk];soPersist();sfx('coin');soSaveList(msg);}
+function frRefuse(pk){SOC.ign[pk]=1;soPersist();updFrBadge();if(state==='friends')renderFriends();else if(state==='card')renderCard();}
+function frCancel(pk){SOC.out=SOC.out.filter(p=>p!==pk);soPersist();soSaveList('Demande annulée');}
+function frRemove(pk){SOC.out=SOC.out.filter(p=>p!==pk);SOC.ign[pk]=1;soPersist();soSaveList('Ami retiré');}
+/* ---- detailed card ---- */
+function openCard(pk,from){
+  cardPk=pk;cardFrom=from||'friends';cardArm=0;state='card';clearOverlays();show('scrCard');pauseBtn.hidden=true;$('scrCard').scrollTop=0;renderCard();
+  if(isPk(pk)&&soReady)SO.profiles([pk]).then(ps=>{for(const x of ps)if(x.p)SOC.cache[x.pk]={p:x.p,at:x.at};if(state==='card'&&cardPk===pk)renderCard();}).catch(()=>{});
+}
+function backFromCard(){if(cardFrom==='title'){goTitle();return;}state='friends';show('scrFriends');renderFriends();}
+function renderCard(){
+  const me=cardPk==='me',c=me?{p:cleanCard(myCard()),at:Date.now()/1000}:cardOf(cardPk),p=c&&c.p;
+  $('cardTitle').textContent=me?'Ma fiche':'Fiche du joueur';
+  const st=p?p.st:'braisot';drawPortrait($('cardCv'),st,1.2,!p,p?skinPal(st,p.sk):null);
+  $('cardName').textContent=me?SOC.nick:nameOf(cardPk);
+  const rel=me?'me':relOf(cardPk);
+  $('cardSub').textContent=me?('Code ami : '+(soReady?fmtCode(SO.code):'…')):!p?'Chargement de la fiche…':(rel==='friend'?'Ton ami · ':'')+seenTxt(c.at);
+  const g=$('cardStats');g.textContent='';
+  const add=(v,l)=>{const d=document.createElement('div');d.className='stat';const b=document.createElement('b');b.textContent=String(v);const sp=document.createElement('span');sp.textContent=l;d.append(b,sp);g.append(d);};
+  if(p){add(p.f,'Étage le plus loin');add(p.lv,'Niveau le plus haut');add(p.w,'Victoires');add(p.k,'Monstres battus');add(p.b+'/'+ORDER.length,'Bestiaire');add(p.a+'/'+ACHS.length,'Succès');
+    add(p.gp,'Parties jouées');add(p.r+'/'+RUSH.length,'Rush des boss');add(p.up,'Améliorations');add(p.g,'Jours de cadeau de suite');}
+  const cr=$('cardCrit');cr.textContent='';
+  $('cardCritH').textContent=(me?'Mes bestioles':'Ses bestioles')+(p?' ('+p.u.length+'/'+SIDS.length+')':'');
+  if(p)for(const id of SIDS){const on=p.u.includes(id),cv=document.createElement('canvas');cv.width=cv.height=Math.round(52*dpr);cv.className=on?'':'off';cv.title=STARTERS[id].name;cv.setAttribute('aria-label',STARTERS[id].name+(on?'':' (pas encore débloquée)'));drawPortrait(cv,id,1.2,!on,null);cr.append(cv);}
+  $('cardBest').textContent=!p?'…':p.mb?(p.mb.s+' points avec '+STARTERS[p.mb.st].name+' : étage '+p.mb.f+', niveau '+p.mb.lv+', '+p.mb.k+' monstres battus'+(p.mb.w?'. Victoire !':'.')):'Pas encore de partie terminée.';
+  $('cardPet').textContent=!p?'…':p.pt?PETS[p.pt[0]].name+' · niveau '+p.pt[1]:'Pas de familier.';
+  const a=$('cardActs');a.textContent='';
+  const big=(t,cls,fn)=>{const b=mkBtn(t,cls,fn);b.classList.remove('sm');return b;};
+  if(me){a.append(big('Changer de pseudo','',()=>{openFriends(frFrom);nickEdit=true;renderFriends();}));return;}
+  if(rel==='friend'){a.append(big('Inviter à jouer','primary',()=>inviteFriend(cardPk)));
+    a.append(big(cardArm?'Touche encore pour retirer':'Retirer des amis',cardArm?'danger':'ghost',()=>{if(!cardArm){cardArm=1;renderCard();return;}cardArm=0;frRemove(cardPk);}));}
+  else if(rel==='sent')a.append(big('Annuler la demande','ghost',()=>frCancel(cardPk)));
+  else if(rel==='req'){a.append(big('Accepter','primary',()=>frAdd(cardPk,'Vous êtes amis !')));a.append(big('Refuser','ghost',()=>{frRefuse(cardPk);backFromCard();}));}
+  else a.append(big('Ajouter en ami','primary',()=>frAdd(cardPk,'Demande envoyée !')));
 }
 function makeCode(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s;}
 async function joinChannel(code){
@@ -5307,7 +5684,8 @@ function onPickStarter(id){
     $('scrPick').scrollTop=0;sfx('coin');return;
   }
   if(pickMode==='local2'){const a=pickLocal1;pickMode=null;startLocalRun(a,id);return;}
-  if(pickMode==='host'){pickMode=null;startHosting(id,{listed:true});}
+  if(pickMode==='invite'){const t=inviteTo;pickMode=null;startHosting(id,{listed:false,invite:t});}
+  else if(pickMode==='host'){pickMode=null;startHosting(id,{listed:true});}
   else if(pickMode==='hostPrivate'){pickMode=null;startHosting(id,{listed:false});}
   else if(pickMode==='search'){pickMode=null;startSearch(id);}
   else if(pickMode==='join'){const c=pickCode;pickMode=null;startJoining(c,id);}
@@ -5321,9 +5699,10 @@ function renderCoop(force){
   $('coopSub').hidden=v!=='home';
   const off=roomReady&&!ROOM;
   for(const id of['modeFriends','modeSearch','modeCode','btnHost','btnHostPrivate','btnCodeJoin'])$(id).disabled=!ROOM;
+  queueMicrotask(()=>{$('coopAccess').hidden=!$('coopAccess').textContent;});
   $('coopAccess').textContent=CB_SA?(!navigator.onLine?"Tu n'es pas connecté à internet : pour jouer à deux, il faut internet sur les deux téléphones."
     :off?"Le jeu en ligne n'a pas pu démarrer. Vérifie ta connexion internet, puis ferme et rouvre le jeu."
-    :"Ton ami ouvre Bestiolins sur son téléphone (vorpiikx99.github.io/Bestiolins). Il faut internet sur les deux téléphones. Le Wi-Fi marche le mieux.")
+    :'')
     :off?"Le jeu en ligne ne marche pas ici : il faut être connecté à un compte Claude, et que le jeu soit partagé avec toi."
     :!ROOM?'Connexion…':"Pour jouer avec toi, l'autre joueur doit pouvoir ouvrir ce jeu : il lui faut un compte Claude (gratuit, avec une adresse mail) et que tu lui partages le jeu.";
   if(v==='friends'){
@@ -5359,8 +5738,9 @@ function renderCoop(force){
   if(NET.role==='host'){
     const gp=NET.ch?guestPeer():null;
     if(NET.auto){$('coopWaitLabel').textContent='Joueur trouvé';$('coopStatus').textContent='Lancement de la partie…';$('btnCoopStart').hidden=true;return;}
-    $('coopWaitLabel').textContent=NET.listed?'Ta partie · code':'Ta partie privée · code';
+    $('coopWaitLabel').textContent=NET.inv?'Partie avec '+nameOf(NET.inv)+' · code':NET.listed?'Ta partie · code':'Ta partie privée · code';
     $('coopStatus').textContent=!NET.ch?'Création de la partie…':gp?(STARTERS[gp.presence.g.st].name+' a rejoint ta partie ! Touche « Lancer la partie ».')
+      :NET.inv?(NET.invOk<0?"L'invitation n'est pas partie : vérifie ta connexion internet, puis touche « Annuler » et réessaie.":NET.invOk>0?'Invitation envoyée à '+nameOf(NET.inv)+' ! Attends qu\'il touche « Rejoindre » sur son téléphone…':'Envoi de l\'invitation…')
       :NET.listed?"En attente d'un joueur… Ta partie apparaît dans « Entre amis » chez les autres.":"Donne ce code à ton ami. Il touche « Jouer à deux », puis « Avec un code ».";
     $('btnCoopStart').hidden=false;$('btnCoopStart').disabled=!gp;
   }else{
@@ -5422,12 +5802,13 @@ async function startHosting(st,opts){
   opts=opts||{};
   if(!ROOM){openCoop(true);return;}
   const code=opts.code||makeCode();lastCoop=true;
-  NET={role:'host',code,st,listed:opts.listed!==false,auto:!!opts.auto,ch:null,q:0,ev:[],fx:[],evq:0,fxq:0,rseq:0,entX:RW/2,entY:RH/2,sendT:0,miss:0,lo:0,loSeq:0,lvWait:0,g:null,gpeer:null};
+  NET={role:'host',code,st,listed:opts.listed!==false,auto:!!opts.auto,inv:opts.invite||null,invOk:0,ch:null,q:0,ev:[],fx:[],evq:0,fxq:0,rseq:0,entX:RW/2,entY:RH/2,sendT:0,miss:0,lo:0,loSeq:0,lvWait:0,g:null,gpeer:null};
   state='coop';show('scrCoop');renderCoop(true);
   const ch=await joinChannel(code);if(!NET||NET.code!==code)return;
   NET.ch=ch;
   if(NET.listed)ROOM.presence({cb:{code,st,open:1}}).catch(()=>{});
-  ch.presence({h:{code,ph:'lobby',st}}).catch(()=>{});
+  ch.presence({h:{code,ph:'lobby',st,u:soU()}}).catch(()=>{});
+  if(NET.inv&&soReady)SO.invite(NET.inv,{c:code,st,n:SOC.nick}).then(()=>{if(NET&&NET.code===code){NET.invOk=1;renderCoop(true);}},()=>{if(NET&&NET.code===code){NET.invOk=-1;renderCoop(true);}});
   renderCoop(true);
 }
 async function startJoining(code,st,opts){
@@ -5443,7 +5824,7 @@ async function startJoining(code,st,opts){
 function startCoopRun(){
   if(!NET||NET.role!=='host'||!NET.ch)return;
   const gp=guestPeer();if(!gp)return;
-  const g=gp.presence.g;NET.gpeer=gp.peer;
+  const g=gp.presence.g;NET.gpeer=gp.peer;soMet(g.u);
   audioUnlock();clearOverlays();
   newRun(NET.st);
   P2=makePlayer(g.st);P2.isRemote=true;P2.abil=P.abil;
@@ -5680,7 +6061,7 @@ function buildSnap(){
 }
 function sendGuestPresence(){
   if(!NET||!NET.ch)return;
-  const g={code:NET.code,st:NET.st,sk:mySkinI(NET.st),pt:myPet()?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,up:save.up,rs:NET.rs,door:NET.door||0,pick:NET.pick||0,bq:NET.bq|0,aq:NET.aq|0,dq:NET.dq|0,sq:NET.sq|0,sx:NET.sx|0,sy:NET.sy|0,gold:save.gold|0,mq:NET.mq|0,mi:NET.mi|0};
+  const g={code:NET.code,st:NET.st,sk:mySkinI(NET.st),pt:myPet()?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,up:save.up,rs:NET.rs,door:NET.door||0,pick:NET.pick||0,bq:NET.bq|0,aq:NET.aq|0,dq:NET.dq|0,sq:NET.sq|0,sx:NET.sx|0,sy:NET.sy|0,gold:save.gold|0,mq:NET.mq|0,mi:NET.mi|0,u:soU()};
   if(run&&run.guest&&P){const a=NET.aim;g.x=Math.round(P.x);g.y=Math.round(P.y);g.lx=Math.round((P.lx||0)*100);g.ly=Math.round((P.ly||0)*100);g.aim=a?[Math.round(a.x*100),Math.round(a.y*100)]:0;}
   try{NET.ch.presence({g}).catch(()=>{});}catch(e){}
 }
@@ -5705,7 +6086,7 @@ function netTick(dt){
       else if(NET.lvWait>30&&NET.lo)resolveGuestPick(NET.lo[1]);
     }
     NET.sendT-=dt;
-    if(NET.sendT<=0&&P2){NET.sendT=0.033;try{NET.ch.presence({h:{code:NET.code,ph:hostPhase(),st:NET.st,s:buildSnap()}}).catch(()=>{});}catch(e){console.error(e);}}
+    if(NET.sendT<=0&&P2){NET.sendT=0.033;try{NET.ch.presence({h:{code:NET.code,ph:hostPhase(),st:NET.st,s:buildSnap(),u:soU()}}).catch(()=>{});}catch(e){console.error(e);}}
   }else{
     if(!run||!run.guest||state==='over')return;
     if(state!=='play')NET.aim=null;
@@ -5717,6 +6098,7 @@ function netTick(dt){
   }
 }
 function startGuestRun(h){
+  if(SIDS.includes(NET.st))bump('pl_'+NET.st);soMet(h&&h.u);
   audioUnlock();clearOverlays();
   run={guest:true,starter:NET.st,floor:0,kills:0,time:0,newEntries:[],shots:[],eshots:[],enemies:[],parts:[],fx:[],floats:[],motes:initMotes(0),
     trans:null,dead:false,deadT:0,won:false,doorsOpen:true,doorAnim:1,bossIntro:0,lvl:1,xp:0,gold:0,hurtFx:0,freeze:0,slow:0,
@@ -5921,7 +6303,7 @@ function boot(data){
   try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot)window.claude.hot.snapshot(snapshotState);}catch(e){}
   if(data.run&&restoreRun(data.run)){state='play';show(null);pauseGame();}
   else goTitle();
-  initRoom();initData();
+  initRoom();initData();initSocial();
   requestAnimationFrame(t=>{last=t;loop(t);});
   if(document.fonts&&document.fonts.load){document.fonts.load('700 14px Grenze').catch(()=>{});}
 }
