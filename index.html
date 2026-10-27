@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261027233503';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261027233503" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027234915';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027234915" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -440,8 +440,9 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   .main-acts{gap:8px}
   .main-acts .btn{min-height:48px}
   .main-acts #btnPlay{min-height:56px;font-size:24px}
-  .setgrid .toggle{align-items:center;padding:6px 10px}
-  .setgrid .tlabel small{display:none}
+  .setgrid .toggle{padding:8px 10px}
+  .setgrid .tlabel small{font-size:13px}
+  .set-ic{width:34px;height:34px}
   .howto{font-size:14px}
   /* creature pick: one row you slide sideways */
   #scrPick .panel{gap:8px}
@@ -622,6 +623,31 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   .hero-name{font-size:24px}
   .hslot canvas{width:38px;height:38px}
 }
+.toggle.set{align-items:center;gap:12px}
+.toggle.set .track{order:3;margin-left:auto}
+.toggle.set .tlabel{order:2;flex:1}
+.set-ic{order:1;flex:none;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#1c130e;border:2px solid var(--stone-edge);color:var(--bone-dim);transition:color .15s,border-color .15s}
+.set-ic svg{width:24px;height:24px}
+.toggle.set input:checked ~ .set-ic{color:var(--torch);border-color:var(--torch-deep)}
+.toggle input:checked ~ .tlabel b{color:var(--bone)}
+.tst{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:700;vertical-align:2px;background:#3a2c24;color:var(--bone-dim)}
+.tst::after{content:"Éteint"}
+.toggle input:checked ~ .tlabel .tst{background:var(--torch-deep);color:#fff2dc}
+.toggle input:checked ~ .tlabel .tst::after{content:"Allumé"}
+.set-h{margin:4px 0 -8px}
+.on-c{color:var(--torch)}
+/* page changes: the new page slides in */
+@keyframes scrIn{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@keyframes scrBack{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+@keyframes scrPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sideItem{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+.screen.scr-in>.panel{animation:scrIn .3s cubic-bezier(.2,.8,.25,1)}
+.screen.scr-back>.panel{animation:scrBack .3s cubic-bezier(.2,.8,.25,1)}
+.screen.scr-pop>.panel{animation:scrPop .28s cubic-bezier(.2,.8,.25,1)}
+.side.open .side-item{animation:sideItem .32s cubic-bezier(.2,.8,.25,1) both;animation-delay:calc(var(--i,0) * 32ms + 60ms)}
+.bagview{animation:pop2 .22s ease-out}
+.toggle{transition:border-color .15s,background .15s}
+.toggle:active{background:rgba(59,44,35,.9)}
 </style>
 </head>
 <body>
@@ -730,36 +756,50 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 <section id="scrSettings" class="screen" hidden>
   <div class="panel">
     <div class="hdr"><button class="back" id="setBack" type="button">← Retour</button><h2>Paramètres</h2></div>
+    <p class="sub">Touche une ligne pour l'allumer ou l'éteindre. Le bouton devient <b class="on-c">orange</b> quand c'est allumé.</p>
+    <p class="small-h set-h">Pendant la partie</p>
     <div class="optgrid setgrid">
-    <label class="toggle" for="optAuto">
+    <label class="toggle set" for="optAuto">
       <input type="checkbox" id="optAuto">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Tir automatique</b><small>Ta créature vise toute seule l'ennemi le plus proche. Plus facile pour commencer.</small></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg></span>
+      <span class="tlabel"><b>Tir automatique <span class="tst"></span></b><small>Ta bestiole tire toute seule sur le monstre le plus proche : tu n'as plus qu'à bouger. Conseillé pour débuter.</small></span>
     </label>
-    <label class="toggle" for="optSound0">
-      <input type="checkbox" id="optSound0">
-      <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Son</b><small>Les bruitages et les bruits d'ambiance.</small></span>
-    </label>
-    <label class="toggle" for="optMusic">
-      <input type="checkbox" id="optMusic">
-      <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Musique</b><small>Une petite musique pendant la partie.</small></span>
-    </label>
-    <label class="toggle" for="optDmg0">
+    <label class="toggle set" for="optDmg0">
       <input type="checkbox" id="optDmg0">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Nombres de dégâts</b><small>Montre combien de vie tu enlèves aux monstres.</small></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.1 5.4 5.6-1.4-3 5 4.3 3.7-5.7.6.4 5.8-3.7-4.4-3.7 4.4.4-5.8-5.7-.6 4.3-3.7-3-5 5.6 1.4z"/></svg></span>
+      <span class="tlabel"><b>Chiffres de dégâts <span class="tst"></span></b><small>Quand tu touches un monstre, un petit chiffre montre combien de vie tu lui enlèves.</small></span>
     </label>
-    <label class="toggle" for="optTips0">
+    <label class="toggle set" for="optTips0">
       <input type="checkbox" id="optTips0">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Astuces</b><small>Des conseils pour débuter. Les rallumer les remontre depuis le début.</small></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg></span>
+      <span class="tlabel"><b>Astuces <span class="tst"></span></b><small>Des petits conseils apparaissent pendant que tu joues. Si tu les rallumes, ils recommencent depuis le début.</small></span>
     </label>
-    <label class="toggle" for="optLow">
+    </div>
+    <p class="small-h set-h">Son</p>
+    <div class="optgrid setgrid">
+    <label class="toggle set" for="optSound0">
+      <input type="checkbox" id="optSound0">
+      <span class="track" aria-hidden="true"></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></span>
+      <span class="tlabel"><b>Bruitages <span class="tst"></span></b><small>Les petits bruits du jeu : les tirs, les pièces, les monstres, les coffres…</small></span>
+    </label>
+    <label class="toggle set" for="optMusic">
+      <input type="checkbox" id="optMusic">
+      <span class="track" aria-hidden="true"></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></span>
+      <span class="tlabel"><b>Musique <span class="tst"></span></b><small>La musique qui joue pendant la partie.</small></span>
+    </label>
+    </div>
+    <p class="small-h set-h">Téléphone</p>
+    <div class="optgrid setgrid">
+    <label class="toggle set" for="optLow">
       <input type="checkbox" id="optLow">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Graphismes légers</b><small>Moins d'effets, pour les téléphones qui rament.</small></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2M13.2 6.5 10 11.5h4l-3.2 5"/></svg></span>
+      <span class="tlabel"><b>Graphismes légers <span class="tst"></span></b><small>Si le jeu rame ou saccade, allume-le : moins de lumières et d'effets à l'écran, donc un jeu plus fluide.</small></span>
     </label>
     </div>
     <div class="slab coopbox" id="updBox" hidden>
@@ -817,27 +857,27 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
     <label class="toggle" for="optAuto2">
       <input type="checkbox" id="optAuto2">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Tir automatique</b><small>Vise tout seul l'ennemi le plus proche.</small></span>
+      <span class="tlabel"><b>Tir automatique <span class="tst"></span></b><small>Ta bestiole tire toute seule : tu n'as qu'à bouger.</small></span>
     </label>
     <label class="toggle" for="optSound">
       <input type="checkbox" id="optSound">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Son</b><small>Les petits bruitages du jeu.</small></span>
+      <span class="tlabel"><b>Bruitages <span class="tst"></span></b><small>Les petits bruits du jeu : tirs, pièces, monstres…</small></span>
     </label>
     <label class="toggle" for="optMusic2">
       <input type="checkbox" id="optMusic2">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Musique</b><small>La musique d'ambiance.</small></span>
+      <span class="tlabel"><b>Musique <span class="tst"></span></b><small>La musique qui joue pendant la partie.</small></span>
     </label>
     <label class="toggle" for="optDmg">
       <input type="checkbox" id="optDmg">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Nombres de dégâts</b><small>Montre combien de vie tu enlèves aux monstres.</small></span>
+      <span class="tlabel"><b>Chiffres de dégâts <span class="tst"></span></b><small>Un petit chiffre montre combien de vie tu enlèves.</small></span>
     </label>
     <label class="toggle" for="optTips">
       <input type="checkbox" id="optTips">
       <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Astuces</b><small>Des conseils pour débuter. Les rallumer les remontre depuis le début.</small></span>
+      <span class="tlabel"><b>Astuces <span class="tst"></span></b><small>Des petits conseils pendant que tu joues.</small></span>
     </label>
     </div>
     <button id="btnQuit" class="btn ghost" type="button">Abandonner la partie</button>
@@ -4807,7 +4847,15 @@ function renderTitle(){
 
 /* ================= UI ================= */
 const SCREENS=['scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
-function show(id){for(const s of SCREENS)$(s).hidden=s!==id;}
+let curScreen=null;
+function show(id){
+  const prev=curScreen;for(const s of SCREENS)$(s).hidden=s!==id;curScreen=id;
+  if(!id||id===prev)return;
+  const el=$(id),kind=['scrPause','scrLevel','scrOver'].includes(id)?'scr-pop':(id==='scrTitle'||(prev&&DEPTH[prev]>(DEPTH[id]||1)))?'scr-back':'scr-in';
+  el.classList.remove('scr-in','scr-back','scr-pop');void el.offsetWidth;el.classList.add(kind);
+}
+/* how deep a page is: going back to a less deep page slides the other way */
+const DEPTH={scrTitle:0,scrCard:2,scrPick:2};
 let toastQ=[],toastT=0,bannerT=0,bossCardT=0;
 function showBossCard(id,label){const el=$('bossCard');drawPortrait($('bossCv'),id,1.2,false);el.querySelector('.bc1').textContent=label;el.querySelector('.bc2').textContent=SPECIES[id].name;
   el.hidden=true;void el.offsetWidth;el.style.opacity='1';el.hidden=false;bossCardT=1.6;bannerT=0;bannerEl.hidden=true;}
@@ -5651,7 +5699,7 @@ $('optLow').addEventListener('change',e=>{save.lowq=e.target.checked;quality=sav
 function menuOpen(){return !$('sideMenu').hidden;}
 function openMenu(){
   audioUnlock();const m=$('sideMenu');m.hidden=false;$('btnSide').setAttribute('aria-expanded','true');
-  $('sideGold').textContent=save.gold||0;void m.offsetWidth;m.classList.add('open');
+  $('sideGold').textContent=save.gold||0;{let i=0;for(const b of m.querySelectorAll('.side-item'))if(!b.hidden)b.style.setProperty('--i',i++);}void m.offsetWidth;m.classList.add('open');
   setTimeout(()=>{try{$('sideClose').focus({preventScroll:true});}catch(e){}},60);
 }
 function closeMenu(now){
