@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261027220103';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261027220103" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027230251';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027230251" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -38,6 +38,7 @@
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--night);color:var(--bone);font-family:var(--font-ui);font-size:17px;line-height:1.4;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;overscroll-behavior:none}
+*{touch-action:pan-x pan-y}
 button{touch-action:manipulation}
 #stage{position:fixed;inset:0;touch-action:none}
 #game{display:block;width:100%;height:100%;touch-action:none}
@@ -2677,7 +2678,7 @@ function rushCleared(room){
   if(run.rushBeat%2===0&&run.actPool.length)room.pickups.push({kind:'active',id:run.actPool.pop(),x:RW/2+50,y:RH/2-50});
   room.pickups.push({kind:'hole',x:RW/2,y:RH/2+34});
   room.pickups.push({kind:'heart',half:false,x:RW/2+76,y:RH/2+34});
-  run.lvl+=2;run.pendingLv+=2;
+  run.lvl+=2;run.pendingLv+=2;if(run.pl&&P2)run.pendingLv2=(run.pendingLv2|0)+2;
   toast('Boss '+run.rushBeat+' sur '+N+' vaincu !','Tu gagnes 2 niveaux. Prends le cadeau, puis marche sur la trappe.');
 }
 function genFloor(fi){
@@ -3946,7 +3947,7 @@ function updateParticles(dt){
 function gainXP(n,x,y){
   if(!run||run.dead)return;
   run.xp+=n;run.floats.push({x,y:y-8,text:'+'+n+' XP',t:0.9,col:'#7fd3ff'});
-  while(run.xp>=xpNeed(run.lvl)){run.xp-=xpNeed(run.lvl);run.lvl++;run.pendingLv++;}
+  while(run.xp>=xpNeed(run.lvl)){run.xp-=xpNeed(run.lvl);run.lvl++;run.pendingLv++;if(run.pl&&P2)run.pendingLv2=(run.pendingLv2|0)+1;}
 }
 function updateAbilities(dt,skipEcl){
   const A=P.abil;
@@ -4124,7 +4125,7 @@ function updateGame(dt){
   }
   updateParticles(dt);
   if(run.roomActive&&!run.room.cleared&&run.enemies.length===0&&!run.ch)roomCleared();
-  if(run.pendingLv>0&&!run.dead&&!run.won&&!run.trans)openLevelUp();
+  if((run.pendingLv>0||(run.pl&&P2&&(run.pendingLv2|0)>0&&!(NET&&NET.lo)))&&!run.dead&&!run.won&&!run.trans)openLevelUp();
 }
 
 /* ================= render ================= */
@@ -4208,13 +4209,15 @@ function drawPickup(p,t,pal){
   if(p.kind==='active'){drawPedestal(p.x,p.y);ctx.save();ctx.translate(p.x,p.y-15+Math.sin(t*3)*2.5);drawActiveIcon(ctx,p.id,9);ctx.restore();return;}
   if(p.kind==='shop'){
     drawPedestal(p.x,p.y);const by=p.y-15+Math.sin(t*3+p.x)*2;
-    ctx.save();ctx.translate(p.x,by);
+    const mine=run.pl&&!run.local&&((p.by|0)&(run.guest?2:1));
+    ctx.save();ctx.translate(p.x,by);if(mine)ctx.globalAlpha=0.35;
     if(p.what==='heart'){heartPath(ctx,0,0,15);fs(ctx,'#dc4a34',8);}
     else if(p.what==='bomb'){drawBomb(ctx,-4,2,5.5,false);drawBomb(ctx,5,4,5.5,false);}
     else if(p.what==='item')drawItemIcon(ctx,p.id,9);
     else if(p.what==='mystery')drawMysteryBag(ctx,10);
     else drawActiveIcon(ctx,p.id,9);
     ctx.restore();
+    if(mine){ctx.font='700 11px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;ctx.strokeText('Acheté ✓',p.x,p.y+25);ctx.fillStyle='#7ee07e';ctx.fillText('Acheté ✓',p.x,p.y+25);return;}
     const ok=(save.gold||0)>=p.price;
     drawCoin(ctx,p.x-9,p.y+21,4);ctx.font='700 12px Grenze, Georgia, serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle=INK;
     ctx.strokeText(String(p.price),p.x-3,p.y+25);ctx.fillStyle=ok?'#f5c542':'#d9826f';ctx.fillText(String(p.price),p.x-3,p.y+25);
@@ -4375,7 +4378,7 @@ function drawHUD(){
   if(run.pl&&P2)drawFriendHud();
 }
 function drawFriendHud(){
-  const hs=12,hearts=Math.ceil((P2.maxHp||2)/2),who=isLocal()?'Joueur 2':'Ami',label=who+(P2.down?' (tombé) · ':' · ')+STARTERS[P2.sid].name;
+  const hs=12,hearts=Math.ceil((P2.maxHp||2)/2),who=isLocal()?'Joueur 2':(run.mateName||'Ami'),label=who+(P2.down?' (tombé) · ':' · ')+STARTERS[P2.sid].name;
   ctx.font='700 12px Grenze, Georgia, serif';
   const w=Math.max(ctx.measureText(label).width,Math.min(6,hearts)*(hs+2));
   let x0,y0;
@@ -4535,7 +4538,7 @@ function renderGame(){
       if(!run.dead&&!pl.down){const vx=pl.vx!=null?pl.vx:(pl.tx!=null?(pl.tx-pl.x)*10:0);ctx.rotate(clamp(vx/(pl.speed||120),-1,1)*0.1);const br=Math.sin(t*2.6+(pl===P?0:1.3))*0.022;ctx.scale(1-br,1+br);}
       drawShaded(ctx,pl.sid,pl.r,t,{lx:pl.lx,ly:pl.ly,pal:skinPal(pl.sid,pl.skinI),seed:pl===P?0:2.7},-0.35,-1);ctx.restore();
       let tag=null,tcol='#7fd3ff';
-      if(run.local){const i=run.pl.indexOf(pl);tag='J'+(i+1);tcol=PL_COL[i]||tcol;}else if(run.pl&&pl!==P)tag='Ami';
+      if(run.local){const i=run.pl.indexOf(pl);tag='J'+(i+1);tcol=PL_COL[i]||tcol;}else if(run.pl&&pl!==P)tag=run.mateName||'Ami';
       if(tag){ctx.font='700 9px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=2.5;ctx.strokeStyle=INK;ctx.strokeText(tag,pl.x,pl.y-pl.r*2);ctx.fillStyle=tcol;ctx.fillText(tag,pl.x,pl.y-pl.r*2);}
       continue;
     }
@@ -4699,8 +4702,8 @@ function renderGame(){
   if(ra>0&&redVig){ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=clamp(ra,0,1);ctx.drawImage(redVig,0,0);ctx.globalAlpha=1;}
   if(run.wFx>0&&!reduceMotion){ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=clamp(run.wFx,0,1)*0.8;ctx.fillStyle='#fff6e6';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.globalAlpha=1;}
   let note=null;
-  if(state==='levelwait')note='Ton ami choisit une capacité pour vous deux…';
-  else if(NET&&NET.role==='guest'&&state==='play'){if(NET.ph==='pause')note='Pause : ton ami a mis le jeu en pause';else if(NET.ph==='lvh')note='Ton ami choisit une capacité pour vous deux…';}
+  if(state==='levelwait')note=(run.mateName||'Ton ami')+' choisit sa capacité…';
+  else if(NET&&NET.role==='guest'&&state==='play'){if(NET.ph==='pause')note='Pause : ton ami a mis le jeu en pause';else if(NET.ph==='lvh')note=(run.mateName||'Ton ami')+' choisit sa capacité…';else if(NET.ph==='lvg')note='Un instant…';}
   else if(P.down&&state==='play'&&!run.dead)note=null;
   if(note){ctx.setTransform(dpr,0,0,dpr,0,0);const cy=L.oy+RH*L.s*0.5;ctx.fillStyle='rgba(12,8,6,0.8)';ctx.fillRect(0,cy-28,W,56);
     ctx.font='700 18px Grenze, Georgia, serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#ece0c8';ctx.fillText(note,W/2,cy);ctx.textBaseline='alphabetic';}
@@ -4825,20 +4828,35 @@ function fillPauseAbil(){
   for(const cb of activeCombos(P)){const c=document.createElement('span');c.className='chip combo';c.textContent='Combo : '+cb.name;c.title=cb.desc;box.appendChild(c);}
 }
 let lvOpenAt=0;
-function openLevelUp(){
-  const opts=Object.keys(ABILITIES).filter(id=>(P.abil[id]||0)<ABILITIES[id].max);
-  if(!opts.length){run.pendingLv=0;P.hp=P.maxHp;return;}
-  shuffle(opts);
-  if(run.pl&&P2&&NET&&NET.role==='host'&&run.pickTurn===1){NET.loSeq=(NET.loSeq||0)+1;NET.lo=[NET.loSeq].concat(opts.slice(0,3));NET.lvWait=0;state='levelwait';pauseBtn.hidden=true;resetSticks();sfx('level');return;}
-  const sub=run.local?('Joueur '+((run.pickTurn|0)+1)+' : choisis une capacité pour vous deux.'):run.pl?'À toi de choisir une capacité pour vous deux : touche-la, puis touche-la encore.':'Touche la capacité que tu veux, puis touche-la encore pour la prendre.';
-  showChoices(opts.slice(0,3),'Niveau '+(run.lvl-run.pendingLv+1)+' !',sub);
+function abOpts(pl){const o=Object.keys(ABILITIES).filter(id=>((pl&&pl.abil&&pl.abil[id])||0)<ABILITIES[id].max);return shuffle(o).slice(0,3);}
+/* online: the friend gets their own 3 choices on their phone */
+function issueGuestLo(){
+  if(!(NET&&NET.role==='host'&&run&&run.pl&&P2)||NET.lo||(run.pendingLv2|0)<=0)return;
+  const o=abOpts(P2);if(!o.length){run.pendingLv2=0;return;}
+  NET.loSeq=(NET.loSeq||0)+1;NET.lo=[NET.loSeq].concat(o);NET.lvWait=0;
 }
-function showChoices(opts,title,sub){
+function openLevelUp(){
+  const duo=!!(run.pl&&P2);if(!duo)run.pendingLv2=0;
+  issueGuestLo();
+  let who=null,wi=0;
+  if(run.pendingLv>0)who=P;
+  else if(duo&&run.local&&(run.pendingLv2|0)>0){who=P2;wi=1;}
+  else if(duo&&NET&&NET.role==='host'&&NET.lo){if(state!=='levelwait'){state='levelwait';show(null);pauseBtn.hidden=true;resetSticks();}return;}
+  if(!who){if(state==='levelup'||state==='levelwait'){state='play';show(null);pauseBtn.hidden=false;resetSticks();}return;}
+  const opts=abOpts(who);
+  if(!opts.length){if(wi)run.pendingLv2=0;else{run.pendingLv=0;who.hp=who.maxHp;}openLevelUp();return;}
+  run.lvFor=wi;
+  const lvN=run.lvl-(wi?run.pendingLv2|0:run.pendingLv)+1;
+  const sub=run.local?('Joueur '+(wi+1)+' : choisis ta capacité, puis touche-la encore.'):duo?'Choisis ta capacité (touche-la, puis touche-la encore). Ton ami choisit la sienne sur son téléphone.':'Touche la capacité que tu veux, puis touche-la encore pour la prendre.';
+  showChoices(opts,(run.local?'Joueur '+(wi+1)+' · ':'')+'Niveau '+lvN+' !',sub,who);
+}
+function showChoices(opts,title,sub,who){
+  who=who||P;
   state='levelup';show('scrLevel');pauseBtn.hidden=true;resetSticks();sfx('level');lvOpenAt=performance.now();
   $('lvTitle').textContent=title;$('lvSub').textContent=sub;
   const box=$('lvChoices');box.textContent='';
   for(const id of opts){
-    const a=ABILITIES[id],cur=P.abil[id]||0;
+    const a=ABILITIES[id],cur=(who.abil&&who.abil[id])||0;
     const b=document.createElement('button');b.type='button';b.className='choice';b.id='ab-'+id;
     const cv=document.createElement('canvas');cv.width=cv.height=Math.round(56*dpr);
     const c=cv.getContext('2d');c.translate(cv.width/2,cv.height/2);drawAbilityIcon(c,id,cv.width*0.3);
@@ -4862,26 +4880,24 @@ function chooseAbility(id,sub){
   }
   pickAbility(id);
 }
-function applyAbility(id){
-  const lv=(P.abil[id]||0)+1;P.abil[id]=lv;
-  for(const pl of players()){
-    if(id==='force')pl.dmg*=1.2;
-    else if(id==='furie')pl.fireDelay*=0.85;
-    else if(id==='agile')pl.speed*=1.1;
-    else if(id==='grocoeur'){pl.maxHp=Math.min(24,pl.maxHp+2);pl.hp=Math.min(pl.maxHp,pl.hp+2);}
-    else if(id==='bouclier'&&lv===1){pl.shield=true;pl.shieldT=0;}
-  }
+function applyAbility(id,pl){
+  pl=pl||P;if(!pl.abil)pl.abil={};
+  const lv=(pl.abil[id]||0)+1;pl.abil[id]=lv;
+  if(id==='force')pl.dmg*=1.2;
+  else if(id==='furie')pl.fireDelay*=0.85;
+  else if(id==='agile')pl.speed*=1.1;
+  else if(id==='grocoeur'){pl.maxHp=Math.min(24,pl.maxHp+2);pl.hp=Math.min(pl.maxHp,pl.hp+2);}
+  else if(id==='bouclier'&&lv===1){pl.shield=true;pl.shieldT=0;}
 }
 function pickAbility(id){
   if(state!=='levelup'||performance.now()-lvOpenAt<700)return;lvSel=null;
   if(NET&&NET.role==='guest'){NET.pick=[NET.loSeq,id];NET.lvDone=NET.loSeq;lvlPillar(P.x,P.y);ringFx(P.x,P.y,70,'127,211,255',0.6);spark(P.x,P.y,'127,211,255',24,180,0.7);state='play';show(null);pauseBtn.hidden=false;resetSticks();return;}
-  applyAbility(id);run.pendingLv--;
-  if(run.local)run.pickTurn=run.pickTurn?0:1;
-  else if(run.pl){run.pickTurn=1;netEv('t',ABILITIES[id].name,'Capacité choisie par ton ami');}
-  ringFx(P.x,P.y,70,'127,211,255',0.6);spark(P.x,P.y,'127,211,255',24,180,0.7);flashFx(P.x,P.y,40);lvlPillar(P.x,P.y);
-  toast(ABILITIES[id].name,P.abil[id]>1?'Niveau '+P.abil[id]:'Nouvelle capacité');
-  if(run.pendingLv>0)openLevelUp();
-  else{state='play';show(null);pauseBtn.hidden=false;resetSticks();}
+  const wi=run.lvFor|0,who=wi&&P2?P2:P;
+  applyAbility(id,who);if(wi)run.pendingLv2=Math.max(0,(run.pendingLv2|0)-1);else run.pendingLv--;
+  ringFx(who.x,who.y,70,'127,211,255',0.6);spark(who.x,who.y,'127,211,255',24,180,0.7);flashFx(who.x,who.y,40);lvlPillar(who.x,who.y);
+  toast(ABILITIES[id].name,(run.local?'Joueur '+(wi+1)+' · ':'')+(who.abil[id]>1?'Niveau '+who.abil[id]:'Nouvelle capacité'));
+  if(run.pl&&!run.local)netEv('t',ABILITIES[id].name,'Capacité choisie par ton ami');
+  openLevelUp();
 }
 function resumeGame(){if(state!=='paused')return;state='play';show(null);pauseBtn.hidden=false;resetSticks();audioUnlock();}
 function showOver(won,quit){
@@ -5126,7 +5142,7 @@ function modAction(a){
   switch(a){
     case 'gold':save.gold=(save.gold||0)+1000;persist();sfx('coin');setMsg('modMsg','+1000 or ajoutés. Tu as maintenant '+save.gold+' or.','ok');break;
     case 'heal':for(const pl of players()){pl.down=false;pl.hp=pl.maxHp;pl.inv=1;}sfx('heal');setMsg('modMsg','Tout le monde est soigné.','ok');break;
-    case 'level':run.xp=0;run.lvl++;run.pendingLv++;sfx('level');setMsg('modMsg','Niveau '+run.lvl+' ! Tu choisiras ta capacité en reprenant la partie.','ok');break;
+    case 'level':run.xp=0;run.lvl++;run.pendingLv++;if(run.pl&&P2)run.pendingLv2=(run.pendingLv2|0)+1;sfx('level');setMsg('modMsg','Niveau '+run.lvl+' ! Tu choisiras ta capacité en reprenant la partie.','ok');break;
     case 'item':{let id=run.pool.pop();if(!id){const ks=Object.keys(ITEMS);id=ks[randi(0,ks.length-1)];}
       ITEMS[id].apply(P);P.items.push(id);sfx('item');setMsg('modMsg','Objet reçu : '+ITEMS[id].name+' ('+ITEMS[id].desc.toLowerCase()+').','ok');break;}
     case 'kill':{const es=run.enemies.filter(e=>!e.dead&&e.spawnT<=0.7);
@@ -6217,7 +6233,7 @@ function goPickLocal(){
 function startLocalRun(a,b){
   audioUnlock();clearOverlays();netLeave();clearTaken();
   newRun(a);
-  P2=makePlayer(b);P2.abil=P.abil;
+  P2=makePlayer(b);P2.abil={};
   for(const u of UPGRADES){const l=Math.min(u.max,save.up[u.id]||0);if(l)u.apply(P2,l);}applyEq(P2,myEqBonus());
   run.pl=[P,P2];run.local=true;run.pickTurn=0;
   placeP2(null);
@@ -6396,13 +6412,13 @@ function startCoopRun(){
   const g=gp.presence.g;NET.gpeer=gp.peer;soMet(g.u);
   audioUnlock();clearOverlays();
   newRun(NET.st);
-  P2=makePlayer(g.st);P2.isRemote=true;P2.abil=P.abil;
+  P2=makePlayer(g.st);P2.isRemote=true;P2.abil={};
   const up=(g.up&&typeof g.up==='object')?g.up:{};
   for(const u of UPGRADES){const l=clamp(up[u.id]|0,0,u.max);if(l)u.apply(P2,l);}
   applyEq(P2,cleanEqBonus(g.eq));
   diffPlayer(P2);
   {const pt=Array.isArray(g.pt)?g.pt:null;P2.pet=pt?makePet(PET_IDS[pt[0]|0],pt[1]|0):null;}
-  run.pl=[P,P2];run.pickTurn=0;run.coop=true;
+  run.pl=[P,P2];run.pickTurn=0;run.coop=true;run.pendingLv2=0;run.mateName=Array.isArray(g.u)?cleanNick(g.u[1]):'';
   placeP2(null);
   if(NET.listed)ROOM.presence({cb:{code:NET.code,st:NET.st,open:0}}).catch(()=>{});
   stopSearch();
@@ -6433,7 +6449,7 @@ function applyGuestInput(dt){
   if(ok&&(g.aq|0)>(NET.gaq|0)){NET.gaq=g.aq|0;useActive(P2);}
   if(ok&&(g.sq|0)>(NET.gsq|0)){NET.gsq=g.sq|0;const ps=run.room.pickups;let bi=-1,bd=40;
     for(let i=0;i<ps.length;i++){const p=ps[i];if(p.kind!=='shop'&&!p.choice&&p.kind!=='altar')continue;const d=Math.hypot(p.x-(+g.sx||0),p.y-(+g.sy||0));if(d<bd&&Math.hypot(p.x-P2.x,p.y-P2.y)<P2.r+40){bd=d;bi=i;}}
-    if(bi>=0){if(ps[bi].kind==='altar')useAltar(ps[bi],P2);else if(ps[bi].choice)takeChoice(ps[bi],P2);else{P2.shopCd=0;if(buyShop(ps[bi],P2))ps.splice(bi,1);}}}
+    if(bi>=0){if(ps[bi].kind==='altar')useAltar(ps[bi],P2);else if(ps[bi].choice)takeChoice(ps[bi],P2);else{P2.shopCd=0;if(!((ps[bi].by|0)&2)&&buyShop(ps[bi],P2))shopSold(ps[bi],P2);}}}
   P2.dashIF=Math.max(0,(P2.dashIF||0)-dt);if(ok&&(g.dq|0)>(NET.gdq|0)){NET.gdq=g.dq|0;P2.dashIF=0.36;}
   if((g.mq|0)>(NET.gmq|0)){NET.gmq=g.mq|0;bubble(P2,g.mi|0);}
   if(ok&&DOOR_KEYS.includes(g.door)&&run.doorsOpen&&run.room.doors[g.door]&&!run.trans&&!P2.down)goThrough(g.door);
@@ -6511,8 +6527,11 @@ function shopInfo(p){
   if(p.what==='mystery')return['Objet surprise',"On ne sait pas ce qu'il y a dedans : un objet, un pouvoir ou de l'or. C'est la surprise !"];
   return['Objet',''];
 }
+function plBit(pl){return run&&run.guest?2:(pl===P2?2:1);}
+function shopSold(p,pl){if(run.pl&&P2){p.by=(p.by|0)|plBit(pl);if((p.by&3)!==3)return;}const i=run.room.pickups.indexOf(p);if(i>=0)run.room.pickups.splice(i,1);}
 function shopBlock(p,pl){
   if(p.choice)return'';
+  if(p.kind==='shop'&&run.pl&&((p.by|0)&plBit(pl)))return"Tu l'as déjà acheté";
   if(p.kind==='altar')return pl.maxHp<=2?'Il te faut au moins 2 cœurs':'';
   if(p.what==='heart'&&pl.hp>=pl.maxHp)return'Tu as déjà tous tes cœurs';
   if(p.what==='bomb'&&(pl.bombs|0)>=9)return'Tu as déjà 9 bombes';
@@ -6545,9 +6564,15 @@ function pressShopBuy(e){
   if(p.choice){takeChoice(p,pl);return;}
   if(p.kind==='altar'){useAltar(p,pl);shopHold=performance.now()+600;return;}
   pl.shopCd=0;
-  if(buyShop(p,pl)){const i=run.room.pickups.indexOf(p);if(i>=0)run.room.pickups.splice(i,1);}
+  if(buyShop(p,pl))shopSold(p,pl);
 }
 $('shopBuy').addEventListener('pointerdown',pressShopBuy);
+/* stop the phone from zooming on a quick double tap or a pinch */
+{let lastEnd=0;
+  document.addEventListener('touchend',e=>{const now=e.timeStamp||performance.now();if(now-lastEnd<350&&!e.target.closest('button,input,textarea,select,label,a,[role=button]'))e.preventDefault();lastEnd=now;},{passive:false});
+  for(const ev of['gesturestart','gesturechange','gestureend'])document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
+  document.addEventListener('dblclick',e=>{if(!e.target.closest('input,textarea'))e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});}
 $('shopBuy').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')pressShopBuy(e);});
 $('shopBuy').addEventListener('click',e=>{e.preventDefault();});
 const QUICK=['Par ici !',"À l'aide !",'Bien joué !','Attends-moi !','On y va ?','Merci !'];
@@ -6570,16 +6595,17 @@ function dropGuest(){
   if(!run||!run.pl)return;
   run.pl=null;P2=null;run.coop=false;
   if(P.down){P.down=false;P.hp=Math.max(2,P.hp);}
-  if(state==='levelwait'){state='play';if(NET)NET.lo=0;pauseBtn.hidden=false;run.pickTurn=0;}
+  run.pendingLv2=0;if(NET)NET.lo=0;
+  if(state==='levelwait'){state='play';pauseBtn.hidden=false;run.pickTurn=0;}
   toast('Ton ami a quitté la partie','Tu continues seul');
 }
 function resolveGuestPick(id){
-  if(state!=='levelwait'||!hasAb(id))return;
-  applyAbility(id);run.pendingLv--;run.pickTurn=0;if(NET)NET.lo=0;
-  ringFx(P.x,P.y,70,'127,211,255',0.6);spark(P.x,P.y,'127,211,255',24,180,0.7);
-  toast(ABILITIES[id].name,'Choisie par ton ami');
-  state='play';pauseBtn.hidden=false;resetSticks();
-  if(run.pendingLv>0&&!run.dead&&!run.won)openLevelUp();
+  if(!hasAb(id)||!P2||!run||!run.pl)return;
+  applyAbility(id,P2);run.pendingLv2=Math.max(0,(run.pendingLv2|0)-1);if(NET)NET.lo=0;
+  ringFx(P2.x,P2.y,70,'127,211,255',0.6);spark(P2.x,P2.y,'127,211,255',24,180,0.7);lvlPillar(P2.x,P2.y);
+  toast(ABILITIES[id].name,'Choisie par '+(run.mateName||'ton ami'));
+  issueGuestLo();
+  if(state==='levelwait')openLevelUp();
 }
 function hostPhase(){
   if(state==='play')return 'play';if(state==='paused'||state==='modmenu')return 'pause';if(state==='levelup')return 'lvh';if(state==='levelwait')return 'lvg';
@@ -6594,7 +6620,7 @@ function buildSnap(){
     p:[R(P.x),R(P.y),R(P.lx*100),R(P.ly*100),P.inv>0?1:0,P.down?1:0,SIDS.indexOf(P.sid),P.hp,P.maxHp,P.shield?1:0,P.ironT>0?1:0,Math.round((P.revT||0)*10),P.tornT>0?1:0,P.skinI|0,P.guard?1:0,P.pet?PET_IDS.indexOf(P.pet.id)+1:0,P.pet?P.pet.lv:0],
     g:[P2.hp,P2.maxHp,P2.down?1:0,P2.hurtSeq|0,P2.shield?1:0,R(P2.speed),P2.bombs|0,ACTIVE_IDS.indexOf(P2.active),P2.charge|0,P2.ironT>0?1:0,Math.round((P2.revT||0)*10),P2.tornT>0?1:0,P2.guard?1:0],
     bo:(run.bombs||[]).map(b=>[R(b.x),R(b.y),R(b.t*10)]),gb:r.broken||[],fz:run.frozen>0?1:0,
-    gi:P2.items.slice(0,24),ab:P.abil,lv:[run.lvl,run.xp],gd:run.gold|0,k:run.kills|0,tm:R(run.time),
+    gi:P2.items.slice(0,24),ab:P2.abil,hab:P.abil,lv:[run.lvl,run.xp],gd:run.gold|0,k:run.kills|0,tm:R(run.time),
     e:[],sh:[],es:[],pk:[],pt:[],fx:NET.fx,ev:NET.ev,lo:NET.lo||0};
   for(const x of run.map.rooms.values())if(x.known)s.mp.push([x.gx,x.gy,RTYPES.indexOf(x.type),x.visited?1:0,doorBits(x.doors),roomMark(x)]);
   for(const e of run.enemies){if(e.dead)continue;s.e.push([e.uid,ORDER.indexOf(e.id),R(e.x),R(e.y),R(e.z),R(clamp(e.hp/e.maxHp,0,1)*100),(e.spawnT>0?1:0)|(e.flash>0?2:0)|(e.intangible?4:0)|(e.airborne?8:0)|(e.elite?16:0)|(e.poisonT>0?32:0)|(e.enraged?64:0)|(e.dying!=null?128:0)|(Math.max(0,AF_IDS.indexOf(e.af||''))<<8),R((e.alpha==null?1:e.alpha)*10),R(e.lx*10),R(e.ly*10),R((e.sq||0)*100),R(((e.puff||0)+(e.charge||0))*10)]);}
@@ -6607,7 +6633,7 @@ function buildSnap(){
     else if(p.kind==='exit')s.pk.push([9,R(p.x),R(p.y)]);
     else if(p.kind==='coin')s.pk.push([3,R(p.x),R(p.y),p.val,R(p.z)]);
     else if(p.kind==='chest')s.pk.push([4,R(p.x),R(p.y),p.open?1:0]);
-    else if(p.kind==='shop')s.pk.push([5,R(p.x),R(p.y),SHOP_WHAT.indexOf(p.what),p.price|0,p.what==='item'?ITEM_IDS.indexOf(p.id):p.what==='active'?ACTIVE_IDS.indexOf(p.id):-1]);
+    else if(p.kind==='shop')s.pk.push([5,R(p.x),R(p.y),SHOP_WHAT.indexOf(p.what),p.price|0,p.what==='item'?ITEM_IDS.indexOf(p.id):p.what==='active'?ACTIVE_IDS.indexOf(p.id):-1,p.by|0]);
     else if(p.kind==='dais')s.pk.push([6,R(p.x),R(p.y),R((p.prog||0)*100)]);
     else if(p.kind==='bomb')s.pk.push([7,R(p.x),R(p.y)]);
     else if(p.kind==='active')s.pk.push([8,R(p.x),R(p.y),ACTIVE_IDS.indexOf(p.id),p.choice?1:0]);
@@ -6650,8 +6676,8 @@ function netTick(dt){
     if(!run||!run.pl)return;
     const gp=guestPeer();
     if(gp){NET.miss=0;NET.g=gp.presence.g;if(P2&&NET.g)P2.skinI=clamp(NET.g.sk|0,0,2);}else{NET.miss+=dt;if(NET.miss>6){dropGuest();return;}}
-    if(state==='levelwait'){
-      NET.lvWait+=dt;const pk=NET.g&&NET.g.pick;
+    if((state==='levelwait'||state==='levelup')&&NET.lo){
+      if(state==='levelwait')NET.lvWait+=dt;const pk=NET.g&&NET.g.pick;
       if(Array.isArray(pk)&&NET.lo&&pk[0]===NET.lo[0]&&NET.lo.indexOf(pk[1])>0)resolveGuestPick(pk[1]);
       else if(NET.lvWait>30&&NET.lo)resolveGuestPick(NET.lo[1]);
     }
@@ -6669,14 +6695,15 @@ function netTick(dt){
 }
 function startGuestRun(h){
   if(SIDS.includes(NET.st))bump('pl_'+NET.st);soMet(h&&h.u);
+  const mate=h&&Array.isArray(h.u)?cleanNick(h.u[1]):'';
   audioUnlock();clearOverlays();
   run={guest:true,starter:NET.st,floor:0,kills:0,time:0,newEntries:[],shots:[],eshots:[],enemies:[],parts:[],fx:[],floats:[],motes:initMotes(0),
     trans:null,dead:false,deadT:0,won:false,doorsOpen:true,doorAnim:1,bossIntro:0,lvl:1,xp:0,gold:0,hurtFx:0,freeze:0,slow:0,
     map:{rooms:new Map(),get(x,y){return this.rooms.get(x+','+y);}},
     room:{gx:4,gy:4,type:'start',doors:{},grid:TEMPLATES[0],pickups:[],pots:[],decals:[],seed:1}};
   P=makePlayer(NET.st);for(const u of UPGRADES){const l=Math.min(u.max,save.up[u.id]||0);if(l)u.apply(P,l);}applyEq(P,myEqBonus());P.pet=myPet();
-  P2={isPl:true,sid:SIDS.includes(h.st)?h.st:'braisot',x:RW/2,y:RH/2,tx:RW/2,ty:RH/2,r:10,lx:0,ly:1,walk:0,inv:0,down:false,shield:false,abil:P.abil,orbA:0,size:1,hp:6,maxHp:6};
-  run.pl=[P,P2];NET.rk=null;NET.lastSAt=performance.now();NET.lastS=h.s;
+  P2={isPl:true,sid:SIDS.includes(h.st)?h.st:'braisot',x:RW/2,y:RH/2,tx:RW/2,ty:RH/2,r:10,lx:0,ly:1,walk:0,inv:0,down:false,shield:false,abil:{},orbA:0,size:1,hp:6,maxHp:6};
+  run.pl=[P,P2];run.mateName=mate;NET.rk=null;NET.lastSAt=performance.now();NET.lastS=h.s;
   applySnap(h.s,h.ph);
   state='play';show(null);pauseBtn.hidden=false;resetSticks();
   toast('Partie à deux',"Restez ensemble et battez le boss de l'étage !");
@@ -6777,7 +6804,8 @@ function applySnap(s,ph){
     if(wasDown&&!P.down){ringFx(P.x,P.y,50,'255,214,140',0.6);sfx('heal');}
   }
   if(Array.isArray(s.gi))P.items=s.gi.filter(id=>Object.prototype.hasOwnProperty.call(ITEMS,id));
-  if(s.ab&&typeof s.ab==='object'){const ab={};for(const k in s.ab)if(hasAb(k))ab[k]=clamp(s.ab[k]|0,0,3);P.abil=ab;P2.abil=ab;}
+  if(s.ab&&typeof s.ab==='object'){const ab={};for(const k in s.ab)if(hasAb(k))ab[k]=clamp(s.ab[k]|0,0,3);P.abil=ab;}
+  if(s.hab&&typeof s.hab==='object'){const ab={};for(const k in s.hab)if(hasAb(k))ab[k]=clamp(s.hab[k]|0,0,3);P2.abil=ab;}
   if(Array.isArray(s.lv)){run.lvl=(s.lv[0]|0)||1;run.xp=s.lv[1]|0;}
   if(typeof s.gd==='number'){if(NET.gd!=null&&s.gd>NET.gd){const d=s.gd-NET.gd;save.gold=(save.gold||0)+d;bump('goldEarned',d);NET.goldEarned+=d;run.gold=NET.goldEarned;persist();sfx('coin');run.floats.push({x:P.x,y:P.y-18,text:'+'+d,t:0.6,col:'#f5c542'});}NET.gd=s.gd;}
   run.kills=s.k|0;NET.tm=s.tm|0;if(typeof s.df==='number')run.diff=clamp(s.df|0,0,3);
@@ -6795,7 +6823,7 @@ function applySnap(s,ph){
   const shOf=i=>STARTERS[SIDS[i]]||STARTERS.braisot;
   run.shots=(s.sh||[]).map(a=>{const st=shOf(a[5]);return{x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:(+a[4]||45)/10,col:st.shot,core:st.core,life:1,sid:SIDS[a[5]|0]||'braisot'};});
   run.eshots=(s.es||[]).map(a=>({x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:+a[4]||5}));
-  run.room.pickups=(s.pk||[]).filter(Array.isArray).map(a=>a[0]===5?{kind:'shop',x:+a[1],y:+a[2],what:SHOP_WHAT[a[3]]||'heart',price:a[4]|0,id:SHOP_WHAT[a[3]]==='item'?(ITEM_IDS[a[5]]||'croc'):(ACTIVE_IDS[a[5]]||'fiole')}
+  run.room.pickups=(s.pk||[]).filter(Array.isArray).map(a=>a[0]===5?{kind:'shop',by:a[6]|0,x:+a[1],y:+a[2],what:SHOP_WHAT[a[3]]||'heart',price:a[4]|0,id:SHOP_WHAT[a[3]]==='item'?(ITEM_IDS[a[5]]||'croc'):(ACTIVE_IDS[a[5]]||'fiole')}
     :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3]}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2]}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':''}
     :a[0]===12?{kind:'portal',x:+a[1],y:+a[2]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3]}
     :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3]}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':''}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
@@ -6814,8 +6842,8 @@ function applySnap(s,ph){
     else if(ev[1]==='b'){banner(String(ev[2]),String(ev[3]),2.2);if(ev[3]==='Malédiction brisée'){bump('curses');unlockAch('maudit');}if(ev[2]==='Fontaine de vie'&&ev[3]==='Cœurs remplis !')bump('fountains');if(ev[2]==='Mini-boss')sfx('boss');}
     else if(ev[1]==='m')bubble(P2,+ev[2]||0);
     else if(ev[1]==='pay'){save.gold=Math.max(0,(save.gold||0)-(+ev[2]||0));save.stats.bought=(save.stats.bought|0)+1;persist();sfx('buy');run.floats.push({x:P.x,y:P.y-26,text:'-'+(+ev[2]||0)+' or',t:1,col:'#f5c542'});}}
-  if(ph==='lvg'&&Array.isArray(s.lo)&&s.lo[0]!==NET.lvDone&&state==='play'){const opts=s.lo.slice(1).filter(hasAb);if(opts.length){NET.loSeq=s.lo[0];showChoices(opts,'Niveau '+run.lvl+' !','À toi de choisir une capacité pour vous deux.');}}
-  if(ph!=='lvg'&&state==='levelup'){state='play';show(null);pauseBtn.hidden=false;}
+  if((ph==='lvg'||ph==='lvh')&&Array.isArray(s.lo)&&s.lo[0]!==NET.lvDone&&state==='play'){const opts=s.lo.slice(1).filter(hasAb);if(opts.length){NET.loSeq=s.lo[0];showChoices(opts,'Niveau '+run.lvl+' !','Choisis ta capacité (touche-la, puis touche-la encore). '+(run.mateName||'Ton ami')+' choisit la sienne.');}}
+  if(state==='levelup'&&!(Array.isArray(s.lo)&&s.lo[0]===NET.loSeq)){state='play';show(null);pauseBtn.hidden=false;}
   if((ph==='over'||ph==='won')&&!NET.ended){NET.ended=true;run.time=NET.tm;run.won=ph==='won';if(run.won)banner('Victoire !','Vous sortez de la crypte',3);
     setTimeout(()=>{if(run&&run.guest&&state!=='title'&&state!=='over')showOver(ph==='won',false);},run.won?2500:800);}
 }
