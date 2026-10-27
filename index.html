@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261027234915';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261027234915" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027235350';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027235350" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -489,7 +489,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   #actBar button{background:rgba(26,18,13,.5)}
 }
 .swipehint{display:none;margin:0;font-size:13px;color:var(--bone-dim);text-align:right}
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+html.no-anim *{animation:none!important;transition:none!important}
 .btn.sm{min-height:44px;padding:6px 14px;font-size:17px;min-width:0}
 .btn.sm.primary{min-width:0}
 .fr-item{flex-wrap:wrap}
@@ -637,13 +637,26 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .set-h{margin:4px 0 -8px}
 .on-c{color:var(--torch)}
 /* page changes: the new page slides in */
-@keyframes scrIn{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
-@keyframes scrBack{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
-@keyframes scrPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes scrIn{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes scrBack{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes scrPop{from{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:none}}
+@keyframes scrFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scrFadeOut{from{opacity:1}to{opacity:0}}
+@keyframes panOutL{to{transform:translateX(-70px)}}
+@keyframes panOutR{to{transform:translateX(70px)}}
+@keyframes panOutS{to{transform:scale(.92)}}
 @keyframes sideItem{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
-.screen.scr-in>.panel{animation:scrIn .3s cubic-bezier(.2,.8,.25,1)}
-.screen.scr-back>.panel{animation:scrBack .3s cubic-bezier(.2,.8,.25,1)}
-.screen.scr-pop>.panel{animation:scrPop .28s cubic-bezier(.2,.8,.25,1)}
+.screen.scr-in,.screen.scr-back,.screen.scr-pop{animation:scrFadeIn .3s ease-out}
+.screen.scr-in>.panel{animation:scrIn .38s cubic-bezier(.2,.85,.25,1)}
+.screen.scr-back>.panel{animation:scrBack .38s cubic-bezier(.2,.85,.25,1)}
+.screen.scr-pop>.panel{animation:scrPop .34s cubic-bezier(.2,.85,.25,1.15)}
+.screen.scr-out{pointer-events:none;z-index:19;animation:scrFadeOut .28s ease-in forwards}
+.screen.scr-out.out-l>.panel{animation:panOutL .28s ease-in forwards}
+.screen.scr-out.out-r>.panel{animation:panOutR .28s ease-in forwards}
+.screen.scr-out.out-s>.panel{animation:panOutS .28s ease-in forwards}
+.side-item,.chip-f,.hslot,.mode,.bag-row .info,.toggle,.tab,.hero-arrow,.menu-btn,.eqt{transition:transform .1s ease-out}
+.side-item:active,.chip-f:active,.hslot:active,.mode:active,.tab:active,.hero-arrow:active,.eqt:active{transform:scale(.95)}
+.toggle:active{transform:scale(.98)}
 .side.open .side-item{animation:sideItem .32s cubic-bezier(.2,.8,.25,1) both;animation-delay:calc(var(--i,0) * 32ms + 60ms)}
 .bagview{animation:pop2 .22s ease-out}
 .toggle{transition:border-color .15s,background .15s}
@@ -800,6 +813,12 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       <span class="track" aria-hidden="true"></span>
       <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2M13.2 6.5 10 11.5h4l-3.2 5"/></svg></span>
       <span class="tlabel"><b>Graphismes légers <span class="tst"></span></b><small>Si le jeu rame ou saccade, allume-le : moins de lumières et d'effets à l'écran, donc un jeu plus fluide.</small></span>
+    </label>
+    <label class="toggle set" for="optAnim">
+      <input type="checkbox" id="optAnim">
+      <span class="track" aria-hidden="true"></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="5" width="11" height="14" rx="2"/><path d="M6 8v8M3 10v4"/></svg></span>
+      <span class="tlabel"><b>Animations des menus <span class="tst"></span></b><small>Les pages glissent quand tu changes de page et les boutons bougent quand tu les touches. Éteins-le si tu préfères que tout s'affiche tout de suite.</small></span>
     </label>
     </div>
     <div class="slab coopbox" id="updBox" hidden>
@@ -1584,8 +1603,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -4848,10 +4867,25 @@ function renderTitle(){
 /* ================= UI ================= */
 const SCREENS=['scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 let curScreen=null;
+function animOn(){return !(save&&save.anim===false);}
 function show(id){
-  const prev=curScreen;for(const s of SCREENS)$(s).hidden=s!==id;curScreen=id;
-  if(!id||id===prev)return;
-  const el=$(id),kind=['scrPause','scrLevel','scrOver'].includes(id)?'scr-pop':(id==='scrTitle'||(prev&&DEPTH[prev]>(DEPTH[id]||1)))?'scr-back':'scr-in';
+  const prev=curScreen;if(id===prev){if(id)$(id).hidden=false;return;}
+  const POP=['scrPause','scrLevel','scrOver'],back=!!id&&(id==='scrTitle'||(prev&&DEPTH[prev]>(DEPTH[id]||1)));
+  for(const s of SCREENS){
+    const el=$(s);
+    if(s===id){el.hidden=false;el.classList.remove('scr-out','out-l','out-r','out-s');continue;}
+    if(s===prev&&animOn()&&!el.hidden){
+      /* the old page slides away while the new one comes in */
+      el.classList.remove('scr-in','scr-back','scr-pop','out-l','out-r','out-s');void el.offsetWidth;
+      el.classList.add('scr-out',!id||POP.includes(s)||POP.includes(id)?'out-s':back?'out-r':'out-l');
+      clearTimeout(el._outT);el._outT=setTimeout(()=>{if(curScreen!==s)el.hidden=true;el.classList.remove('scr-out','out-l','out-r','out-s');},290);
+      continue;
+    }
+    el.hidden=true;
+  }
+  curScreen=id;
+  if(!id||!animOn())return;
+  const el=$(id),kind=POP.includes(id)?'scr-pop':back?'scr-back':'scr-in';
   el.classList.remove('scr-in','scr-back','scr-pop');void el.offsetWidth;el.classList.add(kind);
 }
 /* how deep a page is: going back to a less deep page slides the other way */
@@ -4887,7 +4921,7 @@ function tipsTick(){
   if(run.pl&&!run.local&&NET)tip('chat','Le bouton bulle en bas à droite envoie un message rapide à ton ami.');
 }
 function clearOverlays(){toastQ=[];toastT=0;toastEl.hidden=true;bannerT=0;bannerEl.hidden=true;bossCardT=0;$('bossCard').hidden=true;tipQ=[];tipT=0;$('tip').hidden=true;$('chatMenu').hidden=true;}
-function syncToggles(){$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;$('optTips0').checked=save.tips;$('optDmg0').checked=save.dmgNums!==false;$('optLow').checked=quality==='low';}
+function syncToggles(){$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;$('optTips0').checked=save.tips;$('optDmg0').checked=save.dmgNums!==false;$('optLow').checked=quality==='low';$('optAnim').checked=animOn();}
 function seenCount(){return ORDER.filter(id=>save.seen[id]).length;}
 function goTitle(){
   netLeave();stopSearch();pickMode=null;
@@ -5694,6 +5728,7 @@ for(const id of['optSound','optSound0'])$(id).addEventListener('change',e=>{save
 for(const id of['optMusic','optMusic2'])$(id).addEventListener('change',e=>{save.music=e.target.checked;persist();syncToggles();if(save.music)audioUnlock();});
 for(const id of['optDmg','optDmg0'])$(id).addEventListener('change',e=>{save.dmgNums=e.target.checked;persist();syncToggles();});
 for(const id of['optTips','optTips0'])$(id).addEventListener('change',e=>{save.tips=e.target.checked;if(save.tips)save.tuto={};persist();syncToggles();});
+$('optAnim').addEventListener('change',e=>{save.anim=e.target.checked;persist();document.documentElement.classList.toggle('no-anim',!save.anim);if(save.anim){const el=$('scrSettings');el.classList.remove('scr-in');void el.offsetWidth;el.classList.add('scr-in');}});
 $('optLow').addEventListener('change',e=>{save.lowq=e.target.checked;quality=save.lowq?'low':'high';persist();layout();});
 /* ---- side menu on the title screen ---- */
 function menuOpen(){return !$('sideMenu').hidden;}
@@ -7086,6 +7121,7 @@ function boot(data){
   try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot)window.claude.hot.snapshot(snapshotState);}catch(e){}
   if(data.run&&restoreRun(data.run)){state='play';show(null);pauseGame();}
   else goTitle();
+  document.documentElement.classList.toggle('no-anim',!animOn());
   initRoom();initData();initSocial();
   requestAnimationFrame(t=>{last=t;loop(t);});
   if(document.fonts&&document.fonts.load){document.fonts.load('700 14px Grenze').catch(()=>{});}
