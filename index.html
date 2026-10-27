@@ -298,7 +298,37 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .choice .tag{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#7fd3ff}
 .choice .nm{font-family:var(--font-display);font-weight:900;font-size:27px;line-height:1;color:var(--torch)}
 .choice .ds{font-size:15px;color:var(--bone-dim);line-height:1.3}
-.title-main,.title-side{display:flex;flex-direction:column;gap:18px;min-width:0}
+.title-main,.title-acts{display:flex;flex-direction:column;gap:18px;min-width:0}
+.title-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.menu-btn{position:relative;display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:6px 18px 6px 14px;border-radius:8px;border:2px solid var(--stone-edge);background:var(--stone-hi);color:var(--bone);font:700 20px var(--font-ui);cursor:pointer;box-shadow:0 4px 0 #1a120d;transition:transform .08s,box-shadow .08s}
+.menu-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1a120d}
+.menu-btn:focus-visible,.side-item:focus-visible,.side-x:focus-visible{outline:3px solid var(--bone);outline-offset:2px}
+.mb-bars{display:flex;flex-direction:column;gap:4px}
+.mb-bars i{display:block;width:22px;height:3px;border-radius:2px;background:var(--torch)}
+.mb-badge{position:absolute;top:-9px;right:-9px}
+.title-gold{background:rgba(26,18,13,.7);border:2px solid var(--stone-edge);border-radius:20px;padding:4px 14px 4px 10px}
+.main-acts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.main-acts .btn{width:100%;min-width:0;padding-inline:10px}
+.main-acts #btnPlay{grid-column:1/-1;min-height:66px;font-size:28px}
+.main-acts #btnRush{grid-column:1/-1}
+.side{position:fixed;inset:0;z-index:30}
+.side-dim{position:absolute;inset:0;background:rgba(8,5,3,.62);opacity:0;transition:opacity .22s}
+.side.open .side-dim{opacity:1}
+.side-panel{position:absolute;top:0;bottom:0;left:0;width:min(340px,86vw);box-sizing:border-box;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#2c2019,#170f0b);border-right:2px solid var(--stone-edge);box-shadow:10px 0 34px rgba(0,0,0,.6);padding-top:calc(env(safe-area-inset-top,0px) + 14px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:14px;transform:translateX(-105%);transition:transform .22s ease-out}
+.side.open .side-panel{transform:none}
+.side-head{display:flex;align-items:center;gap:12px}
+.side-title{font-family:var(--font-display);font-weight:900;font-size:36px;line-height:1;color:var(--torch);margin-right:auto}
+.side-x{flex:none;width:46px;height:46px;border-radius:8px;border:2px solid var(--stone-edge);background:var(--stone-hi);color:var(--bone);font-size:22px;cursor:pointer}
+.side-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;padding:2px}
+.side-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 12px;box-sizing:border-box;border-radius:8px;border:2px solid transparent;background:rgba(59,44,35,.55);color:var(--bone);font:700 19px var(--font-ui);text-align:left;cursor:pointer}
+.side-item:active{background:var(--stone-hi)}
+.side-item svg{flex:none;width:26px;height:26px;color:var(--torch)}
+.side-item .lbl{flex:1;min-width:0}
+.side-item .goldtag{font-size:16px}
+.side-item.glow{border-color:#f5c542;box-shadow:0 0 12px rgba(245,197,66,.35)}
+.side-sep{border:0;height:2px;background:var(--stone-edge);opacity:.6;margin:4px 6px;flex:none}
+.side-rec{margin:0;padding:0 4px}
+.setgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .hdr{display:flex;flex-direction:column;align-items:flex-start;gap:18px;min-width:0}
 .cols2{display:flex;flex-direction:column;gap:18px;min-width:0}
 .cols2>*{min-width:0}
@@ -329,8 +359,12 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   .tlabel b{font-size:16px}
   .tlabel small{font-size:13px}
   /* title */
-  .title-panel{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:center}
-  .title-main,.title-side{gap:12px}
+  .title-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;align-items:center}
+  .title-top{grid-column:1/-1}
+  .title-main,.title-acts{gap:12px}
+  .setgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .side-item{min-height:44px;padding:5px 12px;font-size:17px}
+  .side-title{font-size:30px}
   .logo{font-size:clamp(44px,15vh,76px);line-height:.92}
   .actions{gap:8px}
   .howto{font-size:14px;gap:3px 10px;line-height:1.3}
@@ -397,18 +431,16 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   .sum b{font-size:26px}
   .sum span{font-size:12px}
   /* title: every button visible without scrolling, settings scroll on their own */
-  .title-panel{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:start;gap:20px}
-  #scrTitle .eyebrow,#scrTitle .lede{display:none}
-  .logo{font-size:clamp(34px,12vh,58px)}
-  .title-main{gap:10px}
-  .title-main .actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-  .title-main .actions .btn{min-height:46px;padding:6px 10px}
-  .title-main .actions.small{display:flex;flex-wrap:wrap;gap:6px}
-  .title-main .actions.small .btn{min-height:40px;font-size:15px;padding:4px 11px;flex:1 1 auto}
-  .title-side{max-height:calc(100vh - 34px);max-height:calc(100dvh - 34px);overflow-y:auto;gap:8px;padding-right:4px;overscroll-behavior:contain}
-  .title-side .toggle{padding:6px 10px;align-items:center}
-  .title-side .tlabel small{display:none}
-  .howto{font-size:13px}
+  .title-panel{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:10px 24px}
+  .menu-btn{min-height:44px;font-size:18px}
+  .logo{font-size:clamp(40px,16vh,72px)}
+  .lede{font-size:15px}
+  .main-acts{gap:8px}
+  .main-acts .btn{min-height:48px}
+  .main-acts #btnPlay{min-height:56px;font-size:24px}
+  .setgrid .toggle{align-items:center;padding:6px 10px}
+  .setgrid .tlabel small{display:none}
+  .howto{font-size:14px}
   /* creature pick: one row you slide sideways */
   #scrPick .panel{gap:8px}
   #scrPick h2{font-size:28px}
@@ -516,54 +548,97 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
   <div class="ip-btns"><button class="btn primary" id="ipJoin" type="button">Rejoindre</button><button class="btn ghost" id="ipNo" type="button">Non merci</button></div>
 </div>
 <div id="frSnack" class="fr-snack" role="status" hidden></div>
+<div id="sideMenu" class="side" hidden>
+  <div class="side-dim" id="sideDim"></div>
+  <nav class="side-panel" aria-label="Menu">
+    <div class="side-head"><span class="side-title">Menu</span><span class="goldtag"><i class="coin"></i><span id="sideGold"></span></span><button class="side-x" id="sideClose" type="button" aria-label="Fermer le menu">✕</button></div>
+    <div class="side-list" id="sideList">
+      <button id="btnInstall" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span class="lbl">Installer le jeu</span></button>
+      <button id="btnGiftDay" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9C10 5 5.5 5 6.2 7.8 6.7 9.6 12 9 12 9zm0 0c2-4 6.5-4 5.8-1.2C17.3 9.6 12 9 12 9z"/></svg><span class="lbl">Cadeau du jour</span><span class="qbadge" id="giftDayBadge" hidden>1</span></button>
+      <button id="btnShop" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 17V8M8 11l4-4 4 4"/></svg><span class="lbl">Améliorations</span><span class="goldtag"><i class="coin"></i><span id="titleGold"></span></span></button>
+      <button id="btnBest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5V5.5M9 7h6"/></svg><span class="lbl">Bestiaire</span><span class="count" id="bestCount"></span></button>
+      <button id="btnAch" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3.5 4M16 6h3a3 3 0 0 1-3.5 4M12 13v4M8 21h8M10 17h4v4h-4z"/></svg><span class="lbl">Succès</span><span class="count" id="achCount"></span></button>
+      <button id="btnQuest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8.5l1.6 1.6L13.5 7M8.5 14h7M8.5 17h5"/></svg><span class="lbl">Quêtes</span><span class="qbadge" id="questCount" hidden></span></button>
+      <button id="btnFriends" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20C6 16 3 12.5 3 8.8 3 6.2 5 4 7.6 4c1.8 0 3.4 1 4.4 2.6C13 5 14.6 4 16.4 4 19 4 21 6.2 21 8.8 21 12.5 18 16 12 20z"/></svg><span class="lbl">Amis</span><span class="qbadge" id="frBadge" hidden></span></button>
+      <button id="btnRank" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20v-6h4v6M10 20V8h4v12M15 20v-9h4v9"/></svg><span class="lbl">Classement</span></button>
+      <hr class="side-sep">
+      <button id="btnSettings" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3"/><circle cx="12" cy="12" r="6.5"/></svg><span class="lbl">Paramètres</span></button>
+      <button id="btnSave" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg><span class="lbl">Sauvegarde</span></button>
+      <button id="btnGiftOpen" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3.5a2 2 0 0 0 0 4V18H3v-3.5a2 2 0 0 0 0-4z"/><path d="M14.5 7v11" stroke-dasharray="2 2.2"/></svg><span class="lbl">Code cadeau</span></button>
+      <button id="btnHelp" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.6"/><path d="M12 17.2v.1"/></svg><span class="lbl">Comment jouer</span></button>
+    </div>
+    <p class="record side-rec" id="record"></p>
+  </nav>
+</div>
+
 <div id="probe" aria-hidden="true"></div>
 
 <section id="scrTitle" class="screen">
   <div class="panel title-panel">
+   <div class="title-top">
+    <button id="btnSide" class="menu-btn" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="sideMenu"><span class="mb-bars" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span><span class="qbadge mb-badge" id="menuBadge" hidden></span></button>
+    <span class="goldtag title-gold"><i class="coin"></i><span id="titleGold2"></span></span>
+   </div>
    <div class="title-main">
     <p class="eyebrow">Petites bêtes · grande crypte</p>
     <h1 class="logo">Bestiolins</h1>
     <p class="lede">Choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.</p>
-    <div class="actions">
+   </div>
+   <div class="title-acts">
+    <div class="main-acts">
       <button id="btnPlay" class="btn primary" type="button">Jouer</button>
       <button id="btnCoop" class="btn" type="button">Jouer à deux</button>
       <button id="btnDaily" class="btn" type="button">Défi du jour <span class="count" id="dailyTag"></span></button>
       <button id="btnRush" class="btn" type="button">Rush des boss <span class="count" id="rushTag"></span></button>
     </div>
-    <div class="actions small">
-      <button id="btnInstall" class="btn glow" type="button" hidden>Installer le jeu</button>
-      <button id="btnGiftDay" class="btn" type="button">Cadeau du jour <span class="qbadge" id="giftDayBadge" hidden>1</span></button>
-      <button id="btnShop" class="btn" type="button">Améliorations <span class="goldtag"><i class="coin"></i><span id="titleGold"></span></span></button>
-      <button id="btnBest" class="btn" type="button">Bestiaire <span class="count" id="bestCount"></span></button>
-      <button id="btnAch" class="btn" type="button">Succès <span class="count" id="achCount"></span></button>
-      <button id="btnQuest" class="btn" type="button">Quêtes <span class="qbadge" id="questCount" hidden></span></button>
-      <button id="btnFriends" class="btn" type="button" hidden>Amis <span class="qbadge" id="frBadge" hidden></span></button>
-      <button id="btnRank" class="btn" type="button">Classement</button>
-      <button id="btnSave" class="btn" type="button">Sauvegarde</button>
-      <button id="btnGiftOpen" class="btn" type="button">Code cadeau</button>
-    </div>
     <p class="coop-status ok giftmsg" id="giftDayMsg" role="status" hidden></p>
     <p class="coop-status ok" id="cloudNote" hidden></p>
    </div>
-   <div class="title-side">
+  </div>
+</section>
+
+<section id="scrSettings" class="screen" hidden>
+  <div class="panel">
+    <div class="hdr"><button class="back" id="setBack" type="button">← Retour</button><h2>Paramètres</h2></div>
+    <div class="optgrid setgrid">
     <label class="toggle" for="optAuto">
       <input type="checkbox" id="optAuto">
       <span class="track" aria-hidden="true"></span>
       <span class="tlabel"><b>Tir automatique</b><small>Ta créature vise toute seule l'ennemi le plus proche. Plus facile pour commencer.</small></span>
-    </label>
-    <label class="toggle" for="optMusic">
-      <input type="checkbox" id="optMusic">
-      <span class="track" aria-hidden="true"></span>
-      <span class="tlabel"><b>Musique</b><small>Une petite musique d'ambiance pendant la partie.</small></span>
     </label>
     <label class="toggle" for="optSound0">
       <input type="checkbox" id="optSound0">
       <span class="track" aria-hidden="true"></span>
       <span class="tlabel"><b>Son</b><small>Les bruitages et les bruits d'ambiance.</small></span>
     </label>
-    <dl class="howto" id="howto"></dl>
-    <p class="record" id="record"></p>
-   </div>
+    <label class="toggle" for="optMusic">
+      <input type="checkbox" id="optMusic">
+      <span class="track" aria-hidden="true"></span>
+      <span class="tlabel"><b>Musique</b><small>Une petite musique pendant la partie.</small></span>
+    </label>
+    <label class="toggle" for="optDmg0">
+      <input type="checkbox" id="optDmg0">
+      <span class="track" aria-hidden="true"></span>
+      <span class="tlabel"><b>Nombres de dégâts</b><small>Montre combien de vie tu enlèves aux monstres.</small></span>
+    </label>
+    <label class="toggle" for="optTips0">
+      <input type="checkbox" id="optTips0">
+      <span class="track" aria-hidden="true"></span>
+      <span class="tlabel"><b>Astuces</b><small>Des conseils pour débuter. Les rallumer les remontre depuis le début.</small></span>
+    </label>
+    <label class="toggle" for="optLow">
+      <input type="checkbox" id="optLow">
+      <span class="track" aria-hidden="true"></span>
+      <span class="tlabel"><b>Graphismes légers</b><small>Moins d'effets, pour les téléphones qui rament.</small></span>
+    </label>
+    </div>
+  </div>
+</section>
+
+<section id="scrHelp" class="screen" hidden>
+  <div class="panel">
+    <div class="hdr"><button class="back" id="helpBack" type="button">← Retour</button><h2>Comment jouer</h2></div>
+    <div class="slab"><dl class="howto" id="howto"></dl></div>
   </div>
 </section>
 
@@ -4524,7 +4599,7 @@ function renderTitle(){
 }
 
 /* ================= UI ================= */
-const SCREENS=['scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
+const SCREENS=['scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 function show(id){for(const s of SCREENS)$(s).hidden=s!==id;}
 let toastQ=[],toastT=0,bannerT=0,bossCardT=0;
 function showBossCard(id,label){const el=$('bossCard');drawPortrait($('bossCv'),id,1.2,false);el.querySelector('.bc1').textContent=label;el.querySelector('.bc2').textContent=SPECIES[id].name;
@@ -4557,7 +4632,7 @@ function tipsTick(){
   if(run.pl&&!run.local&&NET)tip('chat','Le bouton bulle en bas à droite envoie un message rapide à ton ami.');
 }
 function clearOverlays(){toastQ=[];toastT=0;toastEl.hidden=true;bannerT=0;bannerEl.hidden=true;bossCardT=0;$('bossCard').hidden=true;tipQ=[];tipT=0;$('tip').hidden=true;$('chatMenu').hidden=true;}
-function syncToggles(){$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;}
+function syncToggles(){$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;$('optTips0').checked=save.tips;$('optDmg0').checked=save.dmgNums!==false;$('optLow').checked=quality==='low';}
 function seenCount(){return ORDER.filter(id=>save.seen[id]).length;}
 function goTitle(){
   netLeave();stopSearch();pickMode=null;
@@ -4566,7 +4641,7 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
-  updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  closeMenu(true);updFrBadge();if(soInvite)setTimeout(showInvite,400);
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
@@ -4579,11 +4654,11 @@ function goTitle(){
   rows.push(['Bombes',"Pose une bombe pour casser les rochers. Un mur fissuré cache une salle secrète !"]);
   rows.push(['Pouvoir',"Certains objets se déclenchent avec le bouton rond. Bats des monstres pour le recharger."]);
   rows.push(['À deux',"En ligne, chacun sur son téléphone : entre amis, recherche automatique ou avec un code."]);
-  $('titleGold').textContent=save.gold||0;
+  $('titleGold').textContent=save.gold||0;$('titleGold2').textContent=save.gold||0;
   for(const r of rows){const dt=document.createElement('dt');dt.textContent=r[0];const dd=document.createElement('dd');dd.textContent=r[1];hl.append(dt,dd);}
   const rec=$('record');
   if(save.best){rec.textContent='Ton record : étage '+save.best+(save.best>NFLOORS?' (mode infini)':' sur '+NFLOORS)+(save.wins?' · '+save.wins+(save.wins>1?' victoires':' victoire'):'');rec.hidden=false;}else rec.hidden=true;
-  syncToggles();
+  syncToggles();updMenuBadge();
 }
 function goPick(){netLeave();stopSearch();buildStarters();pickMode=null;lastCoop=false;lastDaily=false;lastRush=false;lastLocal=false;clearTaken();$('pickSub').textContent='Touche une créature pour commencer la partie.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;}
 function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);
@@ -5085,7 +5160,7 @@ function openDailyGift(){
   let extra='';if(streak%3===0&&(save.bag||[]).length<BAG_MAX){save.bag.push('?');extra=' + un objet surprise pour ta prochaine partie';}
   persist();sfx('chest');
   giftMsg('Cadeau du jour : +'+gold+' or'+extra+'. '+(streak>1?('Jour '+streak+' de suite ! Reviens demain pour un cadeau encore plus gros.'):'Reviens demain : le cadeau grossit chaque jour de suite.'));
-  $('titleGold').textContent=save.gold||0;$('giftDayBadge').hidden=true;$('btnGiftDay').classList.remove('glow');
+  $('titleGold').textContent=save.gold||0;$('titleGold2').textContent=save.gold||0;$('sideGold').textContent=save.gold||0;$('giftDayBadge').hidden=true;$('btnGiftDay').classList.remove('glow');updMenuBadge();
 }
 function dateKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function hashStr(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
@@ -5324,8 +5399,34 @@ $('shopBack').addEventListener('click',()=>{if(shopFrom==='over'){state='over';s
 for(const id of['optAuto','optAuto2'])$(id).addEventListener('change',e=>{save.auto=e.target.checked;persist();syncToggles();});
 for(const id of['optSound','optSound0'])$(id).addEventListener('change',e=>{save.sound=e.target.checked;persist();syncToggles();if(save.sound)audioUnlock();});
 for(const id of['optMusic','optMusic2'])$(id).addEventListener('change',e=>{save.music=e.target.checked;persist();syncToggles();if(save.music)audioUnlock();});
-$('optDmg').addEventListener('change',e=>{save.dmgNums=e.target.checked;persist();});
-$('optTips').addEventListener('change',e=>{save.tips=e.target.checked;if(save.tips)save.tuto={};persist();});
+for(const id of['optDmg','optDmg0'])$(id).addEventListener('change',e=>{save.dmgNums=e.target.checked;persist();syncToggles();});
+for(const id of['optTips','optTips0'])$(id).addEventListener('change',e=>{save.tips=e.target.checked;if(save.tips)save.tuto={};persist();syncToggles();});
+$('optLow').addEventListener('change',e=>{save.lowq=e.target.checked;quality=save.lowq?'low':'high';persist();layout();});
+/* ---- side menu on the title screen ---- */
+function menuOpen(){return !$('sideMenu').hidden;}
+function openMenu(){
+  audioUnlock();const m=$('sideMenu');m.hidden=false;$('btnSide').setAttribute('aria-expanded','true');
+  $('sideGold').textContent=save.gold||0;void m.offsetWidth;m.classList.add('open');
+  setTimeout(()=>{try{$('sideClose').focus({preventScroll:true});}catch(e){}},60);
+}
+function closeMenu(now){
+  const m=$('sideMenu');if(m.hidden)return;m.classList.remove('open');$('btnSide').setAttribute('aria-expanded','false');
+  clearTimeout(closeMenu.t);if(now){m.hidden=true;return;}closeMenu.t=setTimeout(()=>{if(!m.classList.contains('open'))m.hidden=true;},230);
+}
+function updMenuBadge(){
+  let n=0;if(!$('giftDayBadge').hidden)n++;
+  for(const id of['questCount','frBadge']){const el=$(id);if(!el.hidden&&!$(id).closest('[hidden]'))n+=(+el.textContent||0);}
+  const b=$('menuBadge');b.hidden=!n;b.textContent=n?String(n):'';
+}
+$('btnSide').addEventListener('click',openMenu);
+$('sideClose').addEventListener('click',()=>closeMenu());
+$('sideDim').addEventListener('click',()=>closeMenu());
+$('sideList').addEventListener('click',e=>{const b=e.target.closest('.side-item');if(b)closeMenu(true);},true);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen()){closeMenu();e.preventDefault();}});
+$('btnSettings').addEventListener('click',()=>{state='settings';clearOverlays();show('scrSettings');pauseBtn.hidden=true;syncToggles();$('scrSettings').scrollTop=0;});
+$('btnHelp').addEventListener('click',()=>{state='help';clearOverlays();show('scrHelp');pauseBtn.hidden=true;$('scrHelp').scrollTop=0;});
+$('setBack').addEventListener('click',goTitle);
+$('helpBack').addEventListener('click',goTitle);
 let quitArmed=false,quitTimer=null;
 $('btnQuit').addEventListener('click',()=>{
   const b=$('btnQuit');
@@ -5469,7 +5570,7 @@ function soMet(u){
 }
 function updFrBadge(){
   const n=soRequests().length+(soInvite?1:0),b=$('frBadge');
-  b.hidden=!n;b.textContent=n?String(n):'';$('btnFriends').classList.toggle('glow',!!soInvite);
+  b.hidden=!n;b.textContent=n?String(n):'';$('btnFriends').classList.toggle('glow',!!soInvite);updMenuBadge();
 }
 /* ---- invite popup ---- */
 function showInvite(){
