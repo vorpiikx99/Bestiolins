@@ -12,7 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;</script>
+<script>window.CB_STANDALONE=true;window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});</script>
+<script src="net.js" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -809,7 +810,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 (function(){
 'use strict';
 /* the installed version (own website) has no Claude: no online play, no leaderboard, save stays on the phone */
-const CB_SA=!!window.CB_STANDALONE;
+const CB_SA=!!window.CB_STANDALONE,CB_P2P=!!window.CB_P2P,NETK=CB_P2P?2.5:1;
 /* ================= constants & utils ================= */
 const TAU=Math.PI*2;
 const TS=32, ROWS=9, RH=ROWS*TS, WALL=24, DOOR_W=48;
@@ -5176,7 +5177,7 @@ $('tabAll').addEventListener('click',()=>setRankTab('all'));
 $('tabDay').addEventListener('click',()=>setRankTab('day'));
 $('btnDaily').addEventListener('click',()=>{audioUnlock();goPickDaily();});
 $('btnGiftDay').addEventListener('click',openDailyGift);
-if(CB_SA){$('btnCoop').hidden=true;$('btnRank').hidden=true;}
+if(CB_SA){$('btnRank').hidden=true;if(!CB_P2P)$('btnCoop').hidden=true;}
 /* Android: offer to install the game as an app when the browser allows it */
 {let ip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('btnInstall').hidden=false;});
   $('btnInstall').addEventListener('click',async()=>{if(!ip)return;ip.prompt();try{await ip.userChoice;}catch(e){}ip=null;$('btnInstall').hidden=true;});
@@ -5212,7 +5213,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 addEventListener('resize',()=>{layout();});
 
 /* ================= coop (online, 2 players, host runs the game) ================= */
-let ROOM=null,NET=null,P2=null,pickMode=null,pickCode=null,lastCoop=false,lastLocal=false,pickLocal1=null,coopUiT=0,roomReady=false,coopSig='',coopView='home',MM=null;
+let ROOM=null,NET=null,P2=null,pickMode=null,pickCode=null,lastCoop=false,lastLocal=false,pickLocal1=null,coopUiT=0,roomReady=false,coopSig='',coopView='home',MM=null,coopViewT=0;
 const SIDS=['braisot','gouttin','ronceau','givrelle','petalou','ombrin','volticelle','mamoutin','cristallin'],RTYPES=['start','normal','treasure','boss','shop','secret','challenge'],ITEM_IDS=Object.keys(ITEMS),DOOR_KEYS=['n','s','w','e'];
 const hasAb=k=>Object.prototype.hasOwnProperty.call(ABILITIES,k);
 function players(){return (run&&run.pl)||[P];}
@@ -5227,6 +5228,7 @@ async function initRoom(){
   try{
     if(window.claude&&typeof window.claude.use==='function')ROOM=await window.claude.use('room');
     else if(window.__fakeRoom)ROOM=window.__fakeRoom;
+    else if(CB_P2P)ROOM=await Promise.race([window.CB_P2P,new Promise(r=>setTimeout(()=>r(null),8000))]);
   }catch(e){ROOM=null;}
   roomReady=true;
   if(state==='coop')renderCoop(true);
@@ -5257,7 +5259,7 @@ function openGames(){
   return out;
 }
 function openCoop(keepView){netLeave();stopSearch();if(!keepView)coopView='home';lastCoop=true;lastLocal=false;pickMode=null;state='coop';clearOverlays();show('scrCoop');pauseBtn.hidden=true;resetSticks();coopSig='';renderCoop(true);$('scrCoop').scrollTop=0;}
-function setCoopView(v){coopView=v;coopSig='';setMsg('codeMsg','');renderCoop(true);$('scrCoop').scrollTop=0;}
+function setCoopView(v){coopView=v;coopViewT=performance.now();coopSig='';setMsg('codeMsg','');renderCoop(true);$('scrCoop').scrollTop=0;}
 function goPickCoop(mode,code){pickMode=mode;pickCode=code;buildStarters();$('pickSub').textContent=mode==='join'?'Choisis ta créature pour rejoindre la partie. La difficulté est choisie par ton ami.':mode==='search'?'Choisis ta créature : ensuite, le jeu te cherche un joueur.':'Choisis ta créature pour la partie à deux.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;}
 /* ---- local coop: two players on one screen, no account needed ---- */
 function clearTaken(){for(const b of document.querySelectorAll('.starter')){b.classList.remove('taken');const t=b.querySelector('.ptag');if(t)t.remove();}}
@@ -5319,15 +5321,19 @@ function renderCoop(force){
   $('coopSub').hidden=v!=='home';
   const off=roomReady&&!ROOM;
   for(const id of['modeFriends','modeSearch','modeCode','btnHost','btnHostPrivate','btnCodeJoin'])$(id).disabled=!ROOM;
-  $('coopAccess').textContent=off?"Le jeu en ligne ne marche pas ici : il faut être connecté à un compte Claude, et que le jeu soit partagé avec toi."
+  $('coopAccess').textContent=CB_SA?(!navigator.onLine?"Tu n'es pas connecté à internet : pour jouer à deux, il faut internet sur les deux téléphones."
+    :off?"Le jeu en ligne n'a pas pu démarrer. Vérifie ta connexion internet, puis ferme et rouvre le jeu."
+    :"Ton ami ouvre Bestiolins sur son téléphone (vorpiikx99.github.io/Bestiolins). Il faut internet sur les deux téléphones. Le Wi-Fi marche le mieux.")
+    :off?"Le jeu en ligne ne marche pas ici : il faut être connecté à un compte Claude, et que le jeu soit partagé avec toi."
     :!ROOM?'Connexion…':"Pour jouer avec toi, l'autre joueur doit pouvoir ouvrir ce jeu : il lui faut un compte Claude (gratuit, avec une adresse mail) et que tu lui partages le jeu.";
   if(v==='friends'){
     const games=ROOM?openGames():[];
-    const sig=(ROOM?'r':'n')+(roomReady?1:0)+games.map(g=>g.code+g.st).join('|');
+    const early=CB_P2P&&performance.now()-coopViewT<12000;
+    const sig=(ROOM?'r':'n')+(roomReady?1:0)+(early?'e':'')+games.map(g=>g.code+g.st).join('|');
     if(!force&&sig===coopSig)return;coopSig=sig;
     const list=$('coopList');list.textContent='';
     if(!ROOM)return;
-    if(!games.length){const p=document.createElement('p');p.className='coop-empty';p.textContent="Aucune partie ouverte pour l'instant. Crée la tienne : elle apparaîtra ici chez les autres joueurs.";list.appendChild(p);return;}
+    if(!games.length){const p=document.createElement('p');p.className='coop-empty';p.textContent=early?'Recherche des parties ouvertes…':"Aucune partie ouverte pour l'instant. Crée la tienne : elle apparaîtra ici chez les autres joueurs.";list.appendChild(p);return;}
     for(const g of games){
       const row=document.createElement('div');row.className='coop-item';
       const cv=document.createElement('canvas');cv.width=cv.height=Math.round(48*dpr);drawPortrait(cv,g.st,1.2,false);
@@ -5361,7 +5367,7 @@ function renderCoop(force){
     $('coopWaitLabel').textContent=NET.auto?'Joueur trouvé':'Partie rejointe · code';
     const hp=NET.ch?hostPeer():null;
     $('coopStatus').textContent=hp?(NET.auto?'Connecté ! La partie va commencer…':'Connecté ! Attends que ton ami lance la partie…')
-      :(performance.now()-(NET.joinT||0)>8000?"Aucune partie trouvée avec ce code. Vérifie-le, ou demande à ton ami de recréer sa partie.":'Connexion à la partie…');
+      :(performance.now()-(NET.joinT||0)>8000*NETK?"Aucune partie trouvée avec ce code. Vérifie-le, ou demande à ton ami de recréer sa partie.":'Connexion à la partie…');
     $('btnCoopStart').hidden=true;
   }
 }
@@ -5392,7 +5398,7 @@ function mmTick(){
       const st=MM.st;stopSearch();startJoining(m.code,st,{auto:true});return;}}
   if(MM.phase==='host'){
     if(NET&&NET.role==='host'&&NET.ch&&guestPeer())return;
-    if(performance.now()-MM.hostT>9000){MM.ignore[MM.partner]=now+20000;netLeave();MM.phase='search';MM.partner=null;ROOM.presence({mm:{st:MM.st,t:MM.t}}).catch(()=>{});}
+    if(performance.now()-MM.hostT>9000*NETK){MM.ignore[MM.partner]=now+20000;netLeave();MM.phase='search';MM.partner=null;ROOM.presence({mm:{st:MM.st,t:MM.t}}).catch(()=>{});}
     return;
   }
   const list=searchers().map(p=>({peer:p.peer,t:p.sameTab?MM.t:p.presence.mm.t}));
@@ -5409,7 +5415,7 @@ function coopTick(dt){
   coopUiT-=dt;if(coopUiT>0)return;coopUiT=0.35;
   mmTick();
   if(NET&&NET.role==='host'&&NET.auto&&NET.ch&&guestPeer()){startCoopRun();return;}
-  if(NET&&NET.role==='guest'&&NET.auto&&NET.ch&&!hostPeer()&&performance.now()-(NET.joinT||0)>10000){const st=NET.st;netLeave();startSearch(st);return;}
+  if(NET&&NET.role==='guest'&&NET.auto&&NET.ch&&!hostPeer()&&performance.now()-(NET.joinT||0)>10000*NETK){const st=NET.st;netLeave();startSearch(st);return;}
   if(state==='coop')renderCoop(false);
 }
 async function startHosting(st,opts){
