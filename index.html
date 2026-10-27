@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261027232750';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261027232750" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261027233503';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261027233503" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -548,6 +548,40 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .eqt.sel{outline:3px solid var(--torch);outline-offset:2px}
 .eqt.dim{opacity:.3}
 .eq-empty{grid-column:1/-1}
+.bagview{display:flex;flex-direction:column;gap:12px}
+.bag-tools{display:flex;flex-wrap:wrap;gap:8px}
+.bag-tools .btn{flex:1 1 200px;font-size:17px;min-height:48px;white-space:normal;line-height:1.15}
+.chipbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip-f{flex:none;min-height:40px;padding:4px 13px;border-radius:20px;border:2px solid var(--stone-edge);background:var(--stone);color:var(--bone-dim);font:700 15px var(--font-ui);cursor:pointer;touch-action:manipulation}
+.chip-f.on{border-color:var(--torch);color:var(--torch);background:var(--stone-hi)}
+.rar-legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--bone-dim);align-items:center}
+.rar-legend .lg-t{flex-basis:100%}
+.rar-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.bag-h{margin:6px 0 0;font:700 13px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--bone-dim)}
+.bag-list{display:flex;flex-direction:column;gap:8px}
+.bag-row{display:flex;align-items:center;gap:10px;background:var(--stone);border:2px solid var(--stone-edge);border-left-width:7px;border-radius:9px;padding:8px 10px}
+.bag-row.on{background:#26301d;border-top-color:#5e9a4e;border-right-color:#5e9a4e;border-bottom-color:#5e9a4e}
+.bag-row canvas{flex:none;width:54px;height:54px;border-radius:6px;cursor:pointer}
+.bag-row .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.bag-row .nm{font-family:var(--font-display);font-weight:900;font-size:19px;line-height:1.1;color:var(--bone)}
+.bag-row .rr{font-size:13px;font-weight:700}
+.bag-row .ef{font-size:15px;color:#c6f08a}
+.bag-row .side2{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+.bdg{font:700 12px var(--font-ui);padding:3px 8px;border-radius:10px;white-space:nowrap}
+.bdg.on{background:#2e5a2e;color:#d6f8d6}
+.bdg.up{background:#1f4a2a;color:#8ff08f}
+.fuse-explain{display:flex;flex-direction:column;gap:6px;padding:12px 14px}
+.fuse-explain p{margin:0;font-size:16px;line-height:1.35}
+.fuse-list{display:flex;flex-direction:column;gap:10px}
+.fuse-card{display:flex;flex-direction:column;gap:8px;background:var(--stone);border:2px solid var(--stone-edge);border-radius:10px;padding:10px 12px}
+.fuse-card.ready{border-color:var(--torch);box-shadow:0 0 10px rgba(242,162,58,.25)}
+.fuse-vis{display:flex;align-items:center;gap:5px}
+.fuse-vis canvas{width:44px;height:44px;border-radius:6px;flex:none}
+.fuse-vis canvas.big{width:58px;height:58px}
+.fuse-vis .op{font:900 20px var(--font-ui);color:var(--bone-dim);flex:none}
+.fuse-t{margin:0;font-family:var(--font-display);font-weight:900;font-size:20px;line-height:1.1;color:var(--bone)}
+.fuse-s{margin:0;font-size:14px;color:var(--bone-dim)}
+.fuse-card .btn{width:100%}
 .fuse-bar{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:2;display:flex;align-items:center;gap:12px;justify-content:space-between;background:rgba(26,18,13,.97);border:2px solid var(--torch);border-radius:10px;padding:8px 12px;font-size:17px}
 .sheet{position:fixed;inset:0;z-index:35}
 .sheet-dim{position:absolute;inset:0;background:rgba(8,5,3,.62)}
@@ -579,9 +613,8 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 @media (orientation: landscape) and (max-height: 560px){
   #scrHero .panel{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:8px 16px;align-items:start}
   #scrHero .headrow{grid-column:1/-1}
-  #scrHero .hero-box{grid-column:1;grid-row:2/span 5;position:sticky;top:6px;gap:6px;padding:10px}
-  #scrHero .tabs,#scrHero .sub,#scrHero .eq-filt,#scrHero .eq-grid,#scrHero .fuse-bar{grid-column:2}
-  #scrHero .sub{font-size:13px}
+  #scrHero .hero-box{grid-column:1;grid-row:2/span 5;position:sticky;top:58px;gap:6px;padding:10px}
+  #scrHero .tabs,#scrHero .bagview{grid-column:2}
   .hero-arrow{width:42px;height:42px;font-size:24px}
   .hslot{font-size:11px;padding:4px 1px}
   .hero-bonus{font-size:13px}
@@ -942,11 +975,16 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
       <p class="hero-bonus" id="heroBonus"></p>
     </div>
     <div class="tabs" role="tablist"><button class="tab on" id="tabBag" type="button" role="tab">Mon sac</button><button class="tab" id="tabFuse" type="button" role="tab">Fusion</button></div>
-    <p class="sub" id="heroHint"></p>
-    <div class="eq-filt" id="eqFilt" hidden></div>
-    <div class="eq-filt" id="eqSellBox" hidden><button class="btn sm ghost" id="btnSellCommons" type="button"></button></div>
-    <div class="eq-grid" id="eqGrid"></div>
-    <div class="fuse-bar" id="fuseBar" hidden><span id="fuseInfo"></span><button class="btn primary" id="btnFuse" type="button">Fusionner</button></div>
+    <div id="bagView" class="bagview">
+      <div class="bag-tools"><button class="btn primary" id="btnBestEquip" type="button">Mettre mes meilleurs équipements</button><button class="btn ghost" id="btnSellCommons" type="button"></button></div>
+      <div class="chipbar" id="bagFilter"></div>
+      <div class="rar-legend" id="rarLegend"></div>
+      <div class="bag-list" id="eqGrid"></div>
+    </div>
+    <div id="fuseView" class="bagview" hidden>
+      <div class="slab fuse-explain"><p><b>3 équipements de la même couleur = 1 équipement d'une couleur plus forte !</b></p><p>Le jeu choisit tout seul tes moins bons. Ceux que tu portes ne sont jamais utilisés.</p></div>
+      <div class="fuse-list" id="fuseList"></div>
+    </div>
   </div>
 </section>
 
@@ -5563,8 +5601,8 @@ $('heroPrev').addEventListener('click',()=>heroStep(-1));
 $('heroNext').addEventListener('click',()=>heroStep(1));
 $('tabBag').addEventListener('click',()=>setEqTab('bag'));
 $('tabFuse').addEventListener('click',()=>setEqTab('fuse'));
-$('btnFuse').addEventListener('click',doFuse);
-$('btnSellCommons').addEventListener('click',()=>{audioUnlock();if(eqArm!=='sellc'){eqArm='sellc';renderEqGrid();return;}eqArm='';
+$('btnBestEquip').addEventListener('click',()=>{audioUnlock();const n=equipBest();if(n){sfx('item');frMsg(n>1?n+' équipements mis !':'1 équipement mis !','ok');}renderHero();});
+$('btnSellCommons').addEventListener('click',()=>{audioUnlock();if(eqArm!=='sellc'){eqArm='sellc';renderEqGrid();setTimeout(()=>{if(eqArm==='sellc'){eqArm='';if(state==='hero')renderEqGrid();}},4000);return;}eqArm='';
   const L=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it));const v=L.reduce((t,it)=>t+eqSellVal(it),0);save.eq.inv=save.eq.inv.filter(it=>!L.includes(it));save.gold=(save.gold||0)+v;persist();sfx('coin');frMsg(L.length+' Communs vendus : +'+v+' or','ok');renderHero();});
 $('eqClose').addEventListener('click',closeEqSheet);
 $('eqSheetDim').addEventListener('click',closeEqSheet);
@@ -6088,7 +6126,7 @@ function openHero(){
   eqFilterS=-1;fuseSel=[];eqTab='bag';state='hero';clearOverlays();show('scrHero');pauseBtn.hidden=true;$('scrHero').scrollTop=0;renderHero();
 }
 function heroStep(d){const L=heroList();let i=L.indexOf(heroSid);i=(i+d+L.length)%L.length;heroSid=L[i];sfx('coin');renderHeroTop();}
-function setEqTab(t){eqTab=t;fuseSel=[];$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
+function setEqTab(t){eqTab=t;fuseSel=[];eqArm='';$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
 function renderHero(){renderHeroTop();renderEqGrid();}
 function renderHeroTop(){
   $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);$('heroName').textContent=STARTERS[heroSid].name;
@@ -6106,45 +6144,82 @@ function renderHeroTop(){
   if(bo[0])parts.push('+'+fmtN(bo[0]/2)+(bo[0]>2?' cœurs':' cœur'));if(bo[1])parts.push('Tir +'+bo[1]+' %');if(bo[2])parts.push('Dégâts +'+bo[2]+' %');if(bo[3])parts.push('Vitesse +'+fmtN(bo[3]/2)+' %');if(bo[4])parts.push('Or +'+bo[4]+' %');
   $('heroBonus').textContent=parts.length?'Tes bonus : '+parts.join(' · '):"Tu ne portes rien. Touche un équipement de ton sac pour l'équiper.";
 }
+function eqScore(it){return eqVal(it.s,it.r,it.l)*100+it.r*10+it.l;}
+function bestPlan(){const plan=[];for(let k=0;k<5;k++){let best=null;for(const it of save.eq.inv)if(it.s===k&&(!best||eqScore(it)>eqScore(best)))best=it;if(best&&save.eq.on[k]!==best.i){const cur=eqById(save.eq.on[k]);if(!cur||eqScore(best)>eqScore(cur))plan.push(best);}}return plan;}
+function equipBest(){const p=bestPlan();for(const it of p)save.eq.on[it.s]=it.i;if(p.length)persist();return p.length;}
+function qTile(cv,r,txt){const c=cv.getContext('2d'),n=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,n,n);eqTileBg(c,n,r);c.font='900 '+Math.round(n*0.45)+'px Grenze, Georgia, serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(255,255,255,.85)';c.fillText(txt,n/2,n*0.54);}
 function renderEqGrid(){
-  const g=$('eqGrid');g.textContent='';const fuse=eqTab==='fuse';
+  const fuse=eqTab==='fuse';$('bagView').hidden=fuse;$('fuseView').hidden=!fuse;
   $('tabBag').textContent='Mon sac ('+save.eq.inv.length+'/'+EQ_BAG+')';
-  $('heroHint').textContent=fuse?'Choisis 3 équipements de la même couleur (même rareté). Ils se transforment en 1 équipement plus rare ! Ceux que tu portes ne peuvent pas être fusionnés.'
-    :'Touche un équipement pour le voir, le mettre, l\'améliorer ou le vendre. Tous tes équipements marchent avec toutes tes bestioles.';
-  const f=$('eqFilt');f.hidden=fuse||eqFilterS<0;f.textContent='';
-  if(!f.hidden){const t=document.createElement('span');t.className='coop-note';t.textContent='Seulement : '+EQ_SLOTS[eqFilterS].plural;f.append(t,mkBtn('Tout voir','ghost',()=>{eqFilterS=-1;renderHero();}));}
-  {const n=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it)).length,b=$('btnSellCommons');$('eqSellBox').hidden=fuse||n<2;
-    const v=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it)).reduce((t,it)=>t+eqSellVal(it),0);
-    b.textContent=eqArm==='sellc'?'Touche encore pour vendre '+n+' Communs (+'+v+' or)':'Vendre tous les Communs non portés ('+n+')';b.classList.toggle('danger',eqArm==='sellc');}
-  let L=save.eq.inv.slice();if(!fuse&&eqFilterS>=0)L=L.filter(it=>it.s===eqFilterS);
-  L.sort((a,b)=>(eqIsOn(b)-eqIsOn(a))||(b.r-a.r)||(b.l-a.l)||(a.s-b.s));
-  const fr=fuseSel.length?eqById(fuseSel[0]).r:-1;
-  if(!L.length){const p=document.createElement('p');p.className='coop-empty eq-empty';p.textContent=save.eq.inv.length?'Rien de ce type dans ton sac.':"Ton sac est vide. Bats des boss pour gagner des équipements, ou achète-en à la Boutique (dans le Menu).";g.append(p);}
-  for(const it of L){
-    const b=document.createElement('button');b.type='button';b.className='eqt';
-    const on=eqIsOn(it),blocked=fuse&&(on||it.r>=RMAX||(fr>=0&&it.r!==fr&&!fuseSel.includes(it.i)));
-    if(fuse&&fuseSel.includes(it.i))b.classList.add('sel');if(blocked)b.classList.add('dim');
-    b.style.borderColor=RAR[it.r].c;
-    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(70*dpr);drawEqIcon(cv,it.s,it.r,true);
-    const lv=document.createElement('span');lv.className='lv';lv.textContent='Niv. '+it.l;b.append(cv,lv);
-    if(on){const o=document.createElement('span');o.className='on';o.textContent='✓';b.append(o);}
-    b.setAttribute('aria-label',eqName(it)+', '+RAR[it.r].n+', niveau '+it.l+(on?', porté':''));
-    b.addEventListener('click',()=>{audioUnlock();
-      if(!fuse){openEqSheet(it.i);return;}
-      if(fuseSel.includes(it.i)){fuseSel=fuseSel.filter(x=>x!==it.i);renderEqGrid();return;}
-      if(on){frMsg("Retire d'abord cet équipement pour le fusionner.",'bad');return;}
-      if(it.r>=RMAX){frMsg('Les équipements cosmiques sont déjà au maximum !','bad');return;}
-      if(fr>=0&&it.r!==fr){frMsg('Choisis 3 équipements de la même rareté ('+RAR[fr].n+').','bad');return;}
-      if(fuseSel.length>=3)return;fuseSel.push(it.i);sfx('coin');renderEqGrid();});
-    g.append(b);
+  if(fuse){renderFuse();return;}
+  {const plan=bestPlan(),b=$('btnBestEquip');b.hidden=!save.eq.inv.length;b.disabled=!plan.length;
+    b.textContent=plan.length?'Mettre mes meilleurs équipements':'Tu portes déjà tes meilleurs équipements ✓';b.classList.toggle('primary',!!plan.length);b.classList.toggle('ghost',!plan.length);}
+  {const C=save.eq.inv.filter(it=>it.r===0&&!eqIsOn(it)),n=C.length,v=C.reduce((t,it)=>t+eqSellVal(it),0),b=$('btnSellCommons');
+    b.hidden=n<2;b.textContent=eqArm==='sellc'?'Touche encore : vendre '+n+' Communs pour '+v+' or':'Vendre mes Communs en trop ('+n+')';b.classList.toggle('danger',eqArm==='sellc');}
+  const fb=$('bagFilter');fb.textContent='';
+  [-1,0,1,2,3,4].forEach(k=>{const n=k<0?save.eq.inv.length:save.eq.inv.filter(it=>it.s===k).length;
+    const c=document.createElement('button');c.type='button';c.className='chip-f'+(eqFilterS===k?' on':'');c.textContent=(k<0?'Tout':EQ_SLOTS[k].plural)+' ('+n+')';
+    c.addEventListener('click',()=>{audioUnlock();eqFilterS=k;renderHero();});fb.append(c);});
+  const lg=$('rarLegend');lg.textContent='';
+  {const t=document.createElement('span');t.className='lg-t';t.textContent='Les couleurs, de la plus faible à la plus forte :';lg.append(t);
+    RAR.forEach((R0,i)=>{const sp=document.createElement('span');const d=document.createElement('i');d.style.background=i===6?'linear-gradient(135deg,#ff6ad5,#8a5cff,#46e6ff)':R0.c;sp.append(d,document.createTextNode(R0.n+(i<RMAX?' ›':'')));sp.style.color=i===6?'#9fe9ff':R0.c;lg.append(sp);});}
+  lg.hidden=!save.eq.inv.length;
+  const g=$('eqGrid');g.textContent='';
+  if(!save.eq.inv.length){const p=document.createElement('p');p.className='coop-empty';p.textContent="Ton sac est vide. Bats des boss pour gagner des équipements, ou ouvre des coffres à la Boutique (dans le Menu).";g.append(p);return;}
+  for(let k=0;k<5;k++){
+    if(eqFilterS>=0&&eqFilterS!==k)continue;
+    const L=save.eq.inv.filter(it=>it.s===k).sort((a,b)=>(eqIsOn(b)-eqIsOn(a))||(eqScore(b)-eqScore(a)));
+    if(!L.length){if(eqFilterS===k){const p=document.createElement('p');p.className='coop-empty';p.textContent="Tu n'as pas encore de "+EQ_SLOTS[k].name.toLowerCase()+'. Bats des boss ou ouvre des coffres à la Boutique.';g.append(p);}continue;}
+    if(eqFilterS<0){const h=document.createElement('p');h.className='bag-h';h.textContent=EQ_SLOTS[k].plural+' ('+L.length+')';g.append(h);}
+    for(const it of L)g.append(bagRow(it));
   }
-  const fb=$('fuseBar');fb.hidden=!fuse;
-  if(fuse){const n=fuseSel.length;$('fuseInfo').textContent=n?n+'/3 '+RAR[fr].n.toLowerCase()+(n>1?'s':'')+' → 1 '+RAR[Math.min(RMAX,fr+1)].n.toLowerCase():'Choisis 3 équipements';$('btnFuse').disabled=n<3;}
 }
-function doFuse(){
-  if(fuseSel.length!==3)return;const its=fuseSel.map(eqById);if(its.some(x=>!x||eqIsOn(x))||its.some(x=>x.r!==its[0].r)||its[0].r>=RMAX)return;
-  const sl=its[0].s,r=its[0].r+1;save.eq.inv=save.eq.inv.filter(x=>!fuseSel.includes(x.i));fuseSel=[];
-  const it=eqNew(sl,r,1);persist();sfx('item');renderHero();openEqSheet(it.i,true);
+function bagRow(it){
+  const on=eqIsOn(it),cur=eqById(save.eq.on[it.s]),better=!on&&(!cur||eqScore(it)>eqScore(cur));
+  const row=document.createElement('div');row.className='bag-row'+(on?' on':'');row.style.borderLeftColor=it.r===6?'#8a5cff':RAR[it.r].c;
+  const cv=document.createElement('canvas');cv.width=cv.height=Math.round(54*dpr);drawEqIcon(cv,it.s,it.r,true);cv.addEventListener('click',()=>{audioUnlock();openEqSheet(it.i);});
+  const info=document.createElement('button');info.type='button';info.className='info';
+  const nm=document.createElement('span');nm.className='nm';nm.textContent=eqName(it);
+  const rr=document.createElement('span');rr.className='rr';rr.textContent=RAR[it.r].n+' · niveau '+it.l;rr.style.color=it.r===6?'#9fe9ff':RAR[it.r].c;
+  const ef=document.createElement('span');ef.className='ef';ef.textContent=eqEffTxt(it.s,it.r,it.l);
+  info.append(nm,rr,ef);info.setAttribute('aria-label',eqName(it)+', '+RAR[it.r].n+', niveau '+it.l+', '+eqEffTxt(it.s,it.r,it.l)+(on?', porté':''));
+  info.addEventListener('click',()=>{audioUnlock();openEqSheet(it.i);});
+  const side=document.createElement('div');side.className='side2';
+  if(on){const b=document.createElement('span');b.className='bdg on';b.textContent='Porté ✓';side.append(b);}
+  else{if(better){const b=document.createElement('span');b.className='bdg up';b.textContent='▲ Mieux';side.append(b);}
+    side.append(mkBtn('Mettre',better?'primary':'',()=>{save.eq.on[it.s]=it.i;persist();sfx('item');frMsg('Tu portes : '+eqName(it),'ok');renderHero();}));}
+  row.append(cv,info,side);return row;
+}
+function fusePicks(r){return save.eq.inv.filter(it=>it.r===r&&!eqIsOn(it)).sort((a,b)=>a.l-b.l||eqScore(a)-eqScore(b)).slice(0,3);}
+function renderFuse(){
+  const L=$('fuseList');L.textContent='';
+  for(let r=0;r<RMAX;r++){
+    const have=save.eq.inv.filter(it=>it.r===r&&!eqIsOn(it)).length,picks=fusePicks(r),ok=picks.length===3;
+    const card=document.createElement('div');card.className='fuse-card'+(ok?' ready':'');
+    const vis=document.createElement('div');vis.className='fuse-vis';
+    for(let i=0;i<3;i++){const cv=document.createElement('canvas');cv.width=cv.height=Math.round(44*dpr);const it=picks[i];if(it)drawEqIcon(cv,it.s,it.r,true);else{qTile(cv,r,'');cv.style.opacity=0.35;}vis.append(cv);
+      const op=document.createElement('span');op.className='op';op.textContent=i<2?'+':'→';vis.append(op);}
+    const tg=document.createElement('canvas');tg.className='big';tg.width=tg.height=Math.round(58*dpr);qTile(tg,r+1,'?');vis.append(tg);
+    const t=document.createElement('p');t.className='fuse-t';
+    const a=document.createElement('span');a.textContent='3 '+RAR[r].n+'s';a.style.color=RAR[r].c;
+    const b=document.createElement('span');b.textContent='1 '+RAR[r+1].n;b.style.color=r+1===6?'#9fe9ff':RAR[r+1].c;
+    t.append(a,document.createTextNode(' → '),b);
+    const st=document.createElement('p');st.className='fuse-s';
+    st.textContent=ok?('Tu en as '+have+' : tu peux fusionner '+Math.floor(have/3)+(Math.floor(have/3)>1?' fois.':' fois.')+(picks.some(x=>x.l>1)?' Attention : un équipement amélioré sera utilisé.':''))
+      :(have?'Tu en as '+have+' sur 3. Il t\'en manque '+(3-have)+'.':'Tu n\'en as pas encore.');
+    card.append(vis,t,st);
+    if(ok){const arm=eqArm==='fuse'+r;const btn=mkBtn(arm?'Touche encore pour fusionner !':'Fusionner',arm?'primary glow':'primary',()=>{
+        if(eqArm!=='fuse'+r){eqArm='fuse'+r;renderFuse();setTimeout(()=>{if(eqArm==='fuse'+r){eqArm='';if(state==='hero'&&eqTab==='fuse')renderFuse();}},4000);return;}
+        eqArm='';doFuseR(r);});btn.classList.remove('sm');card.append(btn);}
+    L.append(card);
+  }
+}
+function doFuseR(r){
+  const picks=fusePicks(r);if(picks.length!==3||r>=RMAX)return;
+  const cnt=[0,0,0,0,0];for(const p of picks)cnt[p.s]++;const mx=Math.max(...cnt),opts=cnt.map((c,i)=>c===mx?i:-1).filter(i=>i>=0);
+  const sl=opts[Math.floor(Math.random()*opts.length)];
+  save.eq.inv=save.eq.inv.filter(x=>!picks.includes(x));
+  const it=eqNew(sl,r+1,1);persist();sfx('item');renderHero();openEqSheet(it.i,true);
 }
 /* ---- item sheet ---- */
 function openEqSheet(id,isNew){eqSel=id;eqArm='';$('eqNewTag').hidden=!isNew;$('eqSheet').hidden=false;renderEqSheet();}
