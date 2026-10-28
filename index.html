@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028101954';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028101954" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028131440';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028131440" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -5659,7 +5659,7 @@ function drawOwl(cv,t){const c=cv.getContext('2d'),w=cv.width;c.setTransform(1,0
   c.beginPath();c.moveTo(-11,-15);c.quadraticCurveTo(0,-21,11,-15);c.lineWidth=2.5;c.strokeStyle='#4a3020';c.stroke();
   c.fillStyle='#f2a23a';for(const sg of[-1,1]){c.beginPath();c.ellipse(sg*6,24,4,2,0,0,TAU);c.fill();}}
 function maybeStory(k){
-  if(!STORY[k]||!run||run.pl||run.rush||run.surv||run.raid||run.daily||run.guest||TUT||save.story[k])return false;
+  if(window.CB_NOSTORY||!STORY[k]||!run||run.pl||run.rush||run.surv||run.raid||run.daily||run.guest||TUT||save.story[k])return false;
   save.story[k]=1;persist();storyCur={k,i:0,back:state};state='story';resetSticks();renderStory();$('storyBox').hidden=false;pauseBtn.hidden=true;return true;
 }
 function renderStory(){const S=STORY[storyCur.k];$('storyText').textContent=S.p[storyCur.i];$('storyNext').textContent=storyCur.i<S.p.length-1?'Suivant ▶':'Allons-y !';drawOwl($('storyCv'),titleT);
@@ -5855,7 +5855,7 @@ function updateTut(dt){
   else if(i===4){if(run.room!==TUT.room)endTut(false);}
 }
 $('tutSkip').addEventListener('click',e=>{e.preventDefault();endTut(true);});
-function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(opts&&opts.surv)setupSurv();else if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);
+function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(opts&&opts.surv)setupSurv();else if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);lastSurv=!!(opts&&opts.surv);lastTour=!!(opts&&opts.tourney);
   if(run.tourney){const id=tourneyCursed();ITEMS[id].apply(P);P.items.push(id);toast('🏆 Tournoi du week-end','Crypte spéciale : difficulté Difficile, et tu commences avec « '+ITEMS[id].name+' ». Fais le meilleur score de tes amis !');}
   else if(run.daily)toast('Défi du jour',"Le même donjon pour tout le monde aujourd'hui. Fais le meilleur score !");
   if(run.rush)toast('Rush des boss','Choisis tes 2 capacités, prends tes cadeaux, puis passe la porte rouge.');}
@@ -6112,9 +6112,10 @@ function buyUp(id){
 function b64uEnc(str){const by=new TextEncoder().encode(str);let bin='';for(const b of by)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function b64uDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const bin=atob(s),by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return new TextDecoder().decode(by);}
 function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
+const SAVE_EXTRA=['ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(i<30&&save.seen[id])mask|=1<<i;});
-  const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id])];
+  const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
   const p=b64uEnc(JSON.stringify(d));return 'CB1.'+p+'.'+fnv(p);
 }
 function readSaveCode(txt){
@@ -6137,7 +6138,8 @@ function readSaveCode(txt){
   const petSel=typeof d[13]==='string'&&pets[d[13]]?d[13]:'';
   const soc=Array.isArray(d[14])&&isPk(d[14][0])?{sk:d[14][0],nick:cleanNick(d[14][1])}:null;
   let eq=null;if(Array.isArray(d[15])){const o={inv:[],on:[],n:1};d[15].slice(0,EQ_BAG+30).forEach((a,k)=>{if(!Array.isArray(a))return;const it={i:'e'+(k+1),s:a[0],r:a[1],l:a[2]};o.inv.push(it);if(a[3])o.on[a[0]|0]=it.i;});eq=cleanEqState(o);}
-  return{gold:num(d[1],1e8),up,seen,kills,best:num(d[5],999),wins:num(d[6],1e6),gifts,bag,skins,skin,unlocked,pets,petSel,soc,eq};
+  const ex=d[17]&&typeof d[17]==='object'&&!Array.isArray(d[17])?d[17]:null;
+  return{ex,gold:num(d[1],1e8),up,seen,kills,best:num(d[5],999),wins:num(d[6],1e6),gifts,bag,skins,skin,unlocked,pets,petSel,soc,eq};
 }
 function saveFacts(s){
   const ups=UPGRADES.reduce((n,u)=>n+Math.min(u.max,s.up[u.id]||0),0),seen=ORDER.filter(id=>s.seen[id]).length;
@@ -6173,6 +6175,7 @@ function loadSaveCode(){
   }
   save.gold=c.gold;save.up=c.up;save.seen=c.seen;save.kills=c.kills;save.best=c.best;save.wins=c.wins;save.gifts=c.gifts;save.bag=c.bag;save.skins=c.skins||{};save.skin=c.skin||{};save.unlocked=Object.assign({},save.unlocked||{},c.unlocked||{});save.pets=c.pets||{};save.petSel=c.petSel||'';persist();
   if(c.eq){c.eq.shop=save.eq.shop;save.eq=c.eq;persist();}
+  if(c.ex){try{const cl=loadSave(Object.assign(JSON.parse(JSON.stringify(save)),c.ex));for(const k of SAVE_EXTRA)if(k in c.ex)save[k]=cl[k];persist();}catch(e){}}
   if(c.soc&&CB_SOC)soAdopt(c.soc.sk,c.soc.nick);
   audioUnlock();sfx('item');resetLoadBtn();$('saveIn').value='';
   $('saveSummary').textContent='Sur cet appareil : '+saveFacts(save)+'.';$('saveOut').value=makeSaveCode();
@@ -6481,7 +6484,7 @@ function onCosm(kind,k){
   $('shopGold').textContent=save.gold||0;buildShop();
 }
 /* ---- daily challenge: one seeded dungeon per calendar day ---- */
-let lastDaily=false,lastRush=false,lastSurv=false;
+let lastDaily=false,lastRush=false,lastSurv=false,lastTour=false;
 function goPickRush(){
   netLeave();stopSearch();buildStarters();pickMode='rush';lastCoop=false;lastLocal=false;lastDaily=false;clearTaken();
   $('pickSub').textContent="Rush des boss : les 6 boss à la suite, le boss secret compris. Après chaque boss : un cadeau, un cœur et 2 niveaux. Touche ta créature.";
@@ -6757,7 +6760,7 @@ $('coopBack').addEventListener('click',()=>{if(NET||MM){const wasAuto=!!MM||!!(N
 $('bestBack').addEventListener('click',()=>{if(bestFrom==='over'){state='over';show('scrOver');}else goTitle();});
 $('btnResume').addEventListener('click',resumeGame);
 pauseBtn.addEventListener('click',pauseGame);
-$('btnAgain').addEventListener('click',()=>{if(lastRush)goPickRush();else if(lastDaily)goPickDaily();else if(lastLocal)goPickLocal();else if(lastCoop)openCoop();else goPick();});
+$('btnAgain').addEventListener('click',()=>{if(lastSurv&&!lastCoop){$('btnSurv').click();return;}if(lastTour&&!lastCoop){$('btnTourney').click();return;}if(lastRush)goPickRush();else if(lastDaily)goPickDaily();else if(lastLocal)goPickLocal();else if(lastCoop)openCoop();else goPick();});
 $('btnOverBest').addEventListener('click',()=>openBestiary('over'));
 $('btnMenu').addEventListener('click',goTitle);
 $('btnShop').addEventListener('click',()=>{audioUnlock();openShop('title');});
