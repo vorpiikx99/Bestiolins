@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028073052';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028073052" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028073435';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028073435" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -701,6 +701,14 @@ html.no-anim *{animation:none!important;transition:none!important}
 .ach .btn{flex:none;min-height:40px;font-size:15px;padding:4px 12px;min-width:0}
 .ach .ok{flex:none;font:700 14px var(--font-ui);color:#7ee07e}
 .ovseason{color:#ffd36a}
+.rank-row{gap:10px;padding:6px 12px;cursor:pointer}
+.rank-row.me{border-color:var(--torch);cursor:default}
+.rank-row canvas{width:40px;height:40px}
+.rk-n{flex:none;width:30px;text-align:center;font:900 18px var(--font-ui);color:var(--bone)}
+.rk-v{flex:none;font:700 15px var(--font-ui);color:#f5c542;font-variant-numeric:tabular-nums}
+#chatMenu{grid-template-columns:repeat(4,1fr)}
+#chatMenu button{grid-column:span 2}
+#chatMenu button.emo{grid-column:span 1;font-size:24px;min-height:46px;padding:0}
 </style>
 </head>
 <body>
@@ -1071,8 +1079,10 @@ html.no-anim *{animation:none!important;transition:none!important}
         <div class="coop-list" id="frFound"></div>
       </div>
       <div id="frGiftBox" class="coopbox" hidden><div class="fr-h"><p class="small-h">Cadeaux reçus</p><button class="btn sm primary" id="btnClaimAll" type="button">Tout récupérer</button></div><div class="coop-list" id="frGiftList"></div></div>
+      <div id="frChalBox" class="coopbox" hidden><p class="small-h">Défis reçus</p><div class="coop-list" id="frChalList"></div></div>
       <div id="frReqBox" class="coopbox" hidden><p class="small-h">Demandes reçues</p><div class="coop-list" id="frReqList"></div></div>
       <div class="coopbox"><div class="fr-h"><p class="small-h" id="frListH">Mes amis</p><button class="btn sm" id="btnGoldAll" type="button" hidden>Envoyer 25 or à tous</button></div><p class="coop-note" id="frGoldNote" hidden>Chaque jour, tu peux envoyer 25 or gratuits à chaque ami. Ça ne te coûte rien !</p><div class="coop-list" id="frList"></div></div>
+      <div id="frRankBox" class="coopbox" hidden><p class="small-h">Classement entre amis</p><div class="chipbar" id="frRankTabs"></div><div class="coop-list" id="frRankList"></div></div>
       <div id="frSentBox" class="coopbox" hidden><p class="small-h">Demandes envoyées</p><div class="coop-list" id="frSentList"></div></div>
       <div id="frRecentBox" class="coopbox" hidden><p class="small-h">Joueurs rencontrés</p><div class="coop-list" id="frRecentList"></div></div>
     </div>
@@ -4912,10 +4922,10 @@ function renderGame(){
   ctx.font='700 11px Grenze, Georgia, serif';
   ctx.globalAlpha=1;
   {const now=performance.now();for(const pl of players()){if(!pl||!pl.bubble||!(pl.bubbleUntil>now))continue;
-    ctx.font='700 11px Grenze, Georgia, serif';const w=ctx.measureText(pl.bubble).width+12,bx=clamp(pl.x-w/2,2,RW-w-2),by=Math.max(-WALL+2,pl.y-pl.r*2-30);
-    ctx.globalAlpha=clamp((pl.bubbleUntil-now)/400,0,1);rrect(ctx,bx,by,w,18,6);ctx.fillStyle='#f6eedb';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=INK;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(pl.x-4,by+18);ctx.lineTo(pl.x,by+24);ctx.lineTo(pl.x+4,by+18);ctx.closePath();ctx.fillStyle='#f6eedb';ctx.fill();
-    ctx.fillStyle='#24150a';ctx.textAlign='center';ctx.fillText(pl.bubble,bx+w/2,by+13);}}
+    const em=pl.bubble.length<=3,fh=em?20:11,bh=em?26:18;ctx.font='700 '+fh+'px Grenze, Georgia, serif';const w=ctx.measureText(pl.bubble).width+12,bx=clamp(pl.x-w/2,2,RW-w-2),by=Math.max(-WALL+2,pl.y-pl.r*2-22-bh);
+    ctx.globalAlpha=clamp((pl.bubbleUntil-now)/400,0,1);rrect(ctx,bx,by,w,bh,6);ctx.fillStyle='#f6eedb';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=INK;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pl.x-4,by+bh);ctx.lineTo(pl.x,by+bh+6);ctx.lineTo(pl.x+4,by+bh);ctx.closePath();ctx.fillStyle='#f6eedb';ctx.fill();
+    ctx.fillStyle='#24150a';ctx.textAlign='center';ctx.fillText(pl.bubble,bx+w/2,by+bh*0.72);}}
   ctx.globalAlpha=1;
   ctx.setTransform(1,0,0,1,0,0);
   if(vigCanvas)ctx.drawImage(vigCanvas,Math.round((L.rx+shx)*dpr),Math.round((L.ry+shy)*dpr));
@@ -5173,6 +5183,7 @@ function showOver(won,quit){
     else dmsg="Défi du jour : tu as déjà eu ta récompense aujourd'hui.";
     if(!save.dailyBest||save.dailyBest.d!==run.daily||save.dailyBest.s<score)save.dailyBest={d:run.daily,s:score};
   }
+  if(run.daily&&!quit&&CB_SOC&&SOC.chal){const res=[];for(const k in SOC.chal){const c=SOC.chal[k];if(c.day!==run.daily)continue;res.push(score>c.s?'Tu as battu '+c.n+' ('+c.s+') ! 🎉':c.n+' garde la tête : '+c.s+' points contre '+score+'.');}if(res.length)dmsg+=(dmsg?' ':'')+res.join(' ');}
   $('ovDaily').textContent=dmsg;$('ovDaily').hidden=!dmsg;
   if(run.pl&&!quit&&(run.coop||run.guest))unlockAch('duo');
   checkAchs();
@@ -6068,8 +6079,8 @@ function soLoad(){
   try{const o=JSON.parse(localStorage.getItem(SOC_KEY)||'null');
     if(o&&typeof o==='object')return{sk:isPk(o.sk)?o.sk:'',nick:cleanNick(o.nick),out:Array.isArray(o.out)?o.out.filter(isPk):[],ign:(o.ign&&typeof o.ign==='object')?o.ign:{},
       recent:Array.isArray(o.recent)?o.recent.filter(r=>r&&isPk(r.pk)).slice(0,8):[],cache:(o.cache&&typeof o.cache==='object')?o.cache:{},inc:Array.isArray(o.inc)?o.inc.filter(x=>x&&isPk(x.pk)):[],dirty:!!o.dirty,
-      sentGold:(o.sentGold&&typeof o.sentGold==='object')?o.sentGold:{},claimed:(o.claimed&&typeof o.claimed==='object')?o.claimed:{},gcount:(o.gcount&&typeof o.gcount==='object')?o.gcount:{}};}catch(e){}
-  return{sk:'',nick:'',out:[],ign:{},recent:[],cache:{},inc:[],dirty:false,sentGold:{},claimed:{},gcount:{}};
+      sentGold:(o.sentGold&&typeof o.sentGold==='object')?o.sentGold:{},claimed:(o.claimed&&typeof o.claimed==='object')?o.claimed:{},gcount:(o.gcount&&typeof o.gcount==='object')?o.gcount:{},sentChal:(o.sentChal&&typeof o.sentChal==='object')?o.sentChal:{},chal:(o.chal&&typeof o.chal==='object')?o.chal:{}};}catch(e){}
+  return{sk:'',nick:'',out:[],ign:{},recent:[],cache:{},inc:[],dirty:false,sentGold:{},claimed:{},gcount:{},sentChal:{},chal:{}};
 }
 let SOC=soLoad(),SO=null,soReady=false,soNet='',soInvite=null,frFound=null,cardPk=null,cardFrom='friends',frFrom='title',inviteTo=null,nickEdit=false,cardArm=0,soPubAt=0,soRefP=null;
 function soPersist(){try{localStorage.setItem(SOC_KEY,JSON.stringify(SOC));}catch(e){}}
@@ -6083,7 +6094,7 @@ function myCard(){
   return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
     a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
     pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
-    t:save.title||'debut',mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
+    t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
 }
 function cleanCard(o){
   if(!o||typeof o!=='object')return null;
@@ -6092,7 +6103,7 @@ function cleanCard(o){
   const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
   const pi=Array.isArray(o.pt)?Math.floor(+o.pt[0]):-1,pt=pi>=0&&pi<PETS.length?[pi,Math.max(1,N(o.pt[1],PET_MAX))]:null;
   return{n:cleanNick(o.n)||'Joueur',st,sk:N(o.sk,SKINS[st]?SKINS[st].length:0),f:N(o.f,999),lv:N(o.lv,999),w:N(o.w,1e6),k:N(o.k,1e8),b:N(o.b,ORDER.length),a:N(o.a,ACHS.length),
-    r:N(o.r,RUSH.length),g:N(o.g,9999),t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
+    r:N(o.r,RUSH.length),g:N(o.g,9999),dd:o.dd&&typeof o.dd==='object'&&typeof o.dd.d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dd.d)?{d:o.dd.d,s:N(o.dd.s,1e8)}:null,t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
 }
 function cardOf(pk){const c=SOC.cache[pk];const p=c&&cleanCard(c.p);return p?{p,at:+c.at||0}:null;}
 function nameOf(pk){const c=cardOf(pk);if(c)return c.p.n;const r=SOC.recent.find(x=>x.pk===pk);return(r&&r.n)||'Joueur';}
@@ -6124,7 +6135,7 @@ function soStart(){
 }
 function soAdopt(sk,nick){
   if(!isPk(sk)||sk===SOC.sk)return;
-  SOC={sk,nick:cleanNick(nick),out:[],ign:{},recent:[],cache:{},inc:[],dirty:false,sentGold:{},claimed:{},gcount:{}};soPersist();
+  SOC={sk,nick:cleanNick(nick),out:[],ign:{},recent:[],cache:{},inc:[],dirty:false,sentGold:{},claimed:{},gcount:{},sentChal:{},chal:{}};soPersist();
   if(!soReady)return;
   try{SO.setKey(sk);}catch(e){return;}
   soStart.on=false;soStart();
@@ -6254,7 +6265,9 @@ function renderFriends(){
   net.textContent=!soReady?'Connexion…':(!navigator.onLine||soNet==='off')?"Pas de connexion internet : ta liste d'amis n'est peut-être pas à jour.":'';
   net.hidden=!net.textContent;
   renderFound();
-  const gl=myGifts();$('frGiftBox').hidden=!gl.length;
+  const all=myGifts(),gl=all.filter(g=>g.data.t!=='chal'),cl=all.filter(g=>g.data.t==='chal');$('frGiftBox').hidden=!gl.length;
+  $('frChalBox').hidden=!cl.length;
+  fill('frChalList',cl.map(g=>frRow(g.pk,nameOf(g.pk)+' te défie : bats '+(g.data.s|0)+' points au Défi du jour !',[mkBtn('Relever le défi','primary',()=>acceptChal(g)),mkBtn('Non','ghost',()=>{SOC.claimed[g.key]=1;soPersist();updFrBadge();renderFriends();})])));
   fill('frGiftList',gl.map(g=>frRow(g.pk,giftTxt(g),[mkBtn('Récupérer','primary',()=>{if(claimGift(g)){frMsg(g.data.t==='gold'?'+25 or !':'Équipement ajouté à ton sac !','ok');sfx('coin');}updFrBadge();renderFriends();})])));
   const req=soRequests();$('frReqBox').hidden=!req.length;
   fill('frReqList',req.map(pk=>frRow(pk,'Veut être ton ami',relBtns(pk))));
@@ -6262,6 +6275,7 @@ function renderFriends(){
   $('frListH').textContent='Mes amis'+(fr.length?' ('+fr.length+')':'');
   {const n=fr.filter(x=>canSendGold(x.pk)).length;$('btnGoldAll').hidden=n<2;$('frGoldNote').hidden=!fr.length||!n;}
   fill('frList',fr.map(x=>{const t=seenTxt(x.c&&x.c.at);return frRow(x.pk,t,[goldBtn(x.pk),...relBtns(x.pk)],t==='En ligne');}),"Pas encore d'amis. Touche « Envoyer mon code » pour le donner à un ami, ou tape son code au-dessus.");
+  renderFrRank(fr.map(x=>x.pk));
   const sent=soSent();$('frSentBox').hidden=!sent.length;
   fill('frSentList',sent.map(pk=>frRow(pk,'En attente de réponse',relBtns(pk))));
   const rec=SOC.recent.filter(r=>relOf(r.pk)==='none'&&!SOC.ign[r.pk]);$('frRecentBox').hidden=!rec.length;
@@ -6313,6 +6327,7 @@ function renderCard(){
   const big=(t,cls,fn)=>{const b=mkBtn(t,cls,fn);b.classList.remove('sm');return b;};
   if(me){a.append(big('Changer de pseudo','',()=>{openFriends(frFrom);nickEdit=true;renderFriends();}));return;}
   if(rel==='friend'){a.append(big('Inviter à jouer','primary',()=>inviteFriend(cardPk)));
+    a.append(big(SOC.sentChal[cardPk]===dateKey()?'Défi envoyé ✓':'Défier au Défi du jour','',b=>sendChal(cardPk,b)));
     a.append(big(cardArm?'Touche encore pour retirer':'Retirer des amis',cardArm?'danger':'ghost',()=>{if(!cardArm){cardArm=1;renderCard();return;}cardArm=0;frRemove(cardPk);}));}
   else if(rel==='sent')a.append(big('Annuler la demande','ghost',()=>frCancel(cardPk)));
   else if(rel==='req'){a.append(big('Accepter','primary',()=>frAdd(cardPk,'Vous êtes amis !')));a.append(big('Refuser','ghost',()=>{frRefuse(cardPk);backFromCard();}));}
@@ -6323,12 +6338,42 @@ let soGifts=[];
 function giftOk(g){
   const d=g&&g.data;if(!d||typeof d!=='object')return false;
   if(d.t==='gold')return typeof d.day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.day)&&g.d.startsWith('bestiolins-gold-'+d.day+'-');
+  if(d.t==='chal')return typeof d.day==='string'&&d.day===dateKey()&&g.d.startsWith('bestiolins-chal-'+d.day+'-');
   if(d.t==='eq'){const it=d.it;return !!it&&Number.isInteger(it.s)&&it.s>=0&&it.s<5&&Number.isInteger(it.r)&&it.r>=0&&it.r<RAR.length&&g.d.startsWith('bestiolins-gift-');}
   return false;
 }
 function myGifts(){if(!soReady)return[];const F=new Set(soFriends());return soGifts.filter(g=>F.has(g.pk)&&!SOC.claimed[g.key]&&giftOk(g));}
 function giftTxt(g){const n=nameOf(g.pk);if(g.data.t==='gold')return n+" t'a envoyé 25 or";const it=g.data.it;return n+" t'a offert : "+EQ_SLOTS[it.s].names[it.r]+' ('+RAR[it.r].n+')';}
 function trimObj(o,max){const k=Object.keys(o);for(let i=0;i<k.length-max;i++)delete o[k[i]];}
+let frRankTab='f';
+const RANK_TABS=[['f','Étage max'],['w','Victoires'],['s','Meilleur score'],['dd','Défi du jour']];
+function renderFrRank(pks){
+  const box=$('frRankBox');box.hidden=!pks.length;if(!pks.length)return;
+  const tb=$('frRankTabs');tb.textContent='';
+  for(const[k,n] of RANK_TABS){const c=document.createElement('button');c.type='button';c.className='chip-f'+(frRankTab===k?' on':'');c.textContent=n;c.addEventListener('click',()=>{frRankTab=k;renderFriends();});tb.append(c);}
+  const val=p=>!p?-1:frRankTab==='f'?p.f:frRankTab==='w'?p.w:frRankTab==='s'?(p.mb?p.mb.s:0):(p.dd&&p.dd.d===dateKey()?p.dd.s:-1);
+  const me={me:true,p:cleanCard(myCard())},rows=[me].concat(pks.map(pk=>({pk,p:cardOf(pk)&&cardOf(pk).p}))).map(r=>({...r,v:val(r.p)}));
+  rows.sort((a,b)=>b.v-a.v);
+  const L=$('frRankList');L.textContent='';
+  rows.forEach((r,i)=>{const row=document.createElement('div');row.className='coop-item rank-row'+(r.me?' me':'');
+    const nb=document.createElement('span');nb.className='rk-n';nb.textContent=r.v<0?'–':(['🥇','🥈','🥉'][i]||(i+1)+'.');
+    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(40*dpr);const st=r.p?r.p.st:'braisot';drawPortrait(cv,st,1.2,!r.p,r.p?skinPal(st,r.p.sk):null);
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=r.me?'Toi':nameOf(r.pk);info.append(nm);
+    const v=document.createElement('span');v.className='rk-v';v.textContent=r.v<0?(frRankTab==='dd'?"pas joué aujourd'hui":'?'):frRankTab==='f'?'étage '+r.v:frRankTab==='w'?r.v+(r.v>1?' victoires':' victoire'):r.v+' pts';
+    row.append(nb,cv,info,v);if(!r.me)row.addEventListener('click',()=>openCard(r.pk,'friends'));L.append(row);});
+}
+function acceptChal(g){
+  if(!giftOk(g))return;SOC.claimed[g.key]=1;SOC.chal[g.pk]={day:g.data.day,s:g.data.s|0,n:nameOf(g.pk)};
+  for(const k in SOC.chal)if(SOC.chal[k].day!==dateKey())delete SOC.chal[k];soPersist();updFrBadge();audioUnlock();goPickDaily();
+  $('pickSub').textContent='Défi de '+nameOf(g.pk)+' : fais plus de '+(g.data.s|0)+' points ! Choisis ta créature.';
+}
+function sendChal(pk,btn){
+  if(!soReady)return;const day=dateKey();if(SOC.sentChal[pk]===day){frMsg('Tu as déjà défié '+nameOf(pk)+" aujourd'hui.");return;}
+  const sc=save.dailyBest&&save.dailyBest.d===day?save.dailyBest.s|0:0;if(btn)btn.disabled=true;
+  SO.sendChal(pk,day,sc,SOC.nick).then(()=>{for(const k in SOC.sentChal)if(SOC.sentChal[k]!==day)delete SOC.sentChal[k];SOC.sentChal[pk]=day;soPersist();sfx('coin');
+    frMsg(sc?'Défi envoyé à '+nameOf(pk)+' : il doit battre tes '+sc+' points !':'Défi envoyé à '+nameOf(pk)+' ! Joue aussi le Défi du jour pour mettre ton score.','ok');if(state==='card')renderCard();},
+    ()=>{if(btn)btn.disabled=false;frMsg('Pas de connexion : réessaie plus tard.','bad');});
+}
 function claimGift(g){
   if(!giftOk(g)||SOC.claimed[g.key]||!soFriends().includes(g.pk))return false;
   if(g.data.t==='gold')save.gold=(save.gold||0)+25;
@@ -7050,13 +7095,13 @@ $('shopBuy').addEventListener('pointerdown',pressShopBuy);
   document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});}
 $('shopBuy').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')pressShopBuy(e);});
 $('shopBuy').addEventListener('click',e=>{e.preventDefault();});
-const QUICK=['Par ici !',"À l'aide !",'Bien joué !','Attends-moi !','On y va ?','Merci !'];
+const QUICK=['Par ici !',"À l'aide !",'Bien joué !','Attends-moi !','On y va ?','Merci !','👍','😂','😮','❤️','🔥','😢','👋','🎉'];
 function bubble(pl,i){if(!pl)return;const t=QUICK[i|0];if(!t)return;pl.bubble=t;pl.bubbleUntil=performance.now()+3000;sfx('coin');}
 function sendQuick(i){
   $('chatMenu').hidden=true;if(!run||!NET)return;bubble(P,i);
   if(NET.role==='guest'){NET.mq=(NET.mq|0)+1;NET.mi=i;sendGuestPresence();}else netEv('m',i,'');
 }
-{const menu=$('chatMenu');QUICK.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.addEventListener('click',()=>sendQuick(i));menu.appendChild(b);});}
+{const menu=$('chatMenu');QUICK.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;if(i>=6)b.className='emo';b.addEventListener('click',()=>sendQuick(i));menu.appendChild(b);});}
 $('chatBtn').addEventListener('click',e=>{e.preventDefault();if(state==='ctledit')return;const m=$('chatMenu');if(!m.hidden){m.hidden=true;return;}
   const r=$('chatBtn').getBoundingClientRect();m.hidden=false;const mw=m.offsetWidth,mh=m.offsetHeight;
   m.style.left=Math.max(12,Math.min(W-mw-12,r.right-mw))+'px';m.style.top=Math.max(12,r.top-mh-10)+'px';});
