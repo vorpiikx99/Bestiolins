@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028091652';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028091652" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028101954';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028101954" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -780,6 +780,11 @@ html.big-text #toast .t1{font-size:1.1em}
 #confirmSheet .sheet-panel{text-align:center}
 #confirmSheet .coop-text{font-size:17px;line-height:1.45}
 #confirmSheet .actions{justify-content:center}
+.skin .sr{font:700 11px var(--font-ui);letter-spacing:.06em;text-transform:uppercase}
+.skin.tier1{border-color:#8a6a2a;background:linear-gradient(180deg,#3a2c14,var(--stone))}
+.skin.tier2{border-color:#8a3a7a;background:linear-gradient(180deg,#3a1c3a,var(--stone))}
+.skin.tier2 canvas{box-shadow:0 0 12px rgba(255,138,216,.35)}
+.skin.tier1 canvas{box-shadow:0 0 10px rgba(255,211,106,.3)}
 </style>
 </head>
 <body>
@@ -1299,7 +1304,7 @@ html.big-text #toast .t1{font-size:1.1em}
     <div class="upgrades" id="pets"></div>
     <h3 class="small-h skins-h">Pour ta prochaine partie</h3>
     <div class="upgrades" id="extras"></div>
-    <h3 class="small-h skins-h" id="skinsH">Couleurs de tes créatures</h3>
+    <h3 class="small-h skins-h" id="skinsH">Skins de tes créatures</h3>
     <p class="sub">Touche une couleur pour l'acheter (touche-la une 2e fois pour confirmer). Ensuite, touche-la pour la choisir.</p>
     <div class="skins" id="skins"></div>
     <h3 class="small-h skins-h" id="hatsH">Chapeaux</h3>
@@ -1714,7 +1719,14 @@ function drawShotFx(c,fx,x,y,vx,vy,r,t,seed){
   else if(id==='arcenciel'){const cols=['#ff4d4d','#ffa94d','#ffe14d','#5fe36a','#4dc3ff','#a07cff'];c.lineCap='round';for(let i=0;i<cols.length;i++){const d0=r*(1+i*1.1),d1=d0+r*1.2,o=(i-2.5)*0;c.beginPath();c.moveTo(x+bx*d0,y+by*d0);c.lineTo(x+bx*d1,y+by*d1);c.lineWidth=r*(1.3-i*0.15);c.strokeStyle=cols[i];c.globalAlpha=1-i*0.13;c.stroke();}c.globalAlpha=1;}
 }
 function mySkinI(sid){const id=save&&save.skin&&save.skin[sid];if(!id||!SKINS[sid])return 0;return SKINS[sid].findIndex(k=>k.id===id)+1;}
-function skinPal(sid,i){i=i|0;return i>0&&SKINS[sid]&&SKINS[sid][i-1]?SKINS[sid][i-1].pal:null;}
+const SKIN_TIER=[['Rare','#7fd3ff'],['Épique','#ffd36a'],['Légendaire','#ff8ad8']];
+function initSkins(ids){
+  for(const sid of ids){const L=SKINS[sid]||(SKINS[sid]=[]);for(const k of L){if(!k.fx){k.fx='shine';k.tier=0;}}
+    if(!L.some(k=>k.id==='dore'))L.push({id:'dore',name:'Doré',price:400,fx:'or',tier:1},{id:'galaxie',name:'Galaxie',price:650,fx:'galaxie',tier:2},{id:'arcenciel',name:'Arc-en-ciel',price:900,fx:'arcenciel',tier:2});
+    for(const k of L)k.palFx=Object.assign({},k.pal||{},{__fx:k.fx});}
+}
+function skinPal(sid,i){i=i|0;const k=i>0&&SKINS[sid]&&SKINS[sid][i-1];return k?(k.palFx||k.pal):null;}
+function skinFx(sid,i){i=i|0;const k=i>0&&SKINS[sid]&&SKINS[sid][i-1];return k?k.fx||'':'';}
 const QUESTS=[
   {id:'k40',stat:'kills',n:40,gold:50,text:'Bats 40 monstres'},
   {id:'k120',stat:'kills',n:120,gold:100,text:'Bats 120 monstres'},
@@ -2148,7 +2160,32 @@ function drawDecal(c,d){
   c.globalAlpha=0.2;c.fillStyle='#000';c.beginPath();c.ellipse(d.x,d.y,d.r*0.5,d.r*0.33,0,0,TAU);c.fill();c.globalAlpha=1;
 }
 
-function drawSpecies(c,id,r,t,o){o=o||{};const sd0=o.seed||0;BLINK=!o.noBlink&&!((o.flash||0)>0)&&((((t*0.29+sd0*0.173)%1)+1)%1)<0.035;
+let fxCv=null,fxCtx=null,fxMask=null,fxMaskCtx=null;
+function drawSpeciesFx(c,id,r,t,o,fx){
+  let k=1;try{const m=c.getTransform();k=Math.max(0.5,Math.min(8,Math.hypot(m.a,m.b)));}catch(e){}
+  const ext=r*2.4,size=Math.min(640,Math.ceil(ext*2*k)+4);
+  if(!fxCv){fxCv=document.createElement('canvas');fxCv.width=fxCv.height=160;fxCtx=fxCv.getContext('2d');}
+  if(fxCv.width<size)fxCv.width=fxCv.height=size;
+  if(!fxMask){fxMask=document.createElement('canvas');fxMaskCtx=fxMask.getContext('2d');}if(fxMask.width<fxCv.width)fxMask.width=fxMask.height=fxCv.width;
+  const f=fxCtx,o2=Object.assign({},o,{_fx:1});
+  f.setTransform(1,0,0,1,0,0);f.globalCompositeOperation='source-over';f.globalAlpha=1;f.clearRect(0,0,size,size);
+  f.setTransform(k,0,0,k,size/2,size/2);
+  drawSpecies(f,id,r,t,o2);
+  let masked=false;const tint=(g,mul)=>{if(!masked){masked=true;const m=fxMaskCtx;m.setTransform(1,0,0,1,0,0);m.globalCompositeOperation='source-over';m.clearRect(0,0,size,size);m.drawImage(fxCv,0,0,size,size,0,0,size,size);}
+    f.globalCompositeOperation='color';f.fillStyle=g;f.fillRect(-ext,-ext,ext*2,ext*2);if(mul){f.globalCompositeOperation='multiply';f.fillStyle=mul;f.fillRect(-ext,-ext,ext*2,ext*2);}f.globalCompositeOperation='destination-in';f.save();f.setTransform(1,0,0,1,0,0);f.drawImage(fxMask,0,0,size,size,0,0,size,size);f.restore();};
+  const shine=(a,w)=>{f.globalCompositeOperation='source-atop';const cx=(-1.8+((t*0.42)%1)*3.6)*r,g=f.createLinearGradient(cx-w*r,-r,cx+w*r,r);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(0.5,'rgba(255,255,255,'+a+')');g.addColorStop(1,'rgba(255,255,255,0)');f.fillStyle=g;f.fillRect(-ext,-ext,ext*2,ext*2);};
+  if(fx==='or'){const g=f.createLinearGradient(0,-r*1.3,0,r);g.addColorStop(0,'#fff3a0');g.addColorStop(0.5,'#f2b52a');g.addColorStop(1,'#a8641a');tint(g,'#ffcf6a');shine(0.7,0.35);
+    f.globalCompositeOperation='source-atop';for(let i=0;i<4;i++){const a=(t*1.3+i*1.7)%(Math.PI*2),tw=Math.max(0,Math.sin(t*5+i*2));if(tw<0.3)continue;const x=Math.cos(a*1.3+i)*r*0.55,y=Math.sin(a+i*0.7)*r*0.6;star5(f,x,y,r*0.16*tw,t);f.fillStyle='rgba(255,255,240,'+(tw*0.9).toFixed(2)+')';f.fill();}}
+  else if(fx==='galaxie'){const g=f.createLinearGradient(-r,-r,r,r);g.addColorStop(0,'#3a3aa8');g.addColorStop(0.55,'#7a3ac8');g.addColorStop(1,'#c84aa8');tint(g,'#7a6ad8');
+    f.globalCompositeOperation='source-atop';const ng=f.createRadialGradient(r*0.3,-r*0.2,0,r*0.3,-r*0.2,r*0.9);ng.addColorStop(0,'rgba(255,140,220,0.35)');ng.addColorStop(1,'rgba(255,140,220,0)');f.fillStyle=ng;f.fillRect(-ext,-ext,ext*2,ext*2);
+    for(let i=0;i<9;i++){const sx=Math.sin(i*12.9898)*0.7*r,sy=Math.cos(i*78.233)*0.75*r,tw=0.4+0.6*Math.abs(Math.sin(t*3+i*1.3));f.beginPath();f.arc(sx,sy,r*(i%3?0.05:0.09)*tw+0.3,0,TAU);f.fillStyle='rgba(255,255,255,'+tw.toFixed(2)+')';f.fill();}
+    shine(0.3,0.25);}
+  else if(fx==='arcenciel'){const g=f.createLinearGradient(-r,-r,r,r),h=(t*70)%360;for(let i=0;i<=6;i++)g.addColorStop(i/6,'hsl('+((h+i*60)%360)+',95%,62%)');tint(g,'#f0e8ff');shine(0.45,0.3);}
+  else if(fx==='shine')shine(0.32,0.28);
+  f.globalCompositeOperation='source-over';
+  c.drawImage(fxCv,0,0,size,size,-ext,-ext,ext*2,ext*2);
+}
+function drawSpecies(c,id,r,t,o){o=o||{};if(!o._fx&&o.pal&&o.pal.__fx){drawSpeciesFx(c,id,r,t,o,o.pal.__fx);return;}const sd0=o.seed||0;BLINK=!o.noBlink&&!((o.flash||0)>0)&&((((t*0.29+sd0*0.173)%1)+1)%1)<0.035;
   const me=SPECIES[id]||STARTERS[id];let base=null,saved=null;
   /* a "cousin" is drawn with the shape of another creature and its own colours */
   if(me&&me.like){base=SPECIES[me.like]||STARTERS[me.like];if(base){saved=base.col;base.col=me.col;if(me.pal)o=Object.assign({},o,{pal:Object.assign({},me.pal,o.pal||{})});id=me.like;}}
@@ -5280,6 +5317,8 @@ function renderGame(){
       const rc=(pl.recoil||0)*0.12;if(rc)ctx.scale(1+rc,1-rc);
       if(!run.dead&&!pl.down){const vx=pl.vx!=null?pl.vx:(pl.tx!=null?(pl.tx-pl.x)*10:0);ctx.rotate(clamp(vx/(pl.speed||120),-1,1)*0.1);const br=Math.sin(t*2.6+(pl===P?0:1.3))*0.022;ctx.scale(1-br,1+br);}
       {const ev=pl.evo|0;if(ev&&!pl.down){ctx.beginPath();ctx.ellipse(0,pl.r*0.95,pl.r*(ev>=2?1.5:1.2),pl.r*(ev>=2?0.45:0.32),0,0,TAU);ctx.fillStyle=ev>=2?'rgba(255,210,90,'+(0.28+0.12*Math.sin(t*4)).toFixed(2)+')':'rgba(180,220,255,0.18)';ctx.fill();}
+      {const sf=skinFx(pl.sid,pl.skinI);if((sf==='or'||sf==='galaxie'||sf==='arcenciel')&&!pl.down){const col=sf==='or'?'255,210,90':sf==='galaxie'?'170,110,255':'hsl';ctx.beginPath();ctx.ellipse(0,pl.r*0.9,pl.r*1.35,pl.r*0.42,0,0,TAU);ctx.fillStyle=col==='hsl'?'hsla('+((t*70)%360)+',95%,62%,0.3)':'rgba('+col+','+(0.22+0.1*Math.sin(t*4)).toFixed(2)+')';ctx.fill();
+        if(Math.random()<0.12)run.parts.push({kind:'spark',x:pl.x+rand(-pl.r,pl.r),y:pl.y-rand(0,pl.r*1.6),vx:rand(-6,6),vy:-rand(15,35),life:0.7,max:0.7,rgb:sf==='or'?'255,225,120':sf==='galaxie'?'200,170,255':['255,120,120','255,220,100','120,255,160','120,190,255','220,140,255'][randi(0,4)],size:1.3});}}
       drawShaded(ctx,pl.sid,pl.r*EVO_SC[ev],t,{lx:pl.lx,ly:pl.ly,pal:skinPal(pl.sid,pl.skinI),seed:pl===P?0:2.7},-0.35,-1);
       if(pl.hat&&HATS[pl.hat-1]){const hr=pl.r*EVO_SC[ev];ctx.save();ctx.translate(0,-hr*HAT_Y(pl.sid));drawHat(ctx,HATS[pl.hat-1].id,hr,t);ctx.restore();}
       if(ev>=2&&!pl.down&&Math.random()<0.08)run.parts.push({kind:'spark',x:pl.x+rand(-10,10),y:pl.y-rand(4,16),vx:0,vy:-20,life:0.6,max:0.6,rgb:'255,220,120',size:1.4});}
@@ -6382,8 +6421,9 @@ function buildSkins(){
     const opts=[{id:'',name:'Normale',price:0}].concat(SKINS[sid]);
     opts.forEach((k,i)=>{const owned=i===0||!!(save.skins[sid]&&save.skins[sid][k.id]),sel=mySkinI(sid)===i,key=sid+':'+i;
       const b=document.createElement('button');b.type='button';b.className='skin'+(sel?' on':'')+(skinArm===key?' arm':'');b.id='skin-'+sid+'-'+i;b.disabled=!open;
-      const cv=document.createElement('canvas');cv.width=cv.height=size;drawPortrait(cv,sid,1.2,false,i?k.pal:null);
+      const cv=document.createElement('canvas');cv.width=cv.height=size;cv.dataset.sid=sid;cv.dataset.si=i;drawPortrait(cv,sid,1.2,false,i?(k.palFx||k.pal):null);if(i)b.classList.add('tier'+(k.tier|0));
       const n=document.createElement('span');n.className='sn';n.textContent=k.name;
+      if(i){const tg=document.createElement('span');tg.className='sr';tg.textContent=SKIN_TIER[k.tier|0][0];tg.style.color=SKIN_TIER[k.tier|0][1];b.append(tg);}
       const st=document.createElement('span');st.className='ss';
       if(sel)st.textContent='Choisie';
       else if(owned)st.textContent='Touche pour choisir';
@@ -6402,7 +6442,7 @@ function onSkin(sid,i){
   $('shopGold').textContent=save.gold||0;buildShop();
 }
 /* ---- hats and shot trails ---- */
-let cosmArm=null;
+let cosmArm=null,skinAnimT=0;
 function cosmPrevSid(){return (typeof heroSid!=='undefined'&&heroSid&&starterOpen(heroSid))?heroSid:(SIDS.find(starterOpen)||SIDS[0]);}
 function drawCosmPrev(cv,kind,i,t){
   const c=cv.getContext('2d'),w=cv.width,h=cv.height;
@@ -6921,6 +6961,7 @@ addEventListener('resize',()=>{layout();});
 
 /* ================= coop (online, 2 players, host runs the game) ================= */
 let ROOM=null,NET=null,P2=null,pickMode=null,pickCode=null,lastCoop=false,lastLocal=false,pickLocal1=null,coopUiT=0,roomReady=false,coopSig='',coopView='home',MM=null,coopViewT=0;
+initSkins(['braisot','gouttin','ronceau','givrelle','petalou','ombrin','volticelle','mamoutin','cristallin','dracolin','fennouille','carapix','pikolo','lumina','bulbi']);
 const SIDS=['braisot','gouttin','ronceau','givrelle','petalou','ombrin','volticelle','mamoutin','cristallin','dracolin','fennouille','carapix','pikolo','lumina','bulbi'],RTYPES=['start','normal','treasure','boss','shop','secret','challenge'],ITEM_IDS=Object.keys(ITEMS),DOOR_KEYS=['n','s','w','e'];
 const hasAb=k=>Object.prototype.hasOwnProperty.call(ABILITIES,k);
 function players(){return (run&&run.pl)||[P];}
@@ -8148,7 +8189,7 @@ function netTick(dt){
     const peers=chPeers();
     for(const G of (NET.gs||[]).slice()){
       const pp=peers.find(x=>x.peer===G.peer),g=pp&&pp.presence&&pp.presence.g;
-      if(g&&g.code===NET.code){G.miss=0;G.g=g;G.pl.skinI=clamp(g.sk|0,0,2);G.pl.hat=clamp(g.ht|0,0,HATS.length);G.pl.sfx=clamp(g.sf|0,0,SHOTFX.length);}else{G.miss+=dt;if(G.miss>6){dropGuest(G);if(!run||!run.pl)return;continue;}}
+      if(g&&g.code===NET.code){G.miss=0;G.g=g;G.pl.skinI=clamp(g.sk|0,0,6);G.pl.hat=clamp(g.ht|0,0,HATS.length);G.pl.sfx=clamp(g.sf|0,0,SHOTFX.length);}else{G.miss+=dt;if(G.miss>6){dropGuest(G);if(!run||!run.pl)return;continue;}}
       if((state==='levelwait'||state==='levelup')&&G.lo){
         if(state==='levelwait')G.lvWait+=dt;const pk=G.g&&G.g.pick;
         if(Array.isArray(pk)&&pk[0]===G.lo[0]&&G.lo.indexOf(pk[1])>0)resolveGuestPick(G,pk[1]);
@@ -8195,7 +8236,7 @@ function syncMates(s){
     seen[sl]=1;let Q=NET.mates[sl];
     if(!Q){Q=newMate(SIDS[p[7]]||'braisot');Q.slot=sl;Q.x=Q.tx=+p[1]||0;Q.y=Q.ty=+p[2]||0;NET.mates[sl]=Q;changed=true;}
     Q.nick=sl===0?(run.mateName||''):cleanNick(Array.isArray(s.nm)?s.nm[i]:'');
-    Q.ironT=p[11]?1:0;Q.tornT=p[13]?1:0;Q.skinI=clamp(p[14]|0,0,2);Q.guard=!!p[15];
+    Q.ironT=p[11]?1:0;Q.tornT=p[13]?1:0;Q.skinI=clamp(p[14]|0,0,6);Q.guard=!!p[15];
     {const pi=p[16]|0;if(!pi)Q.pet=null;else if(!Q.pet||Q.pet.id!==PET_IDS[pi-1])Q.pet=makePet(PET_IDS[pi-1],p[17]|0);}
     Q.revT=(+p[12]||0)/10;Q.tx=+p[1]||0;Q.ty=+p[2]||0;Q.lx=(+p[3]||0)/100;Q.ly=(+p[4]||0)/100;Q.inv=p[5]?0.3:0;Q.down=!!p[6];Q.sid=SIDS[p[7]]||Q.sid;Q.hp=p[8]|0;Q.maxHp=p[9]|0;Q.shield=!!p[10];Q.evo=clamp(p[18]|0,0,2);Q.hat=clamp(p[19]|0,0,HATS.length);Q.sfx=clamp(p[20]|0,0,SHOTFX.length);
     if(ab)Q.abil=ab;
@@ -8376,7 +8417,8 @@ function loop(now){
   const showMod=!!(save.mod&&state==='play'&&run&&!(NET&&NET.role==='guest'));if(modBtn.hidden===showMod)modBtn.hidden=!showMod;
   const inGame=run&&(state==='story'||state==='ctledit'||state==='play'||state==='paused'||state==='modmenu'||state==='levelup'||state==='levelwait'||state==='over'||(state==='bestiary'&&bestFrom==='over')||(state==='shop'&&shopFrom==='over'));
   if(!inGame){if(setRoomDims(11))layout();updateTitle(dt);}
-  if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);}
+  if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);
+    skinAnimT=(skinAnimT||0)+1;if(skinAnimT%3===0)for(const cv of document.querySelectorAll('#skins canvas')){const i=+cv.dataset.si;if(i>0)drawPortrait(cv,cv.dataset.sid,titleT,false,skinPal(cv.dataset.sid,i));}}
   if(state==='pick'){for(const cv of document.querySelectorAll('.starter canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)));}
   if(state==='bestiary'&&bestSel)drawPortrait($('bdCanvas'),bestSel,titleT,!save.seen[bestSel]);
   if(inGame&&run)renderGame();else renderTitle();
