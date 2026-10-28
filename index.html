@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028000429';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028000429" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028073052';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028073052" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -677,6 +677,30 @@ html.no-anim *{animation:none!important;transition:none!important}
 .rr-t{font-size:17px;font-weight:700;color:var(--bone)}
 .rr-t b{color:var(--torch);margin-left:6px}
 .range-row input{width:100%;accent-color:var(--torch);height:34px}
+.g7-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.g7{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;background:var(--stone);border:2px solid var(--stone-edge);border-radius:10px;padding:8px 4px;min-width:0}
+.g7 .d{font:700 13px var(--font-ui);color:var(--bone-dim);text-transform:uppercase;letter-spacing:.06em}
+.g7 canvas{width:48px;height:48px}
+.g7 .r{font-size:13px;line-height:1.15;color:var(--bone)}
+.g7.big{grid-column:span 2;border-color:#f5c542}
+.g7.big canvas{width:64px;height:64px}
+.g7.done{opacity:.55}
+.g7.done .d::after{content:" ✓";color:#7ee07e}
+.g7.today{border-color:var(--torch);box-shadow:0 0 14px rgba(242,162,58,.45);animation:pop2 .4s ease-out}
+.g7 .btn{min-height:38px;font-size:15px;padding:4px 8px;width:100%;min-width:0}
+.title-pill{background:#2a1f19;border:2px solid #b8862a;border-radius:20px;padding:4px 14px;font:700 15px var(--font-ui);color:#ffe9a8;cursor:pointer}
+.title-pill::after{content:" ✎";color:var(--bone-dim)}
+.card-title{font:700 15px var(--font-ui);color:#ffe9a8}
+.se-head{gap:8px}
+.se-name{margin:0;font-family:var(--font-display);font-weight:900;font-size:24px;color:var(--torch)}
+.se-tier{margin:0;font-size:16px;color:var(--bone)}
+.se-bar{height:14px;border-radius:7px;background:#170f0b;border:2px solid #4a382c;overflow:hidden}
+.se-bar i{display:block;height:100%;background:linear-gradient(90deg,#f2a23a,#ffd36a);transition:width .4s}
+.ach canvas{flex:none;width:44px;height:44px}
+.ach.lock{opacity:.6}
+.ach .btn{flex:none;min-height:40px;font-size:15px;padding:4px 12px;min-width:0}
+.ach .ok{flex:none;font:700 14px var(--font-ui);color:#7ee07e}
+.ovseason{color:#ffd36a}
 </style>
 </head>
 <body>
@@ -729,6 +753,13 @@ html.no-anim *{animation:none!important;transition:none!important}
     <div class="actions"><button class="btn primary" id="lootOk" type="button">Super !</button><button class="btn" id="lootHero" type="button">Voir Mon perso</button></div>
   </div>
 </div>
+<div id="titleSheet" class="sheet" role="dialog" aria-label="Mes titres" hidden>
+  <div class="sheet-dim" id="titleDim"></div>
+  <div class="sheet-panel">
+    <div class="sheet-head"><div class="me-info"><p class="eq-name">Mes titres</p><p class="eq-rar">Ton titre s'affiche sous ton pseudo. Débloque-les en jouant !</p></div><button class="side-x" id="titleClose" type="button" aria-label="Fermer">✕</button></div>
+    <div class="achlist" id="titleList"></div>
+  </div>
+</div>
 <div id="giftSheet" class="sheet" role="dialog" aria-label="Offrir à un ami" hidden>
   <div class="sheet-dim" id="giftSheetDim"></div>
   <div class="sheet-panel">
@@ -744,6 +775,7 @@ html.no-anim *{animation:none!important;transition:none!important}
     <div class="side-list" id="sideList">
       <button id="btnInstall" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span class="lbl">Installer le jeu</span></button>
       <button id="btnGiftDay" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9C10 5 5.5 5 6.2 7.8 6.7 9.6 12 9 12 9zm0 0c2-4 6.5-4 5.8-1.2C17.3 9.6 12 9 12 9z"/></svg><span class="lbl">Cadeau du jour</span><span class="qbadge" id="giftDayBadge" hidden>1</span></button>
+      <button id="btnSeason" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 8.8l6-.7z"/></svg><span class="lbl">Passe de saison</span><span class="qbadge" id="seasonBadge" hidden></span></button>
       <button id="btnHero" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 21c.8-4.4 3.8-7 7.5-7s6.7 2.6 7.5 7"/></svg><span class="lbl">Mon perso</span></button>
       <button id="btnStore" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg><span class="lbl">Boutique</span></button>
       <button id="btnShop" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 17V8M8 11l4-4 4 4"/></svg><span class="lbl">Améliorations</span><span class="goldtag"><i class="coin"></i><span id="titleGold"></span></span></button>
@@ -1052,7 +1084,7 @@ html.no-anim *{animation:none!important;transition:none!important}
     <div class="hdr"><button class="back" id="cardBack" type="button">← Retour</button><h2 id="cardTitle">Fiche</h2></div>
     <div class="slab card-hero">
       <canvas id="cardCv" width="192" height="192"></canvas>
-      <div class="me-info"><span class="me-name" id="cardName"></span><span class="card-sub" id="cardSub"></span></div>
+      <div class="me-info"><span class="me-name" id="cardName"></span><span class="card-title" id="cardTitle2"></span><span class="card-sub" id="cardSub"></span></div>
     </div>
     <div class="statgrid" id="cardStats"></div>
     <div class="coopbox"><p class="small-h" id="cardCritH">Bestioles</p><div class="card-crit" id="cardCrit"></div></div>
@@ -1074,6 +1106,7 @@ html.no-anim *{animation:none!important;transition:none!important}
         <button class="hero-arrow" id="heroNext" type="button" aria-label="Créature suivante">›</button>
       </div>
       <p class="hero-name" id="heroName"></p>
+      <button class="title-pill" id="heroTitle" type="button"></button>
       <div class="hero-slots" id="heroSlots"></div>
       <p class="hero-bonus" id="heroBonus"></p>
     </div>
@@ -1099,6 +1132,29 @@ html.no-anim *{animation:none!important;transition:none!important}
     <div class="store-grid" id="storeChests"></div>
     <p class="small-h">Objets du jour</p>
     <div class="store-grid" id="storeDay"></div>
+  </div>
+</section>
+
+<section id="scrGift7" class="screen" hidden>
+  <div class="panel">
+    <div class="hdr"><button class="back" id="g7Back" type="button">← Retour</button><h2>Cadeau du jour</h2></div>
+    <p class="sub">Reviens chaque jour pour ouvrir le cadeau suivant. Le 7ᵉ jour, c'est un gros cadeau ! Si tu oublies un jour, tu recommences au jour 1.</p>
+    <div class="g7-grid" id="g7Grid"></div>
+    <p class="coop-status" id="g7Msg" role="status"></p>
+  </div>
+</section>
+
+<section id="scrSeason" class="screen" hidden>
+  <div class="panel">
+    <div class="headrow endrow"><div class="hdr"><button class="back" id="seBack" type="button">← Retour</button><h2>Passe de saison</h2></div><span class="goldtag"><i class="coin"></i><span id="seGold"></span></span></div>
+    <div class="slab coopbox se-head">
+      <p class="se-name" id="seName"></p>
+      <p class="se-tier" id="seTier"></p>
+      <div class="se-bar"><i id="seBar"></i></div>
+      <p class="coop-note" id="seHow">Gagne des points en jouant : chaque étage, chaque monstre et chaque boss compte. Tous les 100 points, tu passes un palier et tu gagnes un cadeau.</p>
+      <button class="btn primary" id="btnSeAll" type="button" hidden>Tout récupérer</button>
+    </div>
+    <div class="achlist" id="seList"></div>
   </div>
 </section>
 
@@ -1244,6 +1300,7 @@ html.no-anim *{animation:none!important;transition:none!important}
     <p class="ovscore" id="ovScore"></p>
     <p class="ovdaily" id="ovDaily" hidden></p>
     <p class="ovdaily ovloot" id="ovLoot" hidden></p>
+    <p class="ovdaily ovseason" id="ovSeason" hidden></p>
     <div class="sumgrid">
       <div class="sum"><b id="ovFloor"></b><span>Étage atteint</span></div>
       <div class="sum"><b id="ovLevel"></b><span>Niveau atteint</span></div>
@@ -1656,8 +1713,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,ctl:cleanCtl(s.ctl),myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,ctl:cleanCtl(null),myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -3663,6 +3720,7 @@ function damageEnemy(e,dmg,kx,ky){
 }
 /* a boss does not just vanish: it shakes, pops, then blows up in a shower of coins */
 function startBossDeath(e,credit){
+  if(!run.guest)bump('boss');
   e.dying=1.2;e.dieCredit=credit;e.hp=0;e.intangible=true;e.dyT=0;run.bossDying=1;run.freeze=0.12;run.slow=Math.max(run.slow||0,0.6);
   for(const s2 of run.eshots)if(!s2.dead){s2.dead=true;poof(s2.x,s2.y,'#ff8fb0');}
   for(const o of run.enemies)if(o!==e&&!o.dead)killEnemy(o,false);
@@ -4928,7 +4986,7 @@ function renderTitle(){
 }
 
 /* ================= UI ================= */
-const SCREENS=['scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
+const SCREENS=['scrGift7','scrSeason','scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 let curScreen=null;
 function animOn(){return !(save&&save.anim===false);}
 function show(id){
@@ -4993,7 +5051,7 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
-  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();checkTitles();updFrBadge();if(soInvite)setTimeout(showInvite,400);
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
@@ -5124,6 +5182,8 @@ function showOver(won,quit){
     if(nb>0&&!run.lootDone){run.lootDone=1;const got=[];for(let i=0;i<nb;i++)got.push(eqGive(Math.floor(Math.random()*5),rollRar(lootWeights(reached-nb+i))));
       run.lootTxt='Butin : '+got.map(g=>g.it?eqName(g.it)+' ('+RAR[g.it.r].n+')':g.gold+' or (sac plein)').join(', ')+'. Va dans le Menu, puis « Mon perso » pour les équiper !';}
     lootTxt=run.lootTxt||'';$('ovLoot').textContent=lootTxt;$('ovLoot').hidden=!lootTxt;}
+  {if(!run.seDone){run.seDone=1;run.sePts=Math.max(0,Math.round((rush?(run.rushBeat|0)*60:reached*25+Math.max(0,reached-1+(won?1:0))*40)+Math.min(300,run.kills|0)+(won?100:0)));run.seUp=seasonAdd(run.sePts);}
+    const t=seasonTier();$('ovSeason').textContent='Passe de saison : +'+run.sePts+' points'+(run.seUp>0?' · tu passes au palier '+t+' ! Va le récupérer dans le Menu.':'');$('ovSeason').hidden=!run.sePts;}
   persist();
   const duo=!!(run.local&&run.pl),nm=duo?STARTERS[run.pl[0].sid].name+' et '+STARTERS[run.pl[1].sid].name:STARTERS[run.starter].name;
   $('ovEyebrow').textContent=won?'Victoire':quit?'Partie abandonnée':'Fin de la partie';
@@ -5523,15 +5583,92 @@ function goPickRush(){
 }
 function prevDateKey(){const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function giftMsg(t){const el=$('giftDayMsg');el.textContent=t;el.hidden=true;void el.offsetWidth;el.hidden=false;}
-function openDailyGift(){
-  audioUnlock();const today=dateKey();
-  if(save.giftDay===today){giftMsg("Tu as déjà ouvert ton cadeau aujourd'hui. Reviens demain !");sfx('nope');return;}
-  const streak=save.giftDay===prevDateKey()?(save.giftStreak|0)+1:1,gold=15+10*Math.min(streak,7);
-  save.giftDay=today;save.giftStreak=streak;save.gold=(save.gold||0)+gold;
-  let extra='';if(streak%3===0&&(save.bag||[]).length<BAG_MAX){save.bag.push('?');extra=' + un objet surprise pour ta prochaine partie';}
-  persist();sfx('chest');
-  giftMsg('Cadeau du jour : +'+gold+' or'+extra+'. '+(streak>1?('Jour '+streak+' de suite ! Reviens demain pour un cadeau encore plus gros.'):'Reviens demain : le cadeau grossit chaque jour de suite.'));
-  $('titleGold').textContent=save.gold||0;$('titleGold2').textContent=save.gold||0;$('sideGold').textContent=save.gold||0;$('giftDayBadge').hidden=true;$('btnGiftDay').classList.remove('glow');updMenuBadge();
+const DAY7=[{g:50},{c:0},{g:100},{c:1},{g:150},{c:0,n:3},{c:2,g:200}];
+function day7Txt(d){const p=[];if(d.c!=null)p.push((d.n>1?d.n+' ':'')+(d.n>1?CHESTS[d.c].name.replace('Coffre','coffres'):CHESTS[d.c].name));if(d.g)p.push(d.g+' or');return p.join(' + ');}
+function giftState(){const today=dateKey(),done=save.giftDay===today,streak=save.giftStreak|0;
+  const next=done?streak:(save.giftDay===prevDateKey()?streak+1:1);return{done,idx:((next-1)%7+7)%7,next};}
+function openDailyGift(){audioUnlock();setMsg('g7Msg','');state='gift7';clearOverlays();show('scrGift7');pauseBtn.hidden=true;$('scrGift7').scrollTop=0;renderGift7();}
+function renderGift7(){
+  const st=giftState(),g=$('g7Grid');g.textContent='';
+  DAY7.forEach((d,i)=>{
+    const el=document.createElement('div');el.className='g7'+(i===6?' big':'')+(i<st.idx||(st.done&&i===st.idx)?' done':'')+(!st.done&&i===st.idx?' today':'');
+    const dd=document.createElement('span');dd.className='d';dd.textContent='Jour '+(i+1);
+    const cv=document.createElement('canvas');cv.width=cv.height=Math.round((i===6?64:48)*dpr);
+    if(d.c!=null)drawChestIcon(cv,d.c);else{const c=cv.getContext('2d');drawCoin(c,cv.width/2,cv.height/2,cv.width*0.3);}
+    const r=document.createElement('span');r.className='r';r.textContent=day7Txt(d);
+    el.append(dd,cv,r);
+    if(!st.done&&i===st.idx)el.append(mkBtn('Ouvrir !','primary',claimDay7));
+    g.append(el);
+  });
+  if(st.done)setMsg('g7Msg',"Tu as déjà ouvert ton cadeau aujourd'hui. Reviens demain pour le jour "+(((st.idx+1)%7)+1)+' !');
+}
+function claimDay7(){
+  const st=giftState();if(st.done)return;const d=DAY7[st.idx];
+  save.giftDay=dateKey();save.giftStreak=st.next;if(d.g)save.gold=(save.gold||0)+d.g;
+  const got=[];if(d.c!=null)for(let i=0;i<(d.n||1);i++){const r=eqGive(Math.floor(Math.random()*5),rollRar(CHESTS[d.c].w));if(r.it)got.push(r.it);}
+  if(st.idx===6)bump('week');seasonAdd(30);persist();sfx('chest');renderGift7();
+  $('giftDayBadge').hidden=true;$('btnGiftDay').classList.remove('glow');updMenuBadge();
+  if(got.length)showLoot(got,'Cadeau du jour '+(st.idx+1)+(d.g?' · +'+d.g+' or':''));else setMsg('g7Msg','+'+d.g+' or ! Reviens demain pour le jour '+(((st.idx+1)%7)+1)+'.','ok');
+  checkTitles();
+}
+/* ---- titles ---- */
+const TITLES=[
+  {id:'debut',n:'Petit débutant',d:'Commence à jouer',ok:()=>true},
+  {id:'explo',n:'Explorateur',d:"Atteins l'étage 5",ok:()=>(save.best|0)>=5},
+  {id:'champ',n:'Champion de la crypte',d:'Gagne une partie',ok:()=>(save.wins|0)>=1},
+  {id:'legende',n:'Légende vivante',d:'Gagne 10 parties',ok:()=>(save.wins|0)>=10},
+  {id:'chasseur',n:'Chasseur de monstres',d:'Bats 500 monstres',ok:()=>totalKills()>=500},
+  {id:'boss',n:'Chasseur de boss',d:'Bats 10 boss',ok:()=>(save.stats.boss|0)>=10},
+  {id:'rush',n:'Maître du rush',d:'Termine le Rush des boss',ok:()=>(save.rushBest|0)>=RUSH.length},
+  {id:'coffres',n:'Roi des coffres',d:'Achète 50 coffres à la Boutique',ok:()=>(save.stats.chests|0)>=50},
+  {id:'collec',n:'Collectionneur',d:'Mets 20 créatures dans le Bestiaire',ok:()=>seenCount()>=20},
+  {id:'riche',n:'Riche comme un roi',d:"Ramasse 10 000 pièces d'or",ok:()=>(save.stats.goldEarned|0)>=10000},
+  {id:'fidele',n:'Fidèle',d:'Ouvre le cadeau du jour 7 jours de suite',ok:()=>(save.stats.week|0)>=1},
+  {id:'ami',n:'Bon copain',d:'Aie 3 amis',ok:()=>CB_SOC&&soReady&&soFriends().length>=3,sa:1},
+  {id:'genereux',n:'Cœur généreux',d:"Envoie 20 fois de l'or à tes amis",ok:()=>(save.stats.goldSent|0)>=20,sa:1},
+  {id:'cosmos',n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
+  {id:'saison',n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0}
+];
+function titleName(id){const t=TITLES.find(x=>x.id===id);return t?t.n:'';}
+function checkTitles(){let nw=null;for(const t of TITLES){if(!save.titles[t.id]&&t.ok()){save.titles[t.id]=1;if(t.id!=='debut')nw=t;}}if(nw){persist();frMsg('Nouveau titre débloqué : « '+nw.n+' » !','ok');}return nw;}
+function openTitles(){checkTitles();renderTitles();$('titleSheet').hidden=false;}
+function closeTitles(){$('titleSheet').hidden=true;}
+function renderTitles(){
+  const L=$('titleList');L.textContent='';
+  for(const t of TITLES){if(t.sa&&!CB_SOC)continue;const got=!!save.titles[t.id]||t.id==='debut',on=(save.title||'debut')===t.id;
+    const row=document.createElement('div');row.className='ach'+(got?' done':' lock');
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=(got?'':'🔒 ')+t.n;const ds=document.createElement('span');ds.className='ds';ds.textContent=t.d;info.append(nm,ds);row.append(info);
+    if(on){const o=document.createElement('span');o.className='ok';o.textContent='Choisi ✓';row.append(o);}
+    else if(got){const b=mkBtn('Choisir','primary',()=>{save.title=t.id;persist();sfx('coin');renderTitles();if(state==='hero')renderHeroTop();soPublishProfile(true);});b.classList.remove('sm');row.append(b);}
+    L.append(row);}
+}
+/* ---- season pass: a new season every month ---- */
+const SE_TIERS=30,SE_PTS=100,MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+function seasonId(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function ensureSeason(){const id=seasonId();if(!save.season||save.season.id!==id)save.season={id,pts:0,got:[]};return save.season;}
+function seasonTier(){return Math.min(SE_TIERS,Math.floor(ensureSeason().pts/SE_PTS));}
+function seasonReward(t){if(t===SE_TIERS)return{c:3};if(t%10===0)return{c:2};if(t%5===0)return{c:1};if(t%3===0)return{c:0};return{g:40+t*5};}
+function seasonClaimable(){const S=ensureSeason(),T=seasonTier();let n=0;for(let t=1;t<=T;t++)if(!S.got.includes(t))n++;return n;}
+function seasonAdd(n){const S=ensureSeason(),before=seasonTier();S.pts+=Math.max(0,n|0);const after=seasonTier();if(after>=SE_TIERS)bump('season30');return after-before;}
+function openSeason(){audioUnlock();state='season';clearOverlays();show('scrSeason');pauseBtn.hidden=true;$('scrSeason').scrollTop=0;renderSeason();}
+function claimTier(t,list){const S=ensureSeason();if(t>seasonTier()||S.got.includes(t))return;S.got.push(t);const r=seasonReward(t);if(r.g)save.gold=(save.gold||0)+r.g;
+  if(r.c!=null){const x=eqGive(Math.floor(Math.random()*5),rollRar(CHESTS[r.c].w));if(x.it)list.push(x.it);}}
+function renderSeason(){
+  const S=ensureSeason(),T=seasonTier(),m=+S.id.slice(5)-1,end=new Date(+S.id.slice(0,4),m+1,0),left=Math.max(0,Math.ceil((end-new Date())/86400000));
+  $('seGold').textContent=save.gold||0;$('seName').textContent='Saison de '+MONTHS[m]+' · encore '+left+(left>1?' jours':' jour');
+  $('seTier').textContent=T>=SE_TIERS?'Bravo, tu as fini la saison ! ('+S.pts+' points)':'Palier '+T+' sur '+SE_TIERS+' · '+(S.pts%SE_PTS)+' / '+SE_PTS+' points pour le palier suivant';
+  $('seBar').style.width=(T>=SE_TIERS?100:(S.pts%SE_PTS))+'%';
+  const n=seasonClaimable();$('btnSeAll').hidden=n<2;$('btnSeAll').textContent='Tout récupérer ('+n+')';
+  const L=$('seList');L.textContent='';
+  for(let t=1;t<=SE_TIERS;t++){const r=seasonReward(t),got=S.got.includes(t),open=t<=T;
+    const row=document.createElement('div');row.className='ach'+(got?'':open?' done':' lock');
+    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(44*dpr);if(r.c!=null)drawChestIcon(cv,r.c);else{const c=cv.getContext('2d');drawCoin(c,cv.width/2,cv.height/2,cv.width*0.3);}
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent='Palier '+t;const ds=document.createElement('span');ds.className='ds';ds.textContent=r.c!=null?CHESTS[r.c].name:r.g+' or';info.append(nm,ds);
+    row.append(cv,info);
+    if(got){const o=document.createElement('span');o.className='ok';o.textContent='Récupéré ✓';row.append(o);}
+    else if(open){const b=mkBtn('Récupérer','primary',()=>{const list=[];claimTier(t,list);persist();sfx('chest');renderSeason();updMenuBadge();if(list.length)showLoot(list,'Passe de saison · palier '+t);else frMsg('+'+r.g+' or !','ok');});b.classList.remove('sm');row.append(b);}
+    else{const o=document.createElement('span');o.className='ds';o.textContent='🔒 '+(t*SE_PTS)+' pts';row.append(o);}
+    L.append(row);}
 }
 function dateKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function hashStr(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
@@ -5764,6 +5901,13 @@ $('tabAll').addEventListener('click',()=>setRankTab('all'));
 $('tabDay').addEventListener('click',()=>setRankTab('day'));
 $('btnDaily').addEventListener('click',()=>{audioUnlock();goPickDaily();});
 $('btnGiftDay').addEventListener('click',openDailyGift);
+$('g7Back').addEventListener('click',goTitle);
+$('btnSeason').addEventListener('click',openSeason);
+$('seBack').addEventListener('click',goTitle);
+$('btnSeAll').addEventListener('click',()=>{const list=[];const S=ensureSeason(),T=seasonTier();let g0=save.gold||0;for(let t=1;t<=T;t++)claimTier(t,list);persist();sfx('chest');renderSeason();updMenuBadge();
+  if(list.length)showLoot(list,'Passe de saison'+((save.gold||0)>g0?' · +'+((save.gold||0)-g0)+' or':''));else frMsg('+'+((save.gold||0)-g0)+' or !','ok');});
+$('heroTitle').addEventListener('click',()=>{audioUnlock();openTitles();});
+$('titleClose').addEventListener('click',closeTitles);$('titleDim').addEventListener('click',closeTitles);
 if(CB_SA){$('btnRank').hidden=true;if(!CB_P2P)$('btnCoop').hidden=true;}
 if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
 /* Android: offer to install the game as an app when the browser allows it */
@@ -5852,6 +5996,7 @@ function closeMenu(now){
 }
 function updMenuBadge(){
   let n=0;if(!$('giftDayBadge').hidden)n++;
+  {const c=seasonClaimable(),b=$('seasonBadge');b.hidden=!c;b.textContent=c?String(c):'';n+=c;}
   for(const id of['questCount','frBadge']){const el=$(id);if(!el.hidden&&!$(id).closest('[hidden]'))n+=(+el.textContent||0);}
   const b=$('menuBadge');b.hidden=!n;b.textContent=n?String(n):'';
 }
@@ -5938,7 +6083,7 @@ function myCard(){
   return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
     a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
     pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
-    mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
+    t:save.title||'debut',mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
 }
 function cleanCard(o){
   if(!o||typeof o!=='object')return null;
@@ -5947,7 +6092,7 @@ function cleanCard(o){
   const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
   const pi=Array.isArray(o.pt)?Math.floor(+o.pt[0]):-1,pt=pi>=0&&pi<PETS.length?[pi,Math.max(1,N(o.pt[1],PET_MAX))]:null;
   return{n:cleanNick(o.n)||'Joueur',st,sk:N(o.sk,SKINS[st]?SKINS[st].length:0),f:N(o.f,999),lv:N(o.lv,999),w:N(o.w,1e6),k:N(o.k,1e8),b:N(o.b,ORDER.length),a:N(o.a,ACHS.length),
-    r:N(o.r,RUSH.length),g:N(o.g,9999),u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
+    r:N(o.r,RUSH.length),g:N(o.g,9999),t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
 }
 function cardOf(pk){const c=SOC.cache[pk];const p=c&&cleanCard(c.p);return p?{p,at:+c.at||0}:null;}
 function nameOf(pk){const c=cardOf(pk);if(c)return c.p.n;const r=SOC.recent.find(x=>x.pk===pk);return(r&&r.n)||'Joueur';}
@@ -6104,7 +6249,7 @@ function renderFriends(){
   $('frSetup').hidden=!setup;$('frMain').hidden=setup;$('btnNickCancel').hidden=!SOC.nick;
   if(setup){if(!$('nickIn').value)$('nickIn').value=SOC.nick;return;}
   const fav=favStarter();drawPortrait($('frMe'),fav,1.2,false,skinPal(fav,mySkinI(fav)));
-  $('frMeName').textContent=SOC.nick;$('frMeCode').textContent=soReady?fmtCode(SO.code):'…';
+  $('frMeName').textContent=SOC.nick+(save.title&&save.title!=='debut'?' · '+titleName(save.title):'');$('frMeCode').textContent=soReady?fmtCode(SO.code):'…';
   const net=$('frNet');
   net.textContent=!soReady?'Connexion…':(!navigator.onLine||soNet==='off')?"Pas de connexion internet : ta liste d'amis n'est peut-être pas à jour.":'';
   net.hidden=!net.textContent;
@@ -6152,7 +6297,7 @@ function renderCard(){
   const me=cardPk==='me',c=me?{p:cleanCard(myCard()),at:Date.now()/1000}:cardOf(cardPk),p=c&&c.p;
   $('cardTitle').textContent=me?'Ma fiche':'Fiche du joueur';
   const st=p?p.st:'braisot';drawPortrait($('cardCv'),st,1.2,!p,p?skinPal(st,p.sk):null);
-  $('cardName').textContent=me?SOC.nick:nameOf(cardPk);
+  $('cardName').textContent=me?SOC.nick:nameOf(cardPk);$('cardTitle2').textContent=p&&p.t?'« '+titleName(p.t)+' »':'';
   const rel=me?'me':relOf(cardPk);
   $('cardSub').textContent=me?('Code ami : '+(soReady?fmtCode(SO.code):'…')):!p?'Chargement de la fiche…':(rel==='friend'?'Ton ami · ':'')+seenTxt(c.at);
   const g=$('cardStats');g.textContent='';
@@ -6202,7 +6347,7 @@ function goldBtn(pk){
 }
 function sendGold(pk,btn){
   if(!soReady||!canSendGold(pk))return Promise.resolve(false);if(btn)btn.disabled=true;
-  return SO.sendGold(pk,dateKey(),SOC.nick).then(()=>{const t=dateKey();for(const k in SOC.sentGold)if(SOC.sentGold[k]!==t)delete SOC.sentGold[k];SOC.sentGold[pk]=t;soPersist();
+  return SO.sendGold(pk,dateKey(),SOC.nick).then(()=>{bump('goldSent');persist();const t=dateKey();for(const k in SOC.sentGold)if(SOC.sentGold[k]!==t)delete SOC.sentGold[k];SOC.sentGold[pk]=t;soPersist();
     if(btn){frMsg('25 or envoyés à '+nameOf(pk)+' !','ok');sfx('coin');if(state==='friends')renderFriends();}return true;},
     ()=>{if(btn){frMsg('Pas de connexion : réessaie plus tard.','bad');btn.disabled=false;}return false;});
 }
@@ -6220,7 +6365,7 @@ function eqEffTxt(sl,r,l){const v=eqVal(sl,r,l);if(sl===0){const h=v/2;return'+'
 function eqName(it){return EQ_SLOTS[it.s].names[it.r];}
 function eqById(id){return id?save.eq.inv.find(x=>x.i===id)||null:null;}
 function eqIsOn(it){return save.eq.on[it.s]===it.i;}
-function eqNew(sl,r,l){const it={i:'e'+(save.eq.n++),s:sl,r,l:l||1};save.eq.inv.push(it);return it;}
+function eqNew(sl,r,l){const it={i:'e'+(save.eq.n++),s:sl,r,l:l||1};save.eq.inv.push(it);if(r>=6)bump('cosmic');return it;}
 function eqSellVal(it){return(it.r+1)*(10+5*it.l);}
 function eqUpCost(it){return(it.r+1)*25*it.l;}
 function eqGive(sl,r){if(save.eq.inv.length>=EQ_BAG){const g=(r+1)*15;save.gold=(save.gold||0)+g;return{gold:g};}return{it:eqNew(sl,r,1)};}
@@ -6321,7 +6466,7 @@ function heroStep(d){const L=heroList();let i=L.indexOf(heroSid);i=(i+d+L.length
 function setEqTab(t){eqTab=t;fuseSel=[];eqArm='';$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
 function renderHero(){renderHeroTop();renderEqGrid();}
 function renderHeroTop(){
-  $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);$('heroName').textContent=STARTERS[heroSid].name;
+  $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);$('heroName').textContent=STARTERS[heroSid].name;$('heroTitle').textContent='Titre : '+(titleName(save.title)||'Petit débutant');
   const box=$('heroSlots');box.textContent='';
   EQ_SLOTS.forEach((S,k)=>{
     const it=eqById(save.eq.on[k]),b=document.createElement('button');b.type='button';b.className='hslot'+(it?' full':'')+(eqFilterS===k?' pick':'');
@@ -6463,7 +6608,7 @@ function renderStore(){
   CHESTS.forEach((C,k)=>{
     const odds=C.w.map((w,i)=>w?RAR[i].n+' '+w+' %':'').filter(Boolean).join(' · ');
     ch.append(card(cv=>drawChestIcon(cv,k),C.name,'Équipement au hasard','#e8d9bf',odds,C.price,'c'+k,false,
-      ()=>{save.gold-=C.price;const it=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();sfx('chest');renderStore();openEqSheet(it.i,true);},
+      ()=>{save.gold-=C.price;bump('chests');const it=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();sfx('chest');renderStore();openEqSheet(it.i,true);},
       ()=>openGiftSheet({kind:'c',k}),
       ()=>{const key='c'+k+'x',arm=storeArm===key,p10=C.price*9,gr=chestGuarantee(C.w);
         return mkBtn(arm?'Touche encore : 10 coffres pour '+p10+' or':'Acheter ×10 · '+p10+' or',arm?'primary glow':'',()=>{
@@ -6484,13 +6629,13 @@ function chestGuarantee(w){const nz=w.map((x,i)=>x>0?i:-1).filter(i=>i>=0);retur
 function buyChest10(k){
   const C=CHESTS[k],p10=C.price*9,gr=chestGuarantee(C.w);
   if((save.gold||0)<p10||EQ_BAG-save.eq.inv.length<10)return;
-  save.gold-=p10;const rs=[];for(let i=0;i<10;i++)rs.push(rollRar(C.w));
+  save.gold-=p10;bump('chests',10);const rs=[];for(let i=0;i<10;i++)rs.push(rollRar(C.w));
   if(!rs.some(r=>r>=gr))rs[Math.floor(Math.random()*10)]=gr;
   const got=rs.map(r=>eqNew(Math.floor(Math.random()*5),r,1));persist();sfx('chest');renderStore();showLoot(got,C.name+' ×10');
 }
 function showLoot(list,title){
   const L=list.slice().sort((a,b)=>b.r-a.r||a.s-b.s),best=L[0];
-  $('lootTitle').textContent=list.length+' équipements !';
+  $('lootTitle').textContent=list.length+(list.length>1?' équipements !':' équipement !');
   $('lootSub').textContent=title+' · Le meilleur : '+eqName(best)+' ('+RAR[best.r].n+')';$('lootSub').style.color=RAR[best.r].c;
   const g=$('lootGrid');g.textContent='';
   L.forEach((it,i)=>{const b=document.createElement('button');b.type='button';b.className='eqt loot-in'+(it.r>=4?' loot-wow':'');b.style.borderColor=RAR[it.r].c;b.style.animationDelay=(i*90)+'ms';
