@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028131440';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028131440" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028131726';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028131726" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -316,7 +316,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .main-acts .btn{width:100%;min-width:0;padding-inline:10px}
 .main-acts #btnPlay{grid-column:1/-1;min-height:66px;font-size:28px}
 .main-acts #btnRush{grid-column:auto}
-.main-acts #btnTourney{grid-column:1/-1}
+.main-acts #btnTourney{grid-column:auto}
 .upd-bar{width:100%;white-space:normal;line-height:1.2}
 .side{position:fixed;inset:0;z-index:30}
 .side-dim{position:absolute;inset:0;background:rgba(8,5,3,.62);opacity:0;transition:opacity .22s}
@@ -785,6 +785,7 @@ html.big-text #toast .t1{font-size:1.1em}
 .skin.tier2{border-color:#8a3a7a;background:linear-gradient(180deg,#3a1c3a,var(--stone))}
 .skin.tier2 canvas{box-shadow:0 0 12px rgba(255,138,216,.35)}
 .skin.tier1 canvas{box-shadow:0 0 10px rgba(255,211,106,.3)}
+.hallo-btn{margin-top:6px;border-color:#f08a2a;background:#5a2a0a;color:#ffe0c0;min-height:44px}
 </style>
 </head>
 <body>
@@ -910,7 +911,7 @@ html.big-text #toast .t1{font-size:1.1em}
     <p class="eyebrow">Petites bêtes · grande crypte</p>
     <h1 class="logo">Bestiolins</h1>
     <p class="lede">Choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.</p>
-    <div class="hallo-box" id="halloBox" hidden><b>🎃 Halloween, jusqu'au 2 novembre !</b><span id="halloTxt"></span><span class="hbar"><i id="halloBar"></i></span></div>
+    <div class="hallo-box" id="halloBox" hidden><b>🎃 Halloween, jusqu'au 2 novembre !</b><span id="halloTxt"></span><span class="hbar"><i id="halloBar"></i></span><button class="btn hallo-btn" id="btnReine" type="button">Combattre la Reine Citrouille</button></div>
    </div>
    <div class="title-acts">
     <div class="main-acts">
@@ -920,6 +921,7 @@ html.big-text #toast .t1{font-size:1.1em}
       <button id="btnRush" class="btn" type="button">Rush des boss <span class="count" id="rushTag"></span></button>
       <button id="btnSurv" class="btn" type="button">Survie <span class="count" id="survTag"></span></button>
       <button id="btnTourney" class="btn" type="button">🏆 Tournoi <span class="count" id="tourTag"></span></button>
+      <button id="btnHard" class="btn" type="button">💀 Hardcore <span class="count" id="hardTag"></span></button>
     </div>
     <button class="btn glow upd-bar" id="updBar" type="button" hidden>Nouvelle version du jeu ! Touche ici pour mettre à jour</button>
     <p class="coop-status ok giftmsg" id="giftDayMsg" role="status" hidden></p>
@@ -1561,6 +1563,7 @@ const SPECIES={
   yetin:{name:'Yétin',like:'crapaudron',where:'Le Château de glace',hp:20,speed:0,r:12,ai:'jump',col:'#e6f2f7',fit:1.35,desc:"Un bébé yéti tout poilu. Il saute et retombe là où tu étais."},
   givrille:{name:'Givrille',like:'spectrelle',where:'Le Château de glace',hp:18,speed:64,r:11,ai:'ghost',fly:true,col:'#a8dcff',fit:1.25,desc:"Un fantôme de givre. Il disparaît puis réapparaît tout près de toi."},
   oeilgivre:{name:"L'Œil de Givre",like:'oeil',where:'Boss · Le Château de glace',boss:true,hp:300,speed:0,r:32,ai:'b_oeil',fly:true,col:'#bfe6ff',fit:1.65,desc:"Un œil géant pris dans la glace. Il te fixe et tire des pluies de glaçons."},
+  reinecitrouille:{name:'Reine Citrouille',like:'reine',where:'Boss spécial · Halloween',boss:true,hp:520,speed:0,r:36,ai:'b_coeur',col:'#f08a2a',fit:1.35,minions:['citrouillo','corbeau','feufollet'],desc:"La reine d'Halloween. Elle change trois fois de forme et appelle ses citrouilles et ses corbeaux. Elle n'apparaît que pendant Halloween !"},
   colosse:{name:'Le Colosse',like:'necroroi',where:'Boss de raid · à plusieurs',boss:true,hp:700,speed:0,r:44,ai:'b_coeur',col:'#c9a43a',fit:1.5,pal:{'#5a4a54':'#5c4a1a','#ff6b7d':'#7fd3ff','#c14a64':'#3a9bff','#8c6a3c':'#e8d080','#1a0e14':'#1a1204'},desc:"Un géant d'or et de pierre. Trop fort pour un joueur seul : il faut être 3 ou 4 pour le battre."},
   devoreur:{name:'Le Dévoreur',like:'necroroi',where:'Boss final · Le Cœur de la Crypte',boss:true,hp:620,speed:0,r:38,ai:'b_coeur',col:'#8a1f3a',fit:1.5,pal:{'#5a4a54':'#4a1626','#ff6b7d':'#ffd34a','#c14a64':'#ff3a2a','#8c6a3c':'#2a1a1a','#1a0e14':'#0a0004'},desc:"Le cœur vivant de la crypte, caché tout au fond. Il change trois fois de forme et devient de plus en plus furieux."},
   prismagor:{name:'Prismagor',where:"Boss secret · un passage caché de l'Abîme",boss:true,hp:430,speed:0,r:34,ai:'b_prisme',col:'#8fd8ff',fit:1.5,desc:"Le gardien du Jardin de Cristal, caché sous l'Abîme. Un géant de cristal qui découpe la lumière en mille éclats."}
@@ -1575,7 +1578,7 @@ const FLOORS_ALT={
      pal:{floorA:'#2f3e4f',floorB:'#2a3847',grout:'#101820',wall:'#0c131b',wallHi:'#1a2633',rock:'#5a7890',rockHi:'#a8d4f0',rockLo:'#36506a',light:'170,220,255'}}
 };
 function FL(i){i=i|0;if(run&&run.fv&&run.fv[i]&&FLOORS_ALT[i])return FLOORS_ALT[i];return FLOORS[i];}
-const ORDER=['gloupin','chauvelin','petouille','crapaudron','tetard','bulleur','charbuffle','mitrailloche','duplasme','gloupinet','spectrelle','oeilloche','lanternon','gloupitan','reine','fournaise','oeil','necroroi','eclatin','prismouche','geodon','prismagor','petardeau','mimic','voleur','soignelle','citrouillo','corbeau','feufollet','roicitrouille','lavelot','braisille','cracheur','magmator','glacon','yetin','givrille','oeilgivre','devoreur','colosse'];
+const ORDER=['gloupin','chauvelin','petouille','crapaudron','tetard','bulleur','charbuffle','mitrailloche','duplasme','gloupinet','spectrelle','oeilloche','lanternon','gloupitan','reine','fournaise','oeil','necroroi','eclatin','prismouche','geodon','prismagor','petardeau','mimic','voleur','soignelle','citrouillo','corbeau','feufollet','roicitrouille','lavelot','braisille','cracheur','magmator','glacon','yetin','givrille','oeilgivre','devoreur','colosse','reinecitrouille'];
 
 const STARTERS={
   braisot:{name:'Braisot',col:'#f08a3c',r:10,fit:1.55,desc:'Une salamandre de braise. Équilibrée en tout.',hp:6,speed:118,dmg:3.5,fireDelay:0.36,range:220,size:1,pierce:false,shot:'#ffb347',core:'#fff1c4',stats:{'Dégâts':3,'Cadence':3,'Vitesse':3,'Vie':3}},
@@ -1872,7 +1875,8 @@ const FLOORS=[
    pal:{floorA:'#3a1a22',floorB:'#33161d',grout:'#12060a',wall:'#0e0407',wallHi:'#200a10',rock:'#5a2532',rockHi:'#84394a',rockLo:'#3a1620',light:'255,70,90'}}
 ];
 const NFLOORS=5,SECRET_FLOOR=5,FINAL_FLOOR=6,RUSH=[0,1,2,3,5,4];
-function floorLabel(){return run&&run.duel?'Duel':run&&run.surv?'Survie · vague '+(run.wave|0):run&&run.raid?'Boss de raid':run&&run.rush?'Boss '+((run.rushI|0)+1)+'/'+RUSH.length:run&&run.floor===SECRET_FLOOR?'Étage secret':run&&run.floor===FINAL_FLOOR?'Étage final':'Étage '+floorNo();}
+function floorLabel(){return (run&&run.hard?'💀 ':'')+floorLabel0();}
+function floorLabel0(){return run&&run.reine?'Reine Citrouille':run&&run.duel?'Duel':run&&run.surv?'Survie · vague '+(run.wave|0):run&&run.raid?'Boss de raid':run&&run.rush?'Boss '+((run.rushI|0)+1)+'/'+RUSH.length:run&&run.floor===SECRET_FLOOR?'Étage secret':run&&run.floor===FINAL_FLOOR?'Étage final':'Étage '+floorNo();}
 
 const TPL_SRC=[
 `...........
@@ -2020,8 +2024,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,hardBest:0,reineDay:'',bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -3228,7 +3232,7 @@ function makePlayer0(sid,st){
 }
 function newRun(sid,opts){
   if(SIDS.includes(sid))bump('pl_'+sid);hideInvite();
-  run={fv:[0,0,0,0,0,0],starter:sid,rush:(opts&&opts.rush)?1:0,rushI:0,rushBeat:0,tourney:(opts&&opts.tourney)?1:0,daily:(opts&&opts.tourney)?'tw-'+weekendKey():(opts&&opts.daily)?dateKey():'',diff:(opts&&opts.tourney)?2:(opts&&opts.daily)?1:clamp(save.diff==null?1:save.diff|0,0,3),floor:0,kills:0,time:0,newEntries:[],pool:shuffle(Object.keys(ITEMS)),shots:[],eshots:[],enemies:[],parts:[],
+  run={fv:[0,0,0,0,0,0],starter:sid,rush:(opts&&opts.rush)?1:0,rushI:0,rushBeat:0,tourney:(opts&&opts.tourney)?1:0,hard:(opts&&opts.hard)?1:0,daily:(opts&&opts.tourney)?'tw-'+weekendKey():(opts&&opts.daily)?dateKey():'',diff:(opts&&opts.tourney)?2:(opts&&opts.daily)?1:clamp(save.diff==null?1:save.diff|0,0,3),floor:0,kills:0,time:0,newEntries:[],pool:shuffle(Object.keys(ITEMS)),shots:[],eshots:[],enemies:[],parts:[],
     flow:null,flowT:0,trans:null,dead:false,deadT:0,won:false,endT:0,doorsOpen:true,bossIntro:0,roomActive:false,map:null,room:null,
     lvl:1,xp:0,pendingLv:0,fx:[],floats:[],motes:[],hurtFx:0,freeze:0,slow:0,doorAnim:1,gold:0,goldFrac:0,bombs:[],frozen:0,ch:null,actPool:shuffle(ACTIVE_IDS.slice())};
   if(!run.rush){const pick=()=>[0,Math.random()<0.5?1:0,Math.random()<0.5?1:0,Math.random()<0.5?1:0,0,0];run.fv=run.daily?withSeed(hashStr('fv-'+run.daily),pick):pick();}
@@ -4515,7 +4519,7 @@ function aiCoeur(e,dt,dx,dy,d){
   const ph=e.hp<e.maxHp/3?3:e.hp<e.maxHp*2/3?2:1;
   if(ph!==(e.ph||1)){e.ph=ph;e.st='idle';e.t=1.1;for(const s2 of run.eshots)s2.dead=true;addShake(10);ringFx(e.x,e.y,e.r*6,'255,80,90',0.9);netFx(3,e.x,e.y,e.r*6);sfx('boss');
     announce('Le Dévoreur se transforme !',ph===3?'Dernière forme : il devient furieux':'Deuxième forme');
-    for(let k=0;k<(ph===3?3:2);k++){const p=randomFreePoint(),m=makeEnemy(ph===3?'spectrelle':'lanternon',p.x,p.y);m.spawnT=0.6;run.enemies.push(m);}
+    for(let k=0;k<(ph===3?3:2);k++){const mn=SPECIES[e.id].minions,p=randomFreePoint(),m=makeEnemy(mn?mn[k%mn.length]:ph===3?'spectrelle':'lanternon',p.x,p.y);m.spawnT=0.6;run.enemies.push(m);}
     return;}
   e.puff=Math.max(0,(e.puff||0)-dt*2);
   const sp=ph===3?1.3:ph===2?1.12:1;
@@ -4535,7 +4539,7 @@ function aiCoeur(e,dt,dx,dy,d){
   else if(pat==='rain'){e.st='rain';e.t=2.2;e.cd=0.3;e.puff=1;sfx('boss');}
   else if(pat==='spiral'){e.st='spiral';e.t=2.4;e.sa=rand(0,TAU);e.cd=0;}
   else if(pat==='nova'){e.st='nova';e.vol=ph+1;e.t=0.25;}
-  else{const n=run.enemies.filter(m=>!m.dead&&!m.boss).length;for(let k=0;k<Math.min(2,4-n);k++){const p=randomFreePoint(),m=makeEnemy(ph===3?'oeilloche':'lanternon',p.x,p.y);m.spawnT=0.5;run.enemies.push(m);}e.t=0.8;}
+  else{const n=run.enemies.filter(m=>!m.dead&&!m.boss).length;for(let k=0;k<Math.min(2,4-n);k++){const p=randomFreePoint(),m=makeEnemy(SPECIES[e.id].minions?SPECIES[e.id].minions[k%SPECIES[e.id].minions.length]:ph===3?'oeilloche':'lanternon',p.x,p.y);m.spawnT=0.5;run.enemies.push(m);}e.t=0.8;}
 }
 function aiPrisme(e,dt,dx,dy,d){
   const p2=e.hp<e.maxHp*0.5;
@@ -4890,7 +4894,7 @@ function updateGame(dt){
     }
   }
   updateParticles(dt);updateSurprise(dt);
-  if(run.roomActive&&!run.room.cleared&&run.enemies.length===0&&!run.ch&&!run.surv&&!run.raid)roomCleared();updateArena(dt);updateDuel();
+  if(run.roomActive&&!run.room.cleared&&run.enemies.length===0&&!run.ch&&!run.surv&&!run.raid)roomCleared();updateArena(dt);updateDuel();if(run.hard)for(const q of players()){if(q.maxHp>2)q.maxHp=2;if(q.hp>q.maxHp)q.hp=q.maxHp;}
   if((run.pendingLv>0||mateLvWaiting())&&!run.dead&&!run.won&&!run.trans)openLevelUp();
 }
 
@@ -5615,6 +5619,7 @@ function goTitle(){
   {const hb=$('halloBox');hb.hidden=!HALLO;if(HALLO){const c=save.candy|0;$('halloTxt').textContent='Les monstres lâchent des bonbons 🍬 : tu en as '+c+'. À 50 : chapeau citrouille'+(c>=50?' ✓':'')+'. À 100 : tirs chauves-souris'+(c>=100?' ✓':'')+'.';$('halloBar').style.width=Math.min(100,c)+'%';}
     document.documentElement.classList.toggle('hallo',HALLO);}
   $('tourTag').textContent=isWeekend()?'ouvert !':'samedi';$('btnTourney').classList.toggle('glow',isWeekend());checkTourney();
+  $('hardTag').textContent=save.hardBest?'étage '+save.hardBest:'';
   $('survTag').textContent=save.survBest?'record '+save.survBest:'';
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
@@ -5782,6 +5787,7 @@ function updateDuel(){
     if(w===P){unlockAch('duel');save.trophies.duel=(save.trophies.duel|0)+1;persist();}}
 }
 function setupSurv(){run.surv=1;run.wave=1;run.svWait=0;run.rushBeat=0;setupArena('normal');announce('Survie','Vague 1 : tiens le plus longtemps possible !');}
+function setupReine(){run.reine=1;run.raid=1;setupArena('arena');run.raidT=2.2;announce('🎃 La Reine Citrouille','Elle arrive… bats-la avant la fin d\'Halloween !');}
 function setupRaid(){
   run.raid=1;setupArena('arena');run.raidT=2.2;
   announce('Boss de raid','Le Colosse arrive… restez ensemble !');
@@ -5797,7 +5803,9 @@ function spawnWave(w){
 }
 function updateArena(dt){
   if(run.raid){
-    if(run.raidT>0){run.raidT-=dt;if(run.raidT<=0){const b=makeEnemy('colosse',RW/2,RH*0.3),n=players().length;b.hp=b.maxHp=b.maxHp*n*DF().hp;toughen(b,40+n*25);b.spawnT=1;run.enemies.push(b);run.roomActive=true;showBossCard('colosse','Boss de raid');sfx('boss');}return;}
+    if(run.raidT>0){run.raidT-=dt;if(run.raidT<=0){const id=run.reine?'reinecitrouille':'colosse',b=makeEnemy(id,RW/2,RH*0.3),n=players().length;if(run.reine)toughen(b,35+n*10);else{b.hp=b.maxHp=b.maxHp*n*DF().hp;toughen(b,40+n*25);}b.spawnT=1;run.enemies.push(b);run.roomActive=true;showBossCard(id,run.reine?'Boss d\'Halloween':'Boss de raid');sfx('boss');}return;}
+    if(run.reine&&!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=2;addGold(200);const today=save.reineDay!==dateKey();save.reineDay=dateKey();if(today)addCandy(25,P.x,P.y);save.trophies.reine=(save.trophies.reine|0)+1;unlockAch('reine');persist();
+      const a='🎃 Reine Citrouille vaincue !',b='+200 or'+(today?' et +25 bonbons':'');banner(a,b,3);toast(a,b);sfx('item');return;}
     if(!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=3;addGold(250);
       const a='Raid réussi !',b='Le Colosse est vaincu · +250 or et un butin';banner(a,b,3);toast(a,b);netEv('t',a,b);unlockAch('raid');sfx('item');}
     return;}
@@ -5855,7 +5863,8 @@ function updateTut(dt){
   else if(i===4){if(run.room!==TUT.room)endTut(false);}
 }
 $('tutSkip').addEventListener('click',e=>{e.preventDefault();endTut(true);});
-function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(opts&&opts.surv)setupSurv();else if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);lastSurv=!!(opts&&opts.surv);lastTour=!!(opts&&opts.tourney);
+function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(opts&&opts.reine)setupReine();else if(opts&&opts.surv)setupSurv();else if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);lastSurv=!!(opts&&opts.surv);lastTour=!!(opts&&opts.tourney);
+  if(run.hard){P.maxHp=2;P.hp=2;P.goldMul=(P.goldMul||1)*3;toast('💀 Mode Hardcore','Un seul cœur pour toute la partie. Fais très attention… mais l\'or est multiplié par 3 !');}
   if(run.tourney){const id=tourneyCursed();ITEMS[id].apply(P);P.items.push(id);toast('🏆 Tournoi du week-end','Crypte spéciale : difficulté Difficile, et tu commences avec « '+ITEMS[id].name+' ». Fais le meilleur score de tes amis !');}
   else if(run.daily)toast('Défi du jour',"Le même donjon pour tout le monde aujourd'hui. Fais le meilleur score !");
   if(run.rush)toast('Rush des boss','Choisis tes 2 capacités, prends tes cadeaux, puis passe la porte rouge.');}
@@ -5975,13 +5984,14 @@ function renderTeamStats(){
 function showOver(won,quit){
   state='over';show('scrOver');pauseBtn.hidden=true;resetSticks();clearOverlays();
   if(NET){if(NET.role==='guest'&&quit)netLeave();else{const n=NET;setTimeout(()=>{if(NET===n)netLeave();},6000);}}
-  const reached=floorNo(),rush=!!(run.rush||run.surv||run.raid||run.duel);
+  const reached=floorNo(),rush=!!(run.rush||run.surv||run.raid||run.duel||run.reine);
   if(!rush&&reached>(save.best||0))save.best=reached;
   save.stats.maxLv=Math.max(save.stats.maxLv|0,run.lvl|0);setTimeout(soProfileSoon,300);
   if(won&&!run.winCounted&&!rush){run.winCounted=true;save.wins=(save.wins||0)+1;}
   const score=Math.round((reached*1000+(run.kills|0)*10+(run.lvl|0)*50+(won?2000:0))*DF().score);
   $('ovScore').textContent='Score : '+score+' points · '+DF().name;
   let dmsg='';
+  if(run.hard&&!quit){if(reached>(save.hardBest|0))save.hardBest=reached;if(reached>=3)unlockAch('hard3');if(won)unlockAch('hardwin');$('ovScore').textContent+=' · 💀 Hardcore (or ×3) · record : étage '+(save.hardBest|0);}
   if(run.tourney&&!quit){const w=weekendKey();if(!save.tw||save.tw.w!==w||(save.tw.s|0)<score){save.tw={w,s:score};setTimeout(soProfileSoon,400);}dmsg='Tournoi du week-end : ton meilleur score est '+save.tw.s+' points. Regarde le classement « Tournoi » dans Amis !';}
   if(run.daily&&!run.tourney&&!quit){
     unlockAch('quotidien');
@@ -5997,11 +6007,11 @@ function showOver(won,quit){
   checkAchs();
   const entry={s:score,f:reached,w:won?1:0,k:run.kills|0,lv:run.lvl|0,st:SIDS.includes(P&&P.sid)?P.sid:run.starter};
   if(!quit&&score>0&&!rush){if(!save.myBest||save.myBest.s<score)save.myBest=entry;submitScore(entry,run.tourney?'':run.daily);}
-  {let lootTxt='';const nb=Math.min(3,Math.max(0,rush?(run.rushBeat|0):reached-1+(won?1:0)));
+  {let lootTxt='';const nb=Math.min(run.hard?4:3,Math.max(0,rush?(run.rushBeat|0):reached-1+(won?1:0)+(run.hard?1:0)));
     if(nb>0&&!run.lootDone){run.lootDone=1;const got=[];for(let i=0;i<nb;i++)got.push(eqGive(Math.floor(Math.random()*5),rollRar(lootWeights(reached-nb+i))));
       run.lootTxt='Butin : '+got.map(g=>g.it?eqName(g.it)+' ('+RAR[g.it.r].n+')':g.gold+' or (sac plein)').join(', ')+'. Va dans le Menu, puis « Mon perso » pour les équiper !';}
     lootTxt=run.lootTxt||'';$('ovLoot').textContent=lootTxt;$('ovLoot').hidden=!lootTxt;}
-  {if(!run.seDone){run.seDone=1;run.sePts=Math.max(0,Math.round((rush?(run.rushBeat|0)*60:reached*25+Math.max(0,reached-1+(won?1:0))*40)+Math.min(300,run.kills|0)+(won?100:0)));run.seUp=seasonAdd(run.sePts);}
+  {if(!run.seDone){run.seDone=1;run.sePts=(run.hard?2:1)*Math.max(0,Math.round((rush?(run.rushBeat|0)*60:reached*25+Math.max(0,reached-1+(won?1:0))*40)+Math.min(300,run.kills|0)+(won?100:0)));run.seUp=seasonAdd(run.sePts);}
     const t=seasonTier();$('ovSeason').textContent='Passe de saison : +'+run.sePts+' points'+(run.seUp>0?' · tu passes au palier '+t+' ! Va le récupérer dans le Menu.':'');$('ovSeason').hidden=!run.sePts;}
   persist();
   const duo=!!(run.local&&run.pl),nm=duo?STARTERS[run.pl[0].sid].name+' et '+STARTERS[run.pl[1].sid].name:STARTERS[run.starter].name;
@@ -6017,7 +6027,9 @@ function showOver(won,quit){
     $('ovText').textContent=(many?'Vous avez':'Tu as')+' tenu '+w+' vague'+(w>1?'s':'')+' complète'+(w>1?'s':'')+'.';$('ovFloor').textContent=String(w);$('ovFloor').nextElementSibling.textContent='Vagues tenues';}
   if(run.duel){const me=run.duelWin===(P.slot|0)||(!run.guest&&run.duelWin===0&&!P.down);$('ovScore').textContent='Duel';$('ovEyebrow').textContent='Fin du duel';$('ovTitle').textContent=me?'Tu as gagné le duel ! 🏆':'Tu as perdu le duel';
     $('ovText').textContent=me?'Tu es le dernier debout. Bravo, champion !':'Ce sera pour la prochaine fois : demande une revanche !';$('ovFloor').textContent=me?'🏆':'✗';$('ovFloor').nextElementSibling.textContent='Duel';}
-  if(run.raid){$('ovScore').textContent='Boss de raid · '+DF().name;$('ovEyebrow').textContent=won?'Raid réussi':'Raid perdu';$('ovTitle').textContent=won?'Le Colosse est tombé !':'Le Colosse était trop fort';
+  if(run.reine){$('ovScore').textContent='Boss d\'Halloween';$('ovEyebrow').textContent=won?'Victoire':'Défaite';$('ovTitle').textContent=won?'La Reine Citrouille est vaincue ! 🎃':'La Reine Citrouille a gagné';
+    $('ovText').textContent=won?'Bravo ! Elle reviendra jusqu\'au 2 novembre : tu peux la rebattre (les bonbons ne sont donnés qu\'une fois par jour).':'Réessaie : esquive ses attaques et bats ses citrouilles.';$('ovFloor').textContent=won?'🎃':'✗';$('ovFloor').nextElementSibling.textContent='Reine';}
+  else if(run.raid){$('ovScore').textContent='Boss de raid · '+DF().name;$('ovEyebrow').textContent=won?'Raid réussi':'Raid perdu';$('ovTitle').textContent=won?'Le Colosse est tombé !':'Le Colosse était trop fort';
     $('ovText').textContent=won?'Bravo à toute l\'équipe : vous avez battu le boss de raid.':'Réessayez : restez ensemble et relevez-vous les uns les autres.';$('ovFloor').textContent=won?'✓':'✗';$('ovFloor').nextElementSibling.textContent='Raid';}
   if(run.rush){const N=RUSH.length,b=run.rushBeat|0;
     $('ovScore').textContent='Rush des boss · '+DF().name+' · record : '+(save.rushBest|0)+' sur '+N;
@@ -6112,7 +6124,7 @@ function buyUp(id){
 function b64uEnc(str){const by=new TextEncoder().encode(str);let bin='';for(const b of by)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function b64uDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const bin=atob(s),by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return new TextDecoder().decode(by);}
 function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
-const SAVE_EXTRA=['ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
+const SAVE_EXTRA=['hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(i<30&&save.seen[id])mask|=1<<i;});
   const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
@@ -6275,6 +6287,9 @@ const ACHS=[
   {id:'client',name:'Bon client',desc:'Achète 5 choses à la boutique.',gold:30,goal:()=>[Math.min(save.stats.bought|0,5),5]},
   {id:'collection',name:'Collectionneur',desc:'Aie 8 objets dans une même partie.',gold:60},
   {id:'niveau10',name:'Expert',desc:'Atteins le niveau 10 dans une partie.',gold:50},
+  {id:'reine',name:'Chasseur de citrouille',desc:'Bats la Reine Citrouille pendant Halloween.',gold:80},
+  {id:'hard3',name:'Cœur de pierre',desc:'Atteins l\'étage 3 en mode Hardcore.',gold:100},
+  {id:'hardwin',name:'Légende vivante',desc:'Gagne une partie en mode Hardcore.',gold:300},
   {id:'duel',name:'Champion de duel',desc:'Gagne un duel contre tes amis.',gold:60},
   {id:'tournoi',name:'Roi du week-end',desc:'Gagne le tournoi du week-end contre tes amis.',gold:100},
   {id:'survie10',name:'Increvable',desc:'Tiens 10 vagues en mode Survie.',gold:80},
@@ -6739,7 +6754,7 @@ $('btnPlay').addEventListener('click',()=>{audioUnlock();goPick();});
 addEventListener('resize',()=>{const b=$('starters'),h=$('swipeHint');if(b&&h)h.hidden=!(b.scrollWidth>b.clientWidth+4);});
 for(let i=0;i<4;i++)$('diff-'+i).addEventListener('click',()=>setDiff(i));
 $('btnBest').addEventListener('click',()=>openBestiary('title'));
-$('pickBack').addEventListener('click',()=>{if(pickMode==='daily'||pickMode==='rush'||pickMode==='surv'||pickMode==='tourney'){pickMode=null;goTitle();}else if(pickMode){pickMode=null;openCoop(true);}else goTitle();});
+$('pickBack').addEventListener('click',()=>{if(pickMode==='daily'||pickMode==='rush'||pickMode==='surv'||pickMode==='tourney'||pickMode==='reine'||pickMode==='hard'){pickMode=null;goTitle();}else if(pickMode){pickMode=null;openCoop(true);}else goTitle();});
 $('btnCoop').addEventListener('click',()=>{audioUnlock();openCoop();});
 $('btnHost').addEventListener('click',()=>{if(ROOM)goPickCoop('host',null);});
 $('btnCoopStart').addEventListener('click',startCoopRun);
@@ -6832,6 +6847,8 @@ if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
 $('btnRush').addEventListener('click',()=>{audioUnlock();goPickRush();});
 $('btnTourney').addEventListener('click',()=>{audioUnlock();if(!isWeekend()){toast('Tournoi du week-end','Il a lieu le samedi et le dimanche. Reviens ce week-end : le meilleur score entre amis gagne un trophée !');sfx('nope');return;}
   netLeave();stopSearch();buildStarters();pickMode='tourney';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='Tournoi du week-end : une crypte spéciale, la même pour tous tes amis. Le meilleur score gagne un trophée lundi ! Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
+$('btnReine').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='reine';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='La Reine Citrouille : un combat de boss spécial Halloween. Si tu gagnes : 200 or, 25 bonbons (une fois par jour) et un trophée ! Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
+$('btnHard').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='hard';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='Mode Hardcore : tu n\'as qu\'UN seul cœur pendant toute la partie (impossible d\'en avoir plus). En échange : 3 fois plus d\'or, 2 fois plus de points de saison et un butin en plus. Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('btnSurv').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='surv';lastCoop=false;lastLocal=false;lastDaily=false;lastRush=false;lastSurv=true;clearTaken();$('pickSub').textContent='Survie : des vagues de monstres sans fin dans une grande salle. Tiens le plus longtemps possible ! Tous les 5 vagues : un cœur et un objet. Touche ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('saveBack').addEventListener('click',goTitle);
 $('btnCopySave').addEventListener('click',copySave);
@@ -7756,6 +7773,8 @@ function onPickStarter(id){
   else if(pickMode==='tourney'){pickMode=null;startRun(id,{tourney:true});}
   else if(pickMode==='rush'){pickMode=null;startRun(id,{rush:true});}
   else if(pickMode==='surv'){pickMode=null;startRun(id,{surv:true});}
+  else if(pickMode==='reine'){pickMode=null;startRun(id,{reine:true});}
+  else if(pickMode==='hard'){pickMode=null;startRun(id,{hard:true});}
   else startRun(id);
 }
 function renderCoop(force){
