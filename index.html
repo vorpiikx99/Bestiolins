@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028082951';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028082951" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028083720';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028083720" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -315,7 +315,7 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .main-acts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .main-acts .btn{width:100%;min-width:0;padding-inline:10px}
 .main-acts #btnPlay{grid-column:1/-1;min-height:66px;font-size:28px}
-.main-acts #btnRush{grid-column:1/-1}
+.main-acts #btnRush{grid-column:auto}
 .upd-bar{width:100%;white-space:normal;line-height:1.2}
 .side{position:fixed;inset:0;z-index:30}
 .side-dim{position:absolute;inset:0;background:rgba(8,5,3,.62);opacity:0;transition:opacity .22s}
@@ -730,6 +730,10 @@ html.no-anim #tutBox.pop{animation:none}
 .ovteam td.nm{font-weight:700}
 .ovteam tr.me td{background:rgba(127,211,255,.07)}
 .ovteam td.mvp{text-align:center;color:#ffd36a;font-weight:700;border-top:0;padding-top:8px}
+#giveHeart{position:fixed;z-index:11;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 150px);padding:12px 20px;border-radius:999px;border:2px solid #ff8aa0;background:rgba(60,14,24,.92);color:#ffe0e6;font:700 17px var(--font-ui);box-shadow:0 4px 18px rgba(0,0,0,.5);animation:ghPulse 1s ease-in-out infinite}
+@keyframes ghPulse{50%{box-shadow:0 0 0 8px rgba(255,138,160,.18),0 4px 18px rgba(0,0,0,.5)}}
+#coopModeBox{margin:4px 0 10px}
+#coopModeBox .chips{display:flex;flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
@@ -842,6 +846,7 @@ html.no-anim #tutBox.pop{animation:none}
       <button id="btnCoop" class="btn" type="button">Jouer à plusieurs</button>
       <button id="btnDaily" class="btn" type="button">Défi du jour <span class="count" id="dailyTag"></span></button>
       <button id="btnRush" class="btn" type="button">Rush des boss <span class="count" id="rushTag"></span></button>
+      <button id="btnSurv" class="btn" type="button">Survie <span class="count" id="survTag"></span></button>
     </div>
     <button class="btn glow upd-bar" id="updBar" type="button" hidden>Nouvelle version du jeu ! Touche ici pour mettre à jour</button>
     <p class="coop-status ok giftmsg" id="giftDayMsg" role="status" hidden></p>
@@ -1063,6 +1068,7 @@ html.no-anim #tutBox.pop{animation:none}
       <p class="small-h" id="coopWaitLabel"></p>
       <p class="coop-code" id="coopCode"></p>
       <p class="coop-status" id="coopStatus"></p>
+      <div id="coopModeBox" hidden><p class="small-h">Type de partie</p><div class="chips" id="coopMode"></div><p class="coop-note" id="coopModeNote"></p></div>
       <div id="coopInvMore" hidden><p class="small-h">Inviter d'autres amis (4 joueurs maximum)</p><div id="coopInvList" class="coop-list"></div></div>
       <div class="actions">
         <button class="btn primary" id="btnCoopStart" type="button" hidden>Lancer la partie</button>
@@ -1336,6 +1342,7 @@ html.no-anim #tutBox.pop{animation:none}
   </div>
 </section>
 
+<button type="button" id="giveHeart" hidden>❤️ Donner un cœur</button>
 <div id="tutBox" hidden><p class="tut-n" id="tutN"></p><p class="tut-t" id="tutT"></p><button type="button" class="tut-skip" id="tutSkip">Passer le tutoriel</button></div>
 <section id="scrOver" class="screen" hidden>
   <div class="panel">
@@ -1427,6 +1434,7 @@ const SPECIES={
   yetin:{name:'Yétin',like:'crapaudron',where:'Le Château de glace',hp:20,speed:0,r:12,ai:'jump',col:'#e6f2f7',fit:1.35,desc:"Un bébé yéti tout poilu. Il saute et retombe là où tu étais."},
   givrille:{name:'Givrille',like:'spectrelle',where:'Le Château de glace',hp:18,speed:64,r:11,ai:'ghost',fly:true,col:'#a8dcff',fit:1.25,desc:"Un fantôme de givre. Il disparaît puis réapparaît tout près de toi."},
   oeilgivre:{name:"L'Œil de Givre",like:'oeil',where:'Boss · Le Château de glace',boss:true,hp:300,speed:0,r:32,ai:'b_oeil',fly:true,col:'#bfe6ff',fit:1.65,desc:"Un œil géant pris dans la glace. Il te fixe et tire des pluies de glaçons."},
+  colosse:{name:'Le Colosse',like:'necroroi',where:'Boss de raid · à plusieurs',boss:true,hp:700,speed:0,r:44,ai:'b_coeur',col:'#c9a43a',fit:1.5,pal:{'#5a4a54':'#5c4a1a','#ff6b7d':'#7fd3ff','#c14a64':'#3a9bff','#8c6a3c':'#e8d080','#1a0e14':'#1a1204'},desc:"Un géant d'or et de pierre. Trop fort pour un joueur seul : il faut être 3 ou 4 pour le battre."},
   devoreur:{name:'Le Dévoreur',like:'necroroi',where:'Boss final · Le Cœur de la Crypte',boss:true,hp:620,speed:0,r:38,ai:'b_coeur',col:'#8a1f3a',fit:1.5,pal:{'#5a4a54':'#4a1626','#ff6b7d':'#ffd34a','#c14a64':'#ff3a2a','#8c6a3c':'#2a1a1a','#1a0e14':'#0a0004'},desc:"Le cœur vivant de la crypte, caché tout au fond. Il change trois fois de forme et devient de plus en plus furieux."},
   prismagor:{name:'Prismagor',where:"Boss secret · un passage caché de l'Abîme",boss:true,hp:430,speed:0,r:34,ai:'b_prisme',col:'#8fd8ff',fit:1.5,desc:"Le gardien du Jardin de Cristal, caché sous l'Abîme. Un géant de cristal qui découpe la lumière en mille éclats."}
 };
@@ -1440,7 +1448,7 @@ const FLOORS_ALT={
      pal:{floorA:'#2f3e4f',floorB:'#2a3847',grout:'#101820',wall:'#0c131b',wallHi:'#1a2633',rock:'#5a7890',rockHi:'#a8d4f0',rockLo:'#36506a',light:'170,220,255'}}
 };
 function FL(i){i=i|0;if(run&&run.fv&&run.fv[i]&&FLOORS_ALT[i])return FLOORS_ALT[i];return FLOORS[i];}
-const ORDER=['gloupin','chauvelin','petouille','crapaudron','tetard','bulleur','charbuffle','mitrailloche','duplasme','gloupinet','spectrelle','oeilloche','lanternon','gloupitan','reine','fournaise','oeil','necroroi','eclatin','prismouche','geodon','prismagor','petardeau','mimic','voleur','soignelle','citrouillo','corbeau','feufollet','roicitrouille','lavelot','braisille','cracheur','magmator','glacon','yetin','givrille','oeilgivre','devoreur'];
+const ORDER=['gloupin','chauvelin','petouille','crapaudron','tetard','bulleur','charbuffle','mitrailloche','duplasme','gloupinet','spectrelle','oeilloche','lanternon','gloupitan','reine','fournaise','oeil','necroroi','eclatin','prismouche','geodon','prismagor','petardeau','mimic','voleur','soignelle','citrouillo','corbeau','feufollet','roicitrouille','lavelot','braisille','cracheur','magmator','glacon','yetin','givrille','oeilgivre','devoreur','colosse'];
 
 const STARTERS={
   braisot:{name:'Braisot',col:'#f08a3c',r:10,fit:1.55,desc:'Une salamandre de braise. Équilibrée en tout.',hp:6,speed:118,dmg:3.5,fireDelay:0.36,range:220,size:1,pierce:false,shot:'#ffb347',core:'#fff1c4',stats:{'Dégâts':3,'Cadence':3,'Vitesse':3,'Vie':3}},
@@ -1685,7 +1693,7 @@ const FLOORS=[
    pal:{floorA:'#3a1a22',floorB:'#33161d',grout:'#12060a',wall:'#0e0407',wallHi:'#200a10',rock:'#5a2532',rockHi:'#84394a',rockLo:'#3a1620',light:'255,70,90'}}
 ];
 const NFLOORS=5,SECRET_FLOOR=5,FINAL_FLOOR=6,RUSH=[0,1,2,3,5,4];
-function floorLabel(){return run&&run.rush?'Boss '+((run.rushI|0)+1)+'/'+RUSH.length:run&&run.floor===SECRET_FLOOR?'Étage secret':run&&run.floor===FINAL_FLOOR?'Étage final':'Étage '+floorNo();}
+function floorLabel(){return run&&run.surv?'Survie · vague '+(run.wave|0):run&&run.raid?'Boss de raid':run&&run.rush?'Boss '+((run.rushI|0)+1)+'/'+RUSH.length:run&&run.floor===SECRET_FLOOR?'Étage secret':run&&run.floor===FINAL_FLOOR?'Étage final':'Étage '+floorNo();}
 
 const TPL_SRC=[
 `...........
@@ -1833,8 +1841,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -3891,6 +3899,24 @@ function hurtPlayer(n,sx,sy){
   if(P.hp<=0){P.hp=0;playerDown(P);}
 }
 const REVIVE_T=3;
+function reviveNear(by){if(!run||!run.pl||!by||by.down||(by.hp|0)<=2)return null;let b=null,bd=46;for(const q of run.pl){if(q===by||!q.down)continue;const d=Math.hypot(q.x-by.x,q.y-by.y);if(d<bd){bd=d;b=q;}}return b;}
+function giveHeartTo(by,pl){
+  if(!pl||!pl.down||!by||(by.hp|0)<=2)return;
+  by.hp-=2;pl.down=false;pl.revT=0;pl.hp=Math.min(pl.maxHp,3);pl.inv=1.8;pst(by).rv++;
+  ringFx(pl.x,pl.y,56,'255,120,150',0.7);spark(pl.x,pl.y,'255,140,170',26,170,0.7);sfx('heal');
+  const a='Un cœur a été donné !',b='Te revoilà, grâce à ton ami';
+  if(by===P||!by.isRemote){if(pl.isRemote){toast('Tu as donné un cœur',"Ton ami est de retour !");netEv('t',a,b,pl);}else toast(a,'Joueur relevé !');}
+  else{toast(pl===P?'Ton ami t\'a donné un cœur !':a,pl===P?'Te revoilà !':'Joueur relevé !');if(pl.isRemote)netEv('t',a,b,pl);}
+}
+function pressGiveHeart(e){if(e&&e.preventDefault)e.preventDefault();if(state!=='play'||!run)return;audioUnlock();
+  if(NET&&NET.role==='guest'){NET.gh=(NET.gh|0)+1;sendGuestPresence();sfx('heal');return;}
+  const q=reviveNear(P);if(q)giveHeartTo(P,q);}
+$('giveHeart').addEventListener('pointerdown',pressGiveHeart);
+function updateGiveBtn(){
+  const b=$('giveHeart');let on=false;
+  if(state==='play'&&run&&run.pl&&P&&!run.dead){if(NET&&NET.role==='guest'){on=!P.down&&(P.hp|0)>2&&run.pl.some(q=>q!==P&&q.down&&Math.hypot(q.x-P.x,q.y-P.y)<46);}else on=!!reviveNear(P);}
+  if(b.hidden===on)b.hidden=!on;
+}
 function updateRevive(dt){
   for(const pl of run.pl){
     if(!pl.down){pl.revT=0;continue;}
@@ -4606,7 +4632,7 @@ function updateGame(dt){
     }
   }
   updateParticles(dt);updateSurprise(dt);
-  if(run.roomActive&&!run.room.cleared&&run.enemies.length===0&&!run.ch)roomCleared();
+  if(run.roomActive&&!run.room.cleared&&run.enemies.length===0&&!run.ch&&!run.surv&&!run.raid)roomCleared();updateArena(dt);
   if((run.pendingLv>0||mateLvWaiting())&&!run.dead&&!run.won&&!run.trans)openLevelUp();
 }
 
@@ -5059,6 +5085,10 @@ function renderGame(){
     ctx.save();ctx.translate(pt.x,pt.y+(pt.id==='luciole'?Math.sin(t*4+pl.x*0.01)*2:0));if(pl.down)ctx.globalAlpha=0.45;
     {const ev=petEvo(pt.lv);if(ev){ctx.beginPath();ctx.arc(0,-2,(ev>=2?13:10)+Math.sin(t*4)*1.2,0,TAU);ctx.fillStyle=ev>=2?'rgba(255,210,90,0.22)':'rgba(140,210,255,0.18)';ctx.fill();if(ev>=2&&Math.random()<0.06)run.parts.push({kind:'spark',x:pt.x+rand(-8,8),y:pt.y-rand(2,12),vx:0,vy:-18,life:0.6,max:0.6,rgb:'255,220,120',size:1.2});ctx.scale(1+ev*0.22,1+ev*0.22);}}
     drawPet(ctx,pt.id,t,{lx:pl.lx,ly:pl.ly,walk:pt.walk,face:pt.face,flash:pt.flash});ctx.restore();}
+  if(run.pl&&P&&!P.down&&!run.dead)for(const q of run.pl){if(q===P||!q.down)continue;
+    const dx=q.x-P.x,dy=q.y-P.y,d=Math.hypot(dx,dy);
+    {const by=q.y-q.r*2.6-Math.abs(Math.sin(t*5))*5;ctx.save();ctx.translate(q.x,by);ctx.beginPath();ctx.moveTo(-6,-7);ctx.lineTo(6,-7);ctx.lineTo(0,2);ctx.closePath();ctx.fillStyle='#ff6a7a';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=INK;ctx.stroke();ctx.restore();}
+    if(d>60){const ux=dx/d,uy=dy/d,ax=P.x+ux*24,ay=P.y-4+uy*24;ctx.save();ctx.translate(ax,ay);ctx.rotate(Math.atan2(uy,ux));ctx.globalAlpha=0.6+0.3*Math.sin(t*6);ctx.beginPath();ctx.moveTo(7,0);ctx.lineTo(-4,-5);ctx.lineTo(-2,0);ctx.lineTo(-4,5);ctx.closePath();ctx.fillStyle='#ff6a7a';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle=INK;ctx.stroke();ctx.restore();}}
   for(const sh of run.shots)drawShot(sh,t);
   for(const sh of run.eshots){
     if(sh.r>=8){ctx.save();ctx.translate(sh.x,sh.y-3);ctx.rotate(t*3);ctx.beginPath();ctx.moveTo(0,-sh.r*1.2);ctx.lineTo(sh.r,0);ctx.lineTo(0,sh.r*1.2);ctx.lineTo(-sh.r,0);ctx.closePath();ctx.fillStyle='#9fe6ff';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#0c2a3a';ctx.stroke();ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(-sh.r*0.3,-sh.r*0.6,sh.r*0.35,sh.r*0.5);ctx.restore();continue;}
@@ -5312,6 +5342,7 @@ function goTitle(){
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
   closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();checkTitles();updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  $('survTag').textContent=save.survBest?'record '+save.survBest:'';
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
@@ -5331,6 +5362,44 @@ function goTitle(){
   syncToggles();updMenuBadge();
 }
 function goPick(){netLeave();stopSearch();buildStarters();pickMode=null;lastCoop=false;lastDaily=false;lastRush=false;lastLocal=false;clearTaken();$('pickSub').textContent='Touche une créature pour commencer la partie.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;}
+/* ---- arena modes: endless waves (survival) and a giant boss for 3-4 players (raid) ---- */
+function setupArena(type){
+  const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
+  const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
+  const room={gx:4,gy:4,type,doors:{},tpl:0,mh:false,mv:false,grid,visited:true,known:true,cleared:false,seed,pickups:keep,itemPlaced:true,hidden:{},broken:[],pots:[],surRoll:1,thiefRoll:1,barrels:[],arena:1};
+  run.map={rooms:new Map([['4,4',room]]),start:room,get(x,y){return this.rooms.get(x+','+y);}};
+  enterRoom(room,null);
+}
+function setupSurv(){run.surv=1;run.wave=1;run.svWait=0;run.rushBeat=0;setupArena('normal');announce('Survie','Vague 1 : tiens le plus longtemps possible !');}
+function setupRaid(){
+  run.raid=1;setupArena('arena');run.raidT=2.2;
+  announce('Boss de raid','Le Colosse arrive… restez ensemble !');
+}
+function spawnWave(w){
+  const fl=Math.min(4,Math.floor((w-1)/4)),f0=run.floor,n=Math.min(12,2+Math.floor(w*0.6)+Math.max(0,players().length-1));
+  run.floor=fl;try{spawnEnemies(run.room,n);}finally{run.floor=f0;}
+  for(const e of run.enemies){if(e.boss)continue;e.hp=e.maxHp=e.maxHp*(1+w*0.06);}
+  if(w%10===0){const id=FLOORS[((w/10)-1)%5].boss,b=makeEnemy(id,RW/2,RH*0.32);toughen(b,DF().bossT);b.spawnT=0.8;run.enemies.push(b);showBossCard(id,'Vague '+w+' : boss !');sfx('boss');}
+  else if(w%5===0&&run.enemies.length){const e=run.enemies[0];e.hp=e.maxHp=e.maxHp*2.5;e.elite=true;}
+  run.roomActive=true;
+  const a='Vague '+w,b=w%10===0?'Un boss arrive !':w%5===0?'Un monstre géant est là':'Bats tous les monstres';banner(a,b,1.8);netEv('b',a,b);sfx('slam');
+}
+function updateArena(dt){
+  if(run.raid){
+    if(run.raidT>0){run.raidT-=dt;if(run.raidT<=0){const b=makeEnemy('colosse',RW/2,RH*0.3),n=players().length;b.hp=b.maxHp=b.maxHp*n*DF().hp;toughen(b,40+n*25);b.spawnT=1;run.enemies.push(b);run.roomActive=true;showBossCard('colosse','Boss de raid');sfx('boss');}return;}
+    if(!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=3;addGold(250);
+      const a='Raid réussi !',b='Le Colosse est vaincu · +250 or et un butin';banner(a,b,3);toast(a,b);netEv('t',a,b);unlockAch('raid');sfx('item');}
+    return;}
+  if(!run.surv||run.dead)return;
+  if(run.enemies.some(e=>!e.dead)||run.bossDying){run.svWait=0;return;}
+  if(!run.svWait){const w=run.wave|0,g=4*w;run.svDone=w;addGold(g);run.svWait=3.2;run.rushBeat=Math.min(3,Math.floor(w/5));
+    if(w>(save.survBest|0)){save.survBest=w;persist();}
+    if(w%5===0){const q=nearestFree(RW/2-30,RH/2),id=run.pool.pop();run.room.pickups.push({kind:'heart',x:q.x,y:q.y});if(id){const q2=nearestFree(RW/2+30,RH/2);run.room.pickups.push({kind:'item',id,x:q2.x,y:q2.y});}}
+    const a='Vague '+w+' terminée !',b='+'+g+' or'+(w%5===0?' · un cœur et un objet sont apparus':'');toast(a,b);netEv('t',a,b);
+    if(w>=10)unlockAch('survie10');
+    return;}
+  run.svWait-=dt;if(run.svWait<=0){run.svWait=0;run.wave=(run.wave|0)+1;spawnWave(run.wave);}
+}
 /* ---- first-game tutorial: five small steps, each one done by actually doing it ---- */
 let TUT=null;
 const TUT_N=5;
@@ -5374,7 +5443,7 @@ function updateTut(dt){
   else if(i===4){if(run.room!==TUT.room)endTut(false);}
 }
 $('tutSkip').addEventListener('click',e=>{e.preventDefault();endTut(true);});
-function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);
+function startRun(sid,opts){audioUnlock();clearOverlays();newRun(sid,opts);giveBag();state='play';TUT=null;if(opts&&opts.surv)setupSurv();else if(!save.tutoDone&&!(opts&&(opts.daily||opts.rush)))startTut();show(null);pauseBtn.hidden=false;resetSticks();lastDaily=!!(opts&&opts.daily);lastRush=!!(opts&&opts.rush);
   if(run.daily)toast('Défi du jour',"Le même donjon pour tout le monde aujourd'hui. Fais le meilleur score !");
   if(run.rush)toast('Rush des boss','Choisis tes 2 capacités, prends tes cadeaux, puis passe la porte rouge.');}
 function pauseGame(){if(state!=='play')return;state='paused';show('scrPause');pauseBtn.hidden=true;resetSticks();syncToggles();$('optAuto2').parentElement.hidden=isLocal();quitArmed=false;$('btnQuit').textContent='Abandonner la partie';$('btnQuit').classList.remove('danger');fillPauseAbil();}
@@ -5490,7 +5559,7 @@ function renderTeamStats(){
 function showOver(won,quit){
   state='over';show('scrOver');pauseBtn.hidden=true;resetSticks();clearOverlays();
   if(NET){if(NET.role==='guest'&&quit)netLeave();else{const n=NET;setTimeout(()=>{if(NET===n)netLeave();},6000);}}
-  const reached=floorNo(),rush=!!run.rush;
+  const reached=floorNo(),rush=!!(run.rush||run.surv||run.raid);
   if(!rush&&reached>(save.best||0))save.best=reached;
   save.stats.maxLv=Math.max(save.stats.maxLv|0,run.lvl|0);setTimeout(soProfileSoon,300);
   if(won&&!run.winCounted&&!rush){run.winCounted=true;save.wins=(save.wins||0)+1;}
@@ -5506,6 +5575,8 @@ function showOver(won,quit){
   if(run.daily&&!quit&&CB_SOC&&SOC.chal){const res=[];for(const k in SOC.chal){const c=SOC.chal[k];if(c.day!==run.daily)continue;res.push(score>c.s?'Tu as battu '+c.n+' ('+c.s+') ! 🎉':c.n+' garde la tête : '+c.s+' points contre '+score+'.');}if(res.length)dmsg+=(dmsg?' ':'')+res.join(' ');}
   $('ovDaily').textContent=dmsg;$('ovDaily').hidden=!dmsg;
   if(run.pl&&!quit&&(run.coop||run.guest))unlockAch('duo');
+  if(run.pl&&!quit&&(run.coop||run.guest)&&!rush&&!run.daily){const m=[SOC.nick||'Toi'].concat(run.pl.filter(q=>q!==P).map(q=>q.nick||'Ami')).slice(0,4);
+    if(!save.teamBest||reached>(save.teamBest.f|0)){save.teamBest={f:reached,m};setTimeout(soProfileSoon,500);}}
   checkAchs();
   const entry={s:score,f:reached,w:won?1:0,k:run.kills|0,lv:run.lvl|0,st:SIDS.includes(P&&P.sid)?P.sid:run.starter};
   if(!quit&&score>0&&!rush){if(!save.myBest||save.myBest.s<score)save.myBest=entry;submitScore(entry,run.daily);}
@@ -5523,7 +5594,13 @@ function showOver(won,quit){
   $('ovFloor').textContent=reached>NFLOORS?String(reached):reached+'/'+NFLOORS;$('ovLevel').textContent=run.lvl;$('ovGold').textContent=run.gold||0;$('ovKills').textContent=run.kills;$('ovItems').textContent=duo?run.pl.reduce((n,pl)=>n+pl.items.length,0):P.items.length;$('ovTime').textContent=fmtTime(run.time);
   $('ovFloor').nextElementSibling.textContent=rush?'Boss battus':'Étage atteint';
   renderTeamStats();
-  if(rush){const N=RUSH.length,b=run.rushBeat|0;
+  if(run.surv){const w=run.svDone|0,many=!!run.pl;
+    $('ovScore').textContent='Survie · '+DF().name+' · record : '+(save.survBest|0)+' vague'+((save.survBest|0)>1?'s':'');
+    $('ovEyebrow').textContent=quit?'Survie abandonnée':'Fin de la survie';$('ovTitle').textContent=w>=10?'Quelle résistance !':'Les monstres ont gagné';
+    $('ovText').textContent=(many?'Vous avez':'Tu as')+' tenu '+w+' vague'+(w>1?'s':'')+' complète'+(w>1?'s':'')+'.';$('ovFloor').textContent=String(w);$('ovFloor').nextElementSibling.textContent='Vagues tenues';}
+  if(run.raid){$('ovScore').textContent='Boss de raid · '+DF().name;$('ovEyebrow').textContent=won?'Raid réussi':'Raid perdu';$('ovTitle').textContent=won?'Le Colosse est tombé !':'Le Colosse était trop fort';
+    $('ovText').textContent=won?'Bravo à toute l\'équipe : vous avez battu le boss de raid.':'Réessayez : restez ensemble et relevez-vous les uns les autres.';$('ovFloor').textContent=won?'✓':'✗';$('ovFloor').nextElementSibling.textContent='Raid';}
+  if(run.rush){const N=RUSH.length,b=run.rushBeat|0;
     $('ovScore').textContent='Rush des boss · '+DF().name+' · record : '+(save.rushBest|0)+' sur '+N;
     $('ovEyebrow').textContent=won?'Rush des boss réussi':quit?'Rush abandonné':'Fin du rush';
     $('ovTitle').textContent=won?'Tu as vaincu tous les boss !':"Les boss t'ont eu";
@@ -5776,6 +5853,8 @@ const ACHS=[
   {id:'client',name:'Bon client',desc:'Achète 5 choses à la boutique.',gold:30,goal:()=>[Math.min(save.stats.bought|0,5),5]},
   {id:'collection',name:'Collectionneur',desc:'Aie 8 objets dans une même partie.',gold:60},
   {id:'niveau10',name:'Expert',desc:'Atteins le niveau 10 dans une partie.',gold:50},
+  {id:'survie10',name:'Increvable',desc:'Tiens 10 vagues en mode Survie.',gold:80},
+  {id:'raid',name:'Tous ensemble',desc:'Bats le Colosse, le boss de raid, à plusieurs.',gold:150},
   {id:'coeur',name:'Cœur de la crypte',desc:'Bats le Dévoreur, le boss de l\'étage final.',gold:150},
   {id:'duo',name:'Meilleurs amis',desc:'Termine une partie à deux en ligne.',gold:40},
   {id:'quotidien',name:'Fidèle',desc:'Termine un défi du jour.',gold:30},
@@ -5947,7 +6026,7 @@ function onCosm(kind,k){
   $('shopGold').textContent=save.gold||0;buildShop();
 }
 /* ---- daily challenge: one seeded dungeon per calendar day ---- */
-let lastDaily=false,lastRush=false;
+let lastDaily=false,lastRush=false,lastSurv=false;
 function goPickRush(){
   netLeave();stopSearch();buildStarters();pickMode='rush';lastCoop=false;lastLocal=false;lastDaily=false;clearTaken();
   $('pickSub').textContent="Rush des boss : les 6 boss à la suite, le boss secret compris. Après chaque boss : un cadeau, un cœur et 2 niveaux. Touche ta créature.";
@@ -6289,6 +6368,7 @@ if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
   $('btnInstall').addEventListener('click',async()=>{if(!ip)return;ip.prompt();try{await ip.userChoice;}catch(e){}ip=null;$('btnInstall').hidden=true;});
   addEventListener('appinstalled',()=>{$('btnInstall').hidden=true;});}
 $('btnRush').addEventListener('click',()=>{audioUnlock();goPickRush();});
+$('btnSurv').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='surv';lastCoop=false;lastLocal=false;lastDaily=false;lastRush=false;lastSurv=true;clearTaken();$('pickSub').textContent='Survie : des vagues de monstres sans fin dans une grande salle. Tiens le plus longtemps possible ! Tous les 5 vagues : un cœur et un objet. Touche ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('saveBack').addEventListener('click',goTitle);
 $('btnCopySave').addEventListener('click',copySave);
 $('btnLoadSave').addEventListener('click',loadSaveCode);
@@ -6461,7 +6541,7 @@ function myCard(){
   return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
     a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
     pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
-    t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0)};
+    t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0),sv:save.survBest|0,tm:save.teamBest||0};
 }
 function cleanCard(o){
   if(!o||typeof o!=='object')return null;
@@ -6470,7 +6550,7 @@ function cleanCard(o){
   const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
   const pi=Array.isArray(o.pt)?Math.floor(+o.pt[0]):-1,pt=pi>=0&&pi<PETS.length?[pi,Math.max(1,N(o.pt[1],PET_MAX))]:null;
   return{n:cleanNick(o.n)||'Joueur',st,sk:N(o.sk,SKINS[st]?SKINS[st].length:0),f:N(o.f,999),lv:N(o.lv,999),w:N(o.w,1e6),k:N(o.k,1e8),b:N(o.b,ORDER.length),a:N(o.a,ACHS.length),
-    r:N(o.r,RUSH.length),g:N(o.g,9999),dd:o.dd&&typeof o.dd==='object'&&typeof o.dd.d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dd.d)?{d:o.dd.d,s:N(o.dd.s,1e8)}:null,t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999)};
+    r:N(o.r,RUSH.length),g:N(o.g,9999),dd:o.dd&&typeof o.dd==='object'&&typeof o.dd.d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dd.d)?{d:o.dd.d,s:N(o.dd.s,1e8)}:null,t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999),sv:N(o.sv,9999),tm:o.tm&&typeof o.tm==='object'&&Array.isArray(o.tm.m)?{f:N(o.tm.f,999),m:o.tm.m.slice(0,4).map(cleanNick).filter(Boolean)}:null};
 }
 function cardOf(pk){const c=SOC.cache[pk];const p=c&&cleanCard(c.p);return p?{p,at:+c.at||0}:null;}
 function nameOf(pk){const c=cardOf(pk);if(c)return c.p.n;const r=SOC.recent.find(x=>x.pk===pk);return(r&&r.n)||'Joueur';}
@@ -6713,12 +6793,13 @@ function myGifts(){if(!soReady)return[];const F=new Set(soFriends());return soGi
 function giftTxt(g){const n=nameOf(g.pk);if(g.data.t==='gold')return n+" t'a envoyé 25 or";const it=g.data.it;return n+" t'a offert : "+EQ_SLOTS[it.s].names[it.r]+' ('+RAR[it.r].n+')';}
 function trimObj(o,max){const k=Object.keys(o);for(let i=0;i<k.length-max;i++)delete o[k[i]];}
 let frRankTab='f';
-const RANK_TABS=[['f','Étage max'],['w','Victoires'],['s','Meilleur score'],['dd','Défi du jour']];
+const RANK_TABS=[['f','Étage max'],['w','Victoires'],['s','Meilleur score'],['dd','Défi du jour'],['sv','Survie'],['tm','Équipe']];
 function renderFrRank(pks){
   const box=$('frRankBox');box.hidden=!pks.length;if(!pks.length)return;
   const tb=$('frRankTabs');tb.textContent='';
   for(const[k,n] of RANK_TABS){const c=document.createElement('button');c.type='button';c.className='chip-f'+(frRankTab===k?' on':'');c.textContent=n;c.addEventListener('click',()=>{frRankTab=k;renderFriends();});tb.append(c);}
-  const val=p=>!p?-1:frRankTab==='f'?p.f:frRankTab==='w'?p.w:frRankTab==='s'?(p.mb?p.mb.s:0):(p.dd&&p.dd.d===dateKey()?p.dd.s:-1);
+  if(frRankTab==='tm'){renderTeamRank(pks);return;}
+  const val=p=>!p?-1:frRankTab==='sv'?(p.sv||-1):frRankTab==='f'?p.f:frRankTab==='w'?p.w:frRankTab==='s'?(p.mb?p.mb.s:0):(p.dd&&p.dd.d===dateKey()?p.dd.s:-1);
   const me={me:true,p:cleanCard(myCard())},rows=[me].concat(pks.map(pk=>({pk,p:cardOf(pk)&&cardOf(pk).p}))).map(r=>({...r,v:val(r.p)}));
   rows.sort((a,b)=>b.v-a.v);
   const L=$('frRankList');L.textContent='';
@@ -6726,8 +6807,19 @@ function renderFrRank(pks){
     const nb=document.createElement('span');nb.className='rk-n';nb.textContent=r.v<0?'–':(['🥇','🥈','🥉'][i]||(i+1)+'.');
     const cv=document.createElement('canvas');cv.width=cv.height=Math.round(40*dpr);const st=r.p?r.p.st:'braisot';drawPortrait(cv,st,1.2,!r.p,r.p?skinPal(st,r.p.sk):null);
     const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=r.me?'Toi':nameOf(r.pk);info.append(nm);
-    const v=document.createElement('span');v.className='rk-v';v.textContent=r.v<0?(frRankTab==='dd'?"pas joué aujourd'hui":'?'):frRankTab==='f'?'étage '+r.v:frRankTab==='w'?r.v+(r.v>1?' victoires':' victoire'):r.v+' pts';
+    const v=document.createElement('span');v.className='rk-v';v.textContent=r.v<0?(frRankTab==='dd'?"pas joué aujourd'hui":frRankTab==='sv'?'pas encore joué':'?'):frRankTab==='sv'?r.v+(r.v>1?' vagues':' vague'):frRankTab==='f'?'étage '+r.v:frRankTab==='w'?r.v+(r.v>1?' victoires':' victoire'):r.v+' pts';
     row.append(nb,cv,info,v);if(!r.me)row.addEventListener('click',()=>openCard(r.pk,'friends'));L.append(row);});
+}
+function renderTeamRank(pks){
+  const L=$('frRankList');L.textContent='';const teams=new Map();
+  const add=(tm,mine)=>{if(!tm||!Array.isArray(tm.m)||!tm.m.length)return;const k=tm.m.map(x=>String(x).toLowerCase()).sort().join('|');const o=teams.get(k);if(!o||o.f<tm.f)teams.set(k,{f:tm.f|0,m:tm.m,mine:mine||(o&&o.mine)});else if(mine)o.mine=true;};
+  add(save.teamBest,true);for(const pk of pks){const c=cardOf(pk);if(c&&c.p.tm)add(c.p.tm,false);}
+  const rows=[...teams.values()].sort((a,b)=>b.f-a.f);
+  if(!rows.length){const p=document.createElement('p');p.className='coop-empty';p.textContent="Aucune équipe pour l'instant. Joue une partie en ligne avec tes amis (« Jouer à plusieurs ») : le meilleur étage de votre équipe s'affichera ici.";L.append(p);return;}
+  rows.forEach((r,i)=>{const row=document.createElement('div');row.className='coop-item rank-row'+(r.mine?' me':'');
+    const nb=document.createElement('span');nb.className='rk-n';nb.textContent=['🥇','🥈','🥉'][i]||(i+1)+'.';
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=r.m.join(', ');info.append(nm);
+    const v=document.createElement('span');v.className='rk-v';v.textContent='étage '+r.f;row.append(nb,info,v);L.append(row);});
 }
 function acceptChal(g){
   if(!giftOk(g))return;SOC.claimed[g.key]=1;SOC.chal[g.pk]={day:g.data.day,s:g.data.s|0,n:nameOf(g.pk)};
@@ -7109,6 +7201,14 @@ function inviteMore(pk){
   SO.invite(pk,{c:code,st:NET.st,n:SOC.nick}).catch(()=>{if(NET&&NET.code===code&&NET.invS){delete NET.invS[pk];NET.invSig='';}});
   sfx('coin');toast('Invitation envoyée',nameOf(pk)+' doit toucher « Rejoindre » sur son téléphone');renderCoop(true);
 }
+const COOP_MODES=[['Normale','Les étages de la crypte, comme d\'habitude.'],['Survie','Des vagues de monstres sans fin.'],['Boss de raid','Un boss géant : il faut être au moins 3 joueurs.']];
+function renderCoopMode(n){
+  const box=$('coopModeBox'),show=!!(NET&&NET.role==='host'&&!NET.auto);box.hidden=!show;if(!show)return;
+  const md=NET.md|0,sig=md+'|'+n;if(NET.mdSig===sig)return;NET.mdSig=sig;
+  const c=$('coopMode');c.textContent='';
+  COOP_MODES.forEach((m,i)=>{const b=document.createElement('button');b.type='button';b.className='chip-f'+(md===i?' on':'');b.id='cmode-'+i;b.textContent=m[0];b.addEventListener('click',()=>{if(!NET)return;NET.md=i;NET.mdSig='';NET.idSig='';sfx('coin');renderCoop(true);});c.appendChild(b);});
+  $('coopModeNote').textContent=COOP_MODES[md][1]+(md===2&&n<2?' Il manque encore '+(2-n)+' joueur'+(2-n>1?'s':'')+'.':'');
+}
 function renderInvMore(n){
   const inv=$('coopInvMore'),fr=(soReady&&NET&&!NET.auto&&NET.ch)?soFriends():[];
   inv.hidden=!fr.length||n>=3;if(inv.hidden)return;
@@ -7183,6 +7283,7 @@ function onPickStarter(id){
   else if(pickMode==='join'){const c=pickCode;pickMode=null;startJoining(c,id);}
   else if(pickMode==='daily'){pickMode=null;startRun(id,{daily:true});}
   else if(pickMode==='rush'){pickMode=null;startRun(id,{rush:true});}
+  else if(pickMode==='surv'){pickMode=null;startRun(id,{surv:true});}
   else startRun(id);
 }
 function renderCoop(force){
@@ -7229,20 +7330,20 @@ function renderCoop(force){
   $('coopCode').textContent=NET.code;$('coopCode').hidden=!!NET.auto;
   if(NET.role==='host'){
     const gps=NET.ch?guestPeers():[],gp=gps[0];
-    renderInvMore(gps.length);
+    renderInvMore(gps.length);renderCoopMode(gps.length);
     if(NET.auto){$('coopInvMore').hidden=true;$('coopWaitLabel').textContent='Joueur trouvé';$('coopStatus').textContent='Lancement de la partie…';$('btnCoopStart').hidden=true;return;}
     $('coopWaitLabel').textContent=NET.inv?'Partie avec '+nameOf(NET.inv)+' · code':NET.listed?'Ta partie · code':'Ta partie privée · code';
     $('coopStatus').textContent=!NET.ch?'Création de la partie…':gp?(gps.map(peerLabel).join(', ')+(gps.length>1?' ont':' a')+' rejoint ta partie ('+(gps.length+1)+' joueurs sur 4). Touche « Lancer la partie »'+(gps.length<3?', ou attends d\'autres amis.':'.'))
       :NET.inv?(NET.invOk<0?"L'invitation n'est pas partie : vérifie ta connexion internet, puis touche « Annuler » et réessaie.":NET.invOk>0?'Invitation envoyée à '+nameOf(NET.inv)+' ! Attends qu\'il touche « Rejoindre » sur son téléphone…':'Envoi de l\'invitation…')
       :NET.listed?"En attente d'un joueur… Ta partie apparaît dans « Entre amis » chez les autres.":"Donne ce code à ton ami. Il touche « Jouer à plusieurs », puis « Avec un code ». Jusqu'à 3 amis peuvent te rejoindre.";
-    $('btnCoopStart').hidden=false;$('btnCoopStart').disabled=!gp;
+    $('btnCoopStart').hidden=false;$('btnCoopStart').disabled=!gp||((NET.md|0)===2&&gps.length<2);
   }else{
     $('coopWaitLabel').textContent=NET.auto?'Joueur trouvé':'Partie rejointe · code';
-    const hp=NET.ch?hostPeer():null;$('coopInvMore').hidden=true;
+    const hp=NET.ch?hostPeer():null;$('coopInvMore').hidden=true;$('coopModeBox').hidden=true;
     const hh=hp&&hp.presence.h,ids=hh&&Array.isArray(hh.ids)?hh.ids:null;
     $('coopStatus').textContent=hp?(NET.late&&hh.ph!=='lobby'?"Cette partie a déjà commencé sans toi. Touche « Annuler », puis demande à ton ami d'en créer une autre."
       :ids&&!ids.includes(NET.gid)&&ids.length>=3?'Cette partie est pleine : 4 joueurs au maximum. Touche « Annuler ».'
-      :NET.auto?'Connecté ! La partie va commencer…':'Connecté ! '+(ids&&ids.length>1?(ids.length+1)+' joueurs dans la partie. ':'')+'Attends que ton ami lance la partie…')
+      :NET.auto?'Connecté ! La partie va commencer…':'Connecté ! '+(ids&&ids.length>1?(ids.length+1)+' joueurs dans la partie. ':'')+(hh&&hh.md?'Mode : '+(COOP_MODES[hh.md|0]||COOP_MODES[0])[0]+'. ':'')+'Attends que ton ami lance la partie…')
       :(performance.now()-(NET.joinT||0)>8000*NETK?"Aucune partie trouvée avec ce code. Vérifie-le, ou demande à ton ami de recréer sa partie.":'Connexion à la partie…');
     $('btnCoopStart').hidden=true;
   }
@@ -7291,8 +7392,8 @@ function coopTick(dt){
   coopUiT-=dt;if(coopUiT>0)return;coopUiT=0.35;
   mmTick();
   if(NET&&NET.role==='host'&&NET.auto&&NET.ch&&guestPeer()){startCoopRun();return;}
-  if(NET&&NET.role==='host'&&NET.ch&&state==='coop'){const ids=guestPeers().map(p=>String(p.presence.g.id||p.peer));const sig=ids.join(',');
-    if(sig!==NET.idSig){NET.idSig=sig;try{NET.ch.presence({h:{code:NET.code,ph:'lobby',st:NET.st,u:soU(),ids}}).catch(()=>{});}catch(e){}}}
+  if(NET&&NET.role==='host'&&NET.ch&&state==='coop'){const ids=guestPeers().map(p=>String(p.presence.g.id||p.peer));const sig=ids.join(',')+'|'+(NET.md|0);
+    if(sig!==NET.idSig){NET.idSig=sig;try{NET.ch.presence({h:{code:NET.code,ph:'lobby',st:NET.st,u:soU(),ids,md:NET.md|0}}).catch(()=>{});}catch(e){}}}
   if(NET&&NET.role==='guest'&&NET.auto&&NET.ch&&!hostPeer()&&performance.now()-(NET.joinT||0)>10000*NETK){const st=NET.st;netLeave();startSearch(st);return;}
   if(state==='coop')renderCoop(false);
 }
@@ -7339,6 +7440,7 @@ function startCoopRun(){
   NET.gs=gps.map((gp,i)=>mkMate(gp,i+1));P2=NET.gs[0].pl;
   run.pl=[P].concat(NET.gs.map(G=>G.pl));run.pickTurn=0;run.coop=true;run.pendingLv2=0;run.mateName=NET.gs.length===1?NET.gs[0].name:'';
   placeMates(null);
+  if((NET.md|0)===1)setupSurv();else if((NET.md|0)===2)setupRaid();
   if(NET.listed)ROOM.presence({cb:{code:NET.code,st:NET.st,open:0}}).catch(()=>{});
   stopSearch();
   state='play';show(null);pauseBtn.hidden=false;resetSticks();
@@ -7374,7 +7476,7 @@ function applyGuestInput(dt,G){
   if(ok&&(g.sq|0)>(G.gsq|0)){G.gsq=g.sq|0;const ps=run.room.pickups;let bi=-1,bd=40;
     for(let i=0;i<ps.length;i++){const p=ps[i];if(p.kind!=='shop'&&!p.choice&&p.kind!=='altar')continue;const d=Math.hypot(p.x-(+g.sx||0),p.y-(+g.sy||0));if(d<bd&&Math.hypot(p.x-Q.x,p.y-Q.y)<Q.r+40){bd=d;bi=i;}}
     if(bi>=0){if(ps[bi].kind==='altar')useAltar(ps[bi],Q);else if(ps[bi].choice)takeChoice(ps[bi],Q);else{Q.shopCd=0;if(!((ps[bi].by|0)&plBit(Q))&&buyShop(ps[bi],Q))shopSold(ps[bi],Q);}}}
-  Q.dashIF=Math.max(0,(Q.dashIF||0)-dt);if((g.fq|0)>(G.gfq|0)){G.gfq=g.fq|0;withP(Q,()=>hurtPlayer(1,Q.x,Q.y));}if(ok&&(g.dq|0)>(G.gdq|0)){G.gdq=g.dq|0;Q.dashIF=0.36;}
+  Q.dashIF=Math.max(0,(Q.dashIF||0)-dt);if((g.fq|0)>(G.gfq|0)){G.gfq=g.fq|0;withP(Q,()=>hurtPlayer(1,Q.x,Q.y));}if((g.gh|0)>(G.ggh|0)){G.ggh=g.gh|0;const tq=reviveNear(Q);if(tq)giveHeartTo(Q,tq);}if(ok&&(g.dq|0)>(G.gdq|0)){G.gdq=g.dq|0;Q.dashIF=0.36;}
   if((g.mq|0)>(G.gmq|0)){G.gmq=g.mq|0;bubble(Q,g.mi|0);netEv('m',g.mi|0,Q.slot|0,Q,1);}
   if(ok&&DOOR_KEYS.includes(g.door)&&run.doorsOpen&&run.room.doors[g.door]&&!run.trans&&!Q.down)goThrough(g.door);
 }
@@ -7555,7 +7657,7 @@ function buildSnap(){
     pa:run.pl.map(q=>q.abil||{}),nm:run.pl.map(q=>q===P?'':(q.nick||'')),gp:{},
     bo:(run.bombs||[]).map(b=>[R(b.x),R(b.y),R(b.t*10)]),gb:r.broken||[],fz:run.frozen>0?1:0,
     lv:[run.lvl,run.xp],gd:run.gold|0,k:run.kills|0,tm:R(run.time),
-    e:[],sh:[],es:[],pk:[],pt:[],cr:r.crumb&&r.crumb.length?r.crumb.map(cb=>(cb.r*COLS+cb.c)*3+cb.s):0,fx:NET.fx,ev:NET.ev,ts:run.pl.map(q=>{const t=pst(q);return[q.slot|0,t.k,Math.round(t.d),t.g,t.rv,t.h];})};
+    e:[],sh:[],es:[],pk:[],pt:[],cr:r.crumb&&r.crumb.length?r.crumb.map(cb=>(cb.r*COLS+cb.c)*3+cb.s):0,md:[run.surv?1:run.raid?2:0,run.wave|0,run.svDone|0],fx:NET.fx,ev:NET.ev,ts:run.pl.map(q=>{const t=pst(q);return[q.slot|0,t.k,Math.round(t.d),t.g,t.rv,t.h];})};
   for(const G of NET.gs||[]){const Q=G.pl;s.gp[G.id]={sl:G.slot,en:[R(Q.entX==null?Q.x:Q.entX),R(Q.entY==null?Q.y:Q.entY)],gi:Q.items.slice(0,24),lo:G.lo||0,
     g:[Q.hp,Q.maxHp,Q.down?1:0,Q.hurtSeq|0,Q.shield?1:0,R(Q.speed),Q.bombs|0,ACTIVE_IDS.indexOf(Q.active),Q.charge|0,Q.ironT>0?1:0,Math.round((Q.revT||0)*10),Q.tornT>0?1:0,Q.guard?1:0]};}
   for(const x of run.map.rooms.values())if(x.known)s.mp.push([x.gx,x.gy,RTYPES.indexOf(x.type),x.visited?1:0,doorBits(x.doors),roomMark(x)]);
@@ -7593,7 +7695,7 @@ function buildSnap(){
 }
 function sendGuestPresence(){
   if(!NET||!NET.ch)return;
-  const g={code:NET.code,st:NET.st,sk:mySkinI(NET.st),pt:myPet()?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,up:save.up,rs:NET.rs,door:NET.door||0,pick:NET.pick||0,bq:NET.bq|0,aq:NET.aq|0,dq:NET.dq|0,sq:NET.sq|0,sx:NET.sx|0,sy:NET.sy|0,gold:save.gold|0,mq:NET.mq|0,mi:NET.mi|0,u:soU(),eq:myEqBonus(),ev:evoOf(NET.st),ht:hatIdx(),sf:sfxIdx(),fq:NET.fq|0,id:NET.gid,jt:NET.jt||0};
+  const g={code:NET.code,st:NET.st,sk:mySkinI(NET.st),pt:myPet()?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,up:save.up,rs:NET.rs,door:NET.door||0,pick:NET.pick||0,bq:NET.bq|0,aq:NET.aq|0,dq:NET.dq|0,sq:NET.sq|0,sx:NET.sx|0,sy:NET.sy|0,gold:save.gold|0,mq:NET.mq|0,mi:NET.mi|0,u:soU(),eq:myEqBonus(),ev:evoOf(NET.st),ht:hatIdx(),sf:sfxIdx(),fq:NET.fq|0,gh:NET.gh|0,id:NET.gid,jt:NET.jt||0};
   if(run&&run.guest&&P){const a=NET.aim;g.x=Math.round(P.x);g.y=Math.round(P.y);g.lx=Math.round((P.lx||0)*100);g.ly=Math.round((P.ly||0)*100);g.aim=a?[Math.round(a.x*100),Math.round(a.y*100)]:0;}
   try{NET.ch.presence({g}).catch(()=>{});}catch(e){}
 }
@@ -7769,6 +7871,7 @@ function applySnap(s,ph){
   if(me&&Array.isArray(me.gi))P.items=me.gi.filter(id=>Object.prototype.hasOwnProperty.call(ITEMS,id));
   if(Array.isArray(s.lv)){run.lvl=(s.lv[0]|0)||1;run.xp=s.lv[1]|0;}
   if(typeof s.gd==='number'){if(NET.gd!=null&&s.gd>NET.gd){const d=s.gd-NET.gd;save.gold=(save.gold||0)+d;bump('goldEarned',d);NET.goldEarned+=d;run.gold=NET.goldEarned;persist();sfx('coin');run.floats.push({x:P.x,y:P.y-18,text:'+'+d,t:0.6,col:'#f5c542'});}NET.gd=s.gd;}
+  if(Array.isArray(s.md)){run.surv=s.md[0]===1?1:0;run.raid=s.md[0]===2?1:0;run.wave=s.md[1]|0;run.svDone=s.md[2]|0;run.rushBeat=run.raid?3:Math.min(3,Math.floor(run.svDone/5));}
   run.kills=s.k|0;NET.tm=s.tm|0;if(Array.isArray(s.ts))NET.ts=s.ts.filter(Array.isArray).slice(0,4);if(typeof s.df==='number')run.diff=clamp(s.df|0,0,3);
   const seen=new Set();
   for(const a of s.e||[]){
@@ -7799,7 +7902,7 @@ function applySnap(s,ph){
     else if(f[1]===6){popFx(+f[2]||0,+f[3]||0,+f[4]||30);}
     else if(f[1]===4){const v=+f[4]||0;run.fx.push({kind:'arc',x:+f[2]||0,y:+f[3]||0,x2:Math.floor(v/1024),y2:v%1024,t:0,max:0.22,seed:f[0]});}
     else{run.fx.push(f[1]?{kind:'bolt',x:+f[2],y:+f[3],t:0,max:0.28,seed:f[0]}:{kind:'wave',x:+f[2],y:+f[3],r:+f[4]||60,t:0,max:0.4});sfx(f[1]?'zap':'wave');}}
-  for(const ev of s.ev||[])if(Array.isArray(ev)&&ev[0]>NET.evq){NET.evq=ev[0];if(!evForMe(ev[4]))continue;if(ev[1]==='t'){toast(String(ev[2]),String(ev[3]));if(ev[2]==='Défi réussi !'){bump('chal');unlockAch('defi');}if(String(ev[2]).startsWith('Combo ! ')){const cb=COMBOS.find(c=>'Combo ! '+c.name===ev[2]);if(cb){save.combos[cb.id]=1;bump('combos');persist();}unlockAch('combo');}}
+  for(const ev of s.ev||[])if(Array.isArray(ev)&&ev[0]>NET.evq){NET.evq=ev[0];if(!evForMe(ev[4]))continue;if(ev[1]==='t'){toast(String(ev[2]),String(ev[3]));if(ev[2]==='Raid réussi !')unlockAch('raid');if(/^Vague \d+ terminée/.test(String(ev[2]))){const w=parseInt(String(ev[2]).slice(6))|0;if(w>(save.survBest|0)){save.survBest=w;persist();}if(w>=10)unlockAch('survie10');}if(ev[2]==='Défi réussi !'){bump('chal');unlockAch('defi');}if(String(ev[2]).startsWith('Combo ! ')){const cb=COMBOS.find(c=>'Combo ! '+c.name===ev[2]);if(cb){save.combos[cb.id]=1;bump('combos');persist();}unlockAch('combo');}}
     else if(ev[1]==='b'){banner(String(ev[2]),String(ev[3]),2.2);if(ev[3]==='Malédiction brisée'){bump('curses');unlockAch('maudit');}if(ev[2]==='Fontaine de vie'&&ev[3]==='Cœurs remplis !')bump('fountains');if(ev[2]==='Mini-boss')sfx('boss');}
     else if(ev[1]==='m'){const mq=NET.mates&&NET.mates[(+ev[3]||0)];if(mq)bubble(mq,+ev[2]||0);}
     else if(ev[1]==='pay'){save.gold=Math.max(0,(save.gold||0)-(+ev[2]||0));save.stats.bought=(save.stats.bought|0)+1;persist();sfx('buy');run.floats.push({x:P.x,y:P.y-26,text:'-'+(+ev[2]||0)+' or',t:1,col:'#f5c542'});}}
@@ -7830,7 +7933,7 @@ function loop(now){
   if(state==='coop')coopTick(dt);
   updateTut(dt);
   if(state==='play'&&run&&run.room)updateCritters(dt);
-  updateActBar();updateShopCard();
+  updateActBar();updateShopCard();updateGiveBtn();
   achT-=dt;if(achT<=0){achT=0.5;if(state==='play'&&run&&!run.dead){checkAchs();tipsTick();questTick();}}
   cloudT-=dt;if(cloudT<=0){cloudT=state==='play'?8:2;cloudPush();}
   musicTick();ambTick();
