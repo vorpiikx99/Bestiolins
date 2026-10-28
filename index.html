@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028132822';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028132822" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028134128';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028134128" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -791,6 +791,37 @@ html.big-text #toast .t1{font-size:1.1em}
 .hallo-btn{margin-top:6px;border-color:#f08a2a;background:#5a2a0a;color:#ffe0c0;min-height:44px}
 .side-h{margin:10px 8px 2px;font:700 12px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:#a8957d;flex:none}
 .side-h:first-of-type{margin-top:2px}
+.store-sec{display:flex;gap:10px;align-items:center;margin:16px 0 10px}
+.store-ic{font-size:30px;line-height:1}
+.store-h{margin:0;font:900 24px var(--font-display);color:var(--torch)}
+.store-hs{margin:2px 0 0;font-size:14px;color:var(--bone-dim)}
+.chest-list{display:flex;flex-direction:column;gap:12px}
+.chest-row{position:relative;display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;border:2px solid var(--stone-edge);background:linear-gradient(135deg,#3a2a1e,#21170f)}
+.chest-row.ct1{border-color:#5a6a7a;background:linear-gradient(135deg,#2e3540,#1a1c22)}
+.chest-row.ct2{border-color:#c9a43a;background:linear-gradient(135deg,#4a3814,#221808);box-shadow:0 0 18px rgba(230,177,58,.18)}
+.chest-row.ct3{border-color:#7fe3ff;background:linear-gradient(135deg,#1c3a4a,#0e1a24);box-shadow:0 0 22px rgba(127,227,255,.25)}
+.chest-cv{width:104px;height:104px;flex:0 0 104px}
+.chest-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.chest-nm{margin:0;font:900 22px var(--font-display);color:var(--bone)}
+.rchips{display:flex;flex-wrap:wrap;gap:4px}
+.rchip{font:700 11px var(--font-ui);padding:2px 7px;border-radius:999px;border:1.5px solid;background:rgba(0,0,0,.25)}
+.chest-btns{display:flex;flex-wrap:wrap;gap:6px}
+.chest-btns .btn{flex:1 1 auto}
+.chest-btns .chest-open{flex:1 1 100%;min-height:48px;font-size:18px}
+.ribbon{position:absolute;top:-10px;right:12px;background:#7fe3ff;color:#082030;font:800 12px var(--font-ui);padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.day-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.day-grid .scard{padding:8px 6px;background:linear-gradient(180deg,rgba(255,255,255,.04),var(--stone))}
+.day-grid .scard canvas{width:54px;height:54px}
+.day-grid .scard .nm{font-size:16px}
+.day-grid .scard .ef{font-size:13px}
+.day-grid .scard.glowy{box-shadow:0 0 14px color-mix(in srgb,var(--rc) 30%,transparent)}
+#chestOpen{position:fixed;inset:0;z-index:40;background:rgba(8,5,3,.92);cursor:pointer}
+#coCv{position:absolute;inset:0;width:100%;height:100%}
+.co-txt{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 14%);text-align:center;padding:0 20px;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s}
+#chestOpen.show .co-txt{opacity:1;transform:none}
+.co-rar{margin:0;font:800 18px var(--font-ui);letter-spacing:.1em;text-transform:uppercase}
+.co-name{margin:6px 0 0;font:900 34px var(--font-display);color:#fff3dc}
+.co-hint{margin:16px 0 0;font-size:15px;color:#a8957d}
 </style>
 </head>
 <body>
@@ -858,6 +889,7 @@ html.big-text #toast .t1{font-size:1.1em}
     <div class="coop-list" id="giftList"></div>
   </div>
 </div>
+<div id="chestOpen" hidden><canvas id="coCv"></canvas><div class="co-txt"><p class="co-rar" id="coRar"></p><p class="co-name" id="coName"></p><p class="co-hint" id="coHint">Touche l'écran pour continuer</p></div></div>
 <div id="confirmSheet" class="sheet" role="alertdialog" aria-label="Confirmation" hidden>
   <div class="sheet-dim" id="confirmDim"></div>
   <div class="sheet-panel">
@@ -1275,11 +1307,11 @@ html.big-text #toast .t1{font-size:1.1em}
 <section id="scrStore" class="screen" hidden>
   <div class="panel">
     <div class="headrow endrow"><div class="hdr"><button class="back" id="storeBack" type="button">← Retour</button><h2>Boutique</h2></div><span class="goldtag"><i class="coin"></i><span id="storeGold"></span></span></div>
-    <p class="sub" id="storeSub">Achète des équipements pour toi, ou offre-les à un ami. Les objets du jour changent chaque jour. Touche deux fois « Acheter » pour confirmer.</p>
-    <p class="small-h">Coffres surprise</p>
-    <div class="store-grid" id="storeChests"></div>
-    <p class="small-h">Objets du jour</p>
-    <div class="store-grid" id="storeDay"></div>
+    <p class="sub" id="storeSub">Ouvre des coffres pour trouver des équipements, ou achète les objets du jour. Touche deux fois un bouton pour confirmer.</p>
+    <div class="store-sec"><span class="store-ic">🎁</span><div><p class="store-h">Coffres surprise</p><p class="store-hs">Plus le coffre est rare, plus tu as de chances d'avoir un super équipement.</p></div></div>
+    <div class="chest-list" id="storeChests"></div>
+    <div class="store-sec"><span class="store-ic">🛒</span><div><p class="store-h">Objets du jour</p><p class="store-hs" id="storeTimer"></p></div></div>
+    <div class="store-grid day-grid" id="storeDay"></div>
   </div>
 </section>
 
@@ -7640,6 +7672,29 @@ function renderStore(){
   };
   const ch=$('storeChests');ch.textContent='';
   CHESTS.forEach((C,k)=>{
+    const row=document.createElement('div');row.className='chest-row ct'+k;
+    if(k===CHESTS.length-1){const rb=document.createElement('span');rb.className='ribbon';rb.textContent='Le plus rare';row.append(rb);}
+    const cv=document.createElement('canvas');cv.className='chest-cv';cv.width=cv.height=Math.round(104*dpr);cv.dataset.chest=k;drawChestIcon(cv,k);
+    const info=document.createElement('div');info.className='chest-info';
+    const nm=document.createElement('p');nm.className='chest-nm';nm.textContent=C.name;
+    const chips=document.createElement('div');chips.className='rchips';
+    C.w.forEach((w,i)=>{if(!w)return;const c=document.createElement('span');c.className='rchip';c.style.color=RAR[i].c;c.style.borderColor=RAR[i].d;c.textContent=RAR[i].n+' '+w+' %';chips.append(c);});
+    const btns=document.createElement('div');btns.className='chest-btns';
+    const key1='c'+k,arm1=storeArm===key1,b1=mkBtn(arm1?'Touche encore : ouvrir !':'Ouvrir · '+C.price+' or',arm1?'primary glow':'primary',()=>{
+      if((save.gold||0)<C.price){frMsg("Pas assez d'or : il te faut "+C.price+' or.','bad');return;}
+      if(save.eq.inv.length>=EQ_BAG){frMsg('Ton sac est plein : vends ou fusionne des équipements dans « Mon perso ».','bad');return;}
+      if(!arm1){storeArm=key1;renderStore();return;}
+      storeArm='';save.gold-=C.price;bump('chests');const it=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();renderStore();openChestAnim(k,it,()=>openEqSheet(it.i,true));});
+    b1.classList.remove('sm');b1.classList.add('chest-open');
+    const key2='c'+k+'x',arm2=storeArm===key2,p10=C.price*9,gr=chestGuarantee(C.w),b2=mkBtn(arm2?'Touche encore : ×10 pour '+p10+' or':'×10 · '+p10+' or',arm2?'primary glow':'',()=>{
+      if((save.gold||0)<p10){frMsg("Pas assez d'or : il te faut "+p10+' or.','bad');return;}
+      const free=EQ_BAG-save.eq.inv.length;if(free<10){frMsg('Il te faut 10 places libres dans ton sac (tu en as '+Math.max(0,free)+'). Vends ou fusionne dans « Mon perso ».','bad');return;}
+      if(!arm2){storeArm=key2;renderStore();frMsg('10 coffres pour le prix de 9, avec au moins 1 '+RAR[gr].n+' garanti !');return;}
+      storeArm='';buyChest10(k);});
+    btns.append(b1,b2);if(gift)btns.append(mkBtn('🎁 Offrir à un ami','ghost',()=>{storeArm='';openGiftSheet({kind:'c',k});}));
+    info.append(nm,chips,btns);row.append(cv,info);ch.append(row);
+  });
+  if(false)CHESTS.forEach((C,k)=>{
     const odds=C.w.map((w,i)=>w?RAR[i].n+' '+w+' %':'').filter(Boolean).join(' · ');
     ch.append(card(cv=>drawChestIcon(cv,k),C.name,'Équipement au hasard','#e8d9bf',odds,C.price,'c'+k,false,
       ()=>{save.gold-=C.price;bump('chests');const it=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();sfx('chest');renderStore();openEqSheet(it.i,true);},
@@ -7652,20 +7707,70 @@ function renderStore(){
           storeArm='';buyChest10(k);});}));
   });
   const dy=$('storeDay');dy.textContent='';
+  {const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const mn=Math.max(1,Math.round((m-n)/60000));$('storeTimer').textContent='Nouveaux objets dans '+(mn>=60?Math.floor(mn/60)+' h '+String(mn%60).padStart(2,'0'):mn+' min')+'.';}
   storeDay().forEach((o,i)=>{
     const price=EQ_PRICE[o.r],sold=save.eq.shop.b.includes(i);
-    dy.append(card(cv=>drawEqIcon(cv,o.s,o.r,false),EQ_SLOTS[o.s].names[o.r],RAR[o.r].n+' · '+EQ_SLOTS[o.s].name,RAR[o.r].c,eqEffTxt(o.s,o.r,1),price,'d'+i,sold,
+    dy.append(dayCard(o.r,card(cv=>drawEqIcon(cv,o.s,o.r,false),EQ_SLOTS[o.s].names[o.r],RAR[o.r].n+' · '+EQ_SLOTS[o.s].name,RAR[o.r].c,eqEffTxt(o.s,o.r,1),price,'d'+i,sold,
       ()=>{save.gold-=price;save.eq.shop.b.push(i);const it=eqNew(o.s,o.r,1);persist();sfx('buy');renderStore();openEqSheet(it.i,true);},
-      ()=>openGiftSheet({kind:'d',i,s:o.s,r:o.r})));
+      ()=>openGiftSheet({kind:'d',i,s:o.s,r:o.r}))));
   });
 }
+function dayCard(r,d){d.style.borderColor=RAR[r].d;d.style.setProperty('--rc',RAR[r].c);if(r>=2)d.classList.add('glowy');return d;}
+let CO=null;
+function drawChestOpen(c,k,lid,s){
+  const ch=CHESTS[k];c.save();c.scale(s,s);c.lineJoin='round';c.lineWidth=0.09;c.strokeStyle=INK;
+  c.beginPath();c.rect(-0.95,-0.1,1.9,0.95);c.fillStyle=ch.col;c.fill();c.stroke();
+  c.fillStyle='rgba(0,0,0,.25)';c.fillRect(-0.95,0.5,1.9,0.12);
+  for(const x of[-0.6,0.6]){c.beginPath();c.rect(x-0.1,-0.1,0.2,0.95);c.fillStyle=k===2?'#fff0b0':'#3a3f46';c.fill();c.stroke();}
+  if(lid>0){c.beginPath();c.rect(-0.85,-0.12,1.7,0.1);c.fillStyle='#1a0f08';c.fill();}
+  c.save();c.translate(-0.95,-0.1);c.rotate(-lid*1.9);c.translate(0.95,0.1);
+  c.beginPath();c.moveTo(-0.95,-0.1);c.lineTo(-0.95,-0.45);c.quadraticCurveTo(0,-1.05,0.95,-0.45);c.lineTo(0.95,-0.1);c.closePath();c.fillStyle=ch.col;c.fill();c.stroke();
+  for(const x of[-0.6,0.6]){c.beginPath();c.rect(x-0.1,-0.75,0.2,0.65);c.fillStyle=k===2?'#fff0b0':'#3a3f46';c.fill();c.stroke();}
+  c.beginPath();c.rect(-0.18,-0.25,0.36,0.36);c.fillStyle='#f5c542';c.fill();c.stroke();c.restore();
+  c.restore();
+}
+function openChestAnim(k,it,done,count){
+  const ov=$('chestOpen'),cv=$('coCv');ov.hidden=false;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  const ic=document.createElement('canvas');ic.width=ic.height=Math.round(120*dpr);drawEqIcon(ic,it.s,it.r,true);
+  CO={k,it,done,t:0,last:performance.now(),ic,parts:[],count:count|0,opened:false,shown:false};
+  $('coRar').textContent='';$('coName').textContent='';$('coHint').hidden=true;ov.classList.remove('show');
+  sfx('coin');requestAnimationFrame(coStep);
+}
+function coStep(now){
+  if(!CO)return;const dt=Math.min(0.05,(now-CO.last)/1000);CO.last=now;CO.t+=dt;
+  const cv=$('coCv'),c=cv.getContext('2d'),w=cv.width,h=cv.height,t=CO.t,rc=RAR[CO.it.r].c,OPEN=1.1;
+  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,h);
+  const cx=w/2,cy=h*0.46,S=Math.min(w,h)*0.16;
+  if(t<OPEN){if(Math.random()<dt*(4+t*14))sfx('coin');}
+  else if(!CO.opened){CO.opened=true;sfx('chest');try{if(save.vib&&navigator.vibrate)navigator.vibrate(CO.it.r>=4?[60,40,120]:40);}catch(e){}
+    for(let i=0;i<70;i++){const a=Math.random()*TAU,sp=(0.4+Math.random()*1.3)*S*3;CO.parts.push({x:cx,y:cy-S*0.2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-S*1.5,life:1+Math.random(),c:Math.random()<0.6?rc:'#fff3c4'});}}
+  /* glow + rays */
+  const gk=t<OPEN?t/OPEN:1;
+  {const g=c.createRadialGradient(cx,cy,0,cx,cy,S*(2+gk*2.5));g.addColorStop(0,'rgba(255,255,255,'+(0.15+0.25*gk).toFixed(2)+')');g.addColorStop(0.35,rc+'66');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,w,h);}
+  if(t>=OPEN){c.save();c.translate(cx,cy-S*0.3);c.rotate(t*0.6);const n=14,L=Math.max(w,h);for(let i=0;i<n;i++){c.rotate(TAU/n);c.beginPath();c.moveTo(0,0);c.lineTo(L,-L*0.07);c.lineTo(L,L*0.07);c.closePath();c.fillStyle=(i%2?rc:'#ffffff')+(i%2?'33':'1a');c.fill();}c.restore();}
+  /* chest */
+  const sh=t<OPEN?Math.sin(t*60)*S*0.06*gk:0,hop=t<OPEN?0:Math.max(0,Math.sin(Math.min(1,(t-OPEN)*4)*Math.PI))*S*0.15;
+  c.save();c.translate(cx+sh,cy+S*0.4-hop);c.rotate(t<OPEN?Math.sin(t*47)*0.05*gk:0);
+  const lid=t<OPEN?0:Math.min(1,(t-OPEN)*5);drawChestOpen(c,CO.k,lid,S);c.restore();
+  /* item rising */
+  if(t>=OPEN){const k2=Math.min(1,(t-OPEN)/0.6),e=1+2.2*Math.pow(k2-1,3)+1.2*Math.pow(k2-1,2),sz=S*1.6*Math.max(0,e),iy=cy-S*0.2-S*1.7*Math.min(1,k2*1.2)+Math.sin(t*3)*S*0.05;
+    c.save();c.globalAlpha=Math.min(1,k2*2);c.drawImage(CO.ic,cx-sz/2,iy-sz/2,sz,sz);c.restore();}
+  /* sparks */
+  for(const p of CO.parts){p.life-=dt;if(p.life<=0)continue;p.vy+=S*3*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;c.globalAlpha=Math.min(1,p.life);c.fillStyle=p.c;c.fillRect(p.x-S*0.03,p.y-S*0.03,S*0.06,S*0.06);}
+  c.globalAlpha=1;
+  /* flash */
+  if(t>=OPEN&&t<OPEN+0.35){c.fillStyle='rgba(255,255,255,'+(1-(t-OPEN)/0.35).toFixed(2)+')';c.fillRect(0,0,w,h);}
+  if(t>=OPEN+0.55&&!CO.shown){CO.shown=true;const it=CO.it;$('coRar').textContent=(CO.count?'Le meilleur des '+CO.count+' : ':'')+RAR[it.r].n;$('coRar').style.color=rc;$('coName').textContent=eqName(it);$('coHint').hidden=false;$('chestOpen').classList.add('show');sfx(it.r>=3?'level':'item');}
+  requestAnimationFrame(coStep);
+}
+$('chestOpen').addEventListener('click',()=>{if(!CO)return;if(CO.t<1.1){CO.t=1.1;return;}if(!CO.shown)return;const d=CO.done;CO=null;$('chestOpen').hidden=true;if(d)d();});
 function chestGuarantee(w){const nz=w.map((x,i)=>x>0?i:-1).filter(i=>i>=0);return nz[1]!=null?nz[1]:nz[0];}
 function buyChest10(k){
   const C=CHESTS[k],p10=C.price*9,gr=chestGuarantee(C.w);
   if((save.gold||0)<p10||EQ_BAG-save.eq.inv.length<10)return;
   save.gold-=p10;bump('chests',10);const rs=[];for(let i=0;i<10;i++)rs.push(rollRar(C.w));
   if(!rs.some(r=>r>=gr))rs[Math.floor(Math.random()*10)]=gr;
-  const got=rs.map(r=>eqNew(Math.floor(Math.random()*5),r,1));persist();sfx('chest');renderStore();showLoot(got,C.name+' ×10');
+  const got=rs.map(r=>eqNew(Math.floor(Math.random()*5),r,1));persist();renderStore();const best=got.slice().sort((a,b)=>b.r-a.r)[0];openChestAnim(k,best,()=>showLoot(got,C.name+' ×10'),10);
 }
 function showLoot(list,title){
   const L=list.slice().sort((a,b)=>b.r-a.r||a.s-b.s),best=L[0];
@@ -8483,6 +8588,9 @@ function loop(now){
   const showMod=!!(save.mod&&state==='play'&&run&&!(NET&&NET.role==='guest'));if(modBtn.hidden===showMod)modBtn.hidden=!showMod;
   const inGame=run&&(state==='story'||state==='ctledit'||state==='play'||state==='paused'||state==='modmenu'||state==='levelup'||state==='levelwait'||state==='over'||(state==='bestiary'&&bestFrom==='over')||(state==='shop'&&shopFrom==='over'));
   if(!inGame){if(setRoomDims(11))layout();updateTitle(dt);}
+  if(state==='store'){for(const cv of document.querySelectorAll('.chest-cv')){const k=+cv.dataset.chest,c=cv.getContext('2d'),n=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,n,n);
+      const g=c.createRadialGradient(n/2,n/2,0,n/2,n/2,n*0.5);g.addColorStop(0,CHESTS[k].col+'55');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,n,n);
+      c.translate(n/2,n*0.55-Math.abs(Math.sin(titleT*2+k))*n*0.04);c.rotate(Math.sin(titleT*3+k)*0.04);drawChestOpen(c,k,0,n*0.3);}}
   if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);
     skinAnimT=(skinAnimT||0)+1;if(skinAnimT%3===0)for(const cv of document.querySelectorAll('#skins canvas')){const i=+cv.dataset.si;if(i<=0)continue;const rc=cv.getBoundingClientRect();if(rc.bottom<0||rc.top>H)continue;drawPortrait(cv,cv.dataset.sid,titleT,false,skinPal(cv.dataset.sid,i));}}
   if(state==='pick'){for(const cv of document.querySelectorAll('.starter canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)));}
