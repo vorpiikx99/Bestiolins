@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028090032';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028090032" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028090236';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028090236" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -754,6 +754,21 @@ html.no-anim #storyBox.pop{animation:none}
 .story-ch summary{font-weight:700;font-size:18px;color:var(--torch);cursor:pointer}
 .story-ch.locked summary{color:#7a6a5a}
 .story-ch p{margin:8px 0 0;font-size:16px;line-height:1.45}
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin-top:8px}
+.book-it{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--stone);border:2px solid var(--stone-edge);border-radius:8px;color:var(--bone);font:600 13px var(--font-ui);line-height:1.15;text-align:center;min-width:0}
+.book-it canvas{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+.book-it.unk{opacity:.6}
+.book-it.cursed{border-color:#7a4ab0}
+.book-detail{position:sticky;bottom:8px;margin-top:12px;padding:12px 14px;background:rgba(24,16,11,.97);border:2px solid #f2a23a;border-radius:10px;font-size:16px;line-height:1.4}
+.trophy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:8px 0 18px}
+.trophy{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px 12px;border-radius:10px;background:linear-gradient(180deg,#2c2018,#1c140e);border:2px solid #3e2e22;text-align:center;min-width:0}
+.trophy.got{border-color:#c9a43a;box-shadow:0 0 14px rgba(201,164,58,.25) inset}
+.trophy canvas{width:70px;height:70px}
+.trophy .ti{font-size:34px;line-height:1.2;filter:grayscale(1);opacity:.5}
+.trophy.got .ti{filter:none;opacity:1}
+.trophy .tn{font-weight:700;font-size:15px;color:var(--torch)}
+.trophy .td{font-size:13px;color:#c8b8a0}
+.trophy:not(.got) .tn{color:#8a7a6a}
 </style>
 </head>
 <body>
@@ -835,6 +850,8 @@ html.no-anim #storyBox.pop{animation:none}
       <button id="btnBest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5V5.5M9 7h6"/></svg><span class="lbl">Bestiaire</span><span class="count" id="bestCount"></span></button>
       <button id="btnAch" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3.5 4M16 6h3a3 3 0 0 1-3.5 4M12 13v4M8 21h8M10 17h4v4h-4z"/></svg><span class="lbl">Succès</span><span class="count" id="achCount"></span></button>
       <button id="btnQuest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8.5l1.6 1.6L13.5 7M8.5 14h7M8.5 17h5"/></svg><span class="lbl">Quêtes</span><span class="qbadge" id="questCount" hidden></span></button>
+      <button id="btnBook" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/></svg><span class="lbl">Livre des objets</span></button>
+      <button id="btnTrophy" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M8 20h8"/></svg><span class="lbl">Salle des trophées</span></button>
       <button id="btnStory" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6M8 11h6"/></svg><span class="lbl">Histoire</span></button>
       <button id="btnFriends" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20C6 16 3 12.5 3 8.8 3 6.2 5 4 7.6 4c1.8 0 3.4 1 4.4 2.6C13 5 14.6 4 16.4 4 19 4 21 6.2 21 8.8 21 12.5 18 16 12 20z"/></svg><span class="lbl">Amis</span><span class="qbadge" id="frBadge" hidden></span></button>
       <button id="btnRank" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20v-6h4v6M10 20V8h4v12M15 20v-9h4v9"/></svg><span class="lbl">Classement</span></button>
@@ -1248,6 +1265,26 @@ html.no-anim #storyBox.pop{animation:none}
   </div>
 </section>
 
+<section id="scrBook" class="screen" hidden>
+  <div class="panel">
+    <div class="headrow"><div class="hdr"><button class="back" id="bookBack" type="button">← Retour</button><h2>Livre des objets</h2></div></div>
+    <p class="sub">Tous les objets et pouvoirs que tu as déjà trouvés pendant tes parties. Touche-en un pour lire ce qu'il fait. Ceux en « ? » restent à découvrir !</p>
+    <div class="chips" id="bookTabs"></div>
+    <p class="small-h" id="bookCount"></p>
+    <div class="book-grid" id="bookGrid"></div>
+    <p class="book-detail" id="bookDetail" hidden></p>
+  </div>
+</section>
+<section id="scrTrophy" class="screen" hidden>
+  <div class="panel">
+    <div class="headrow"><div class="hdr"><button class="back" id="trophyBack" type="button">← Retour</button><h2>Salle des trophées</h2></div></div>
+    <p class="sub">Ta salle à toi : chaque boss vaincu y laisse sa statue, et tes plus grands exploits y brillent.</p>
+    <p class="small-h">Les statues des boss</p>
+    <div class="trophy-grid" id="trophyBoss"></div>
+    <p class="small-h">Tes exploits</p>
+    <div class="trophy-grid" id="trophyFeats"></div>
+  </div>
+</section>
 <section id="scrStory" class="screen" hidden>
   <div class="panel">
     <div class="headrow"><div class="hdr"><button class="back" id="storyBack" type="button">← Retour</button><h2>Histoire</h2></div></div>
@@ -1924,8 +1961,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -5420,7 +5457,7 @@ function renderTitle(){
 }
 
 /* ================= UI ================= */
-const SCREENS=['scrStory','scrGift7','scrSeason','scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
+const SCREENS=['scrBook','scrTrophy','scrStory','scrGift7','scrSeason','scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 let curScreen=null;
 function animOn(){return !(save&&save.anim===false);}
 function show(id){
@@ -5547,6 +5584,42 @@ function openStoryBook(){state='storybook';clearOverlays();show('scrStory');paus
     const d=document.createElement('details');d.className='story-ch'+(seen?'':' locked');const sm=document.createElement('summary');sm.textContent=seen?S.t:'??? · pas encore découvert';d.appendChild(sm);
     if(seen)for(const line of S.p){const p=document.createElement('p');p.textContent=line;d.appendChild(p);}box.appendChild(d);}
   $('storyCount').textContent=n+' / '+STORY_KEYS.length+' chapitres découverts';}
+/* ---- book of items and powers ---- */
+function noteFound(){let ch=false;const pls=run.local&&run.pl?run.pl:[P];
+  for(const q of pls){if(!q)continue;for(const id of q.items||[])if(ITEMS[id]&&!save.found[id]){save.found[id]=1;ch=true;}
+    if(q.active&&ACTIVES[q.active]&&!save.found['a_'+q.active]){save.found['a_'+q.active]=1;ch=true;}}
+  if(ch)persist();}
+let bookTab='i';
+function openBook(){state='book';clearOverlays();show('scrBook');pauseBtn.hidden=true;$('scrBook').scrollTop=0;renderBook();}
+function renderBook(){
+  const tabs=$('bookTabs');tabs.textContent='';
+  for(const[k,n] of[['i','Objets'],['a','Pouvoirs']]){const b=document.createElement('button');b.type='button';b.className='chip-f'+(bookTab===k?' on':'');b.textContent=n;b.addEventListener('click',()=>{bookTab=k;$('bookDetail').hidden=true;renderBook();});tabs.appendChild(b);}
+  const ids=bookTab==='i'?Object.keys(ITEMS):ACTIVE_IDS,key=id=>bookTab==='i'?id:'a_'+id,n=ids.filter(id=>save.found[key(id)]).length;
+  $('bookCount').textContent=n+' / '+ids.length+(bookTab==='i'?' objets trouvés':' pouvoirs trouvés');
+  const g=$('bookGrid');g.textContent='';const size=Math.round(52*dpr);
+  for(const id of ids){const got=!!save.found[key(id)],b=document.createElement('button');b.type='button';b.className='book-it'+(got?'':' unk')+(bookTab==='i'&&ITEMS[id].cursed?' cursed':'');
+    const cv=document.createElement('canvas');cv.width=cv.height=size;const c=cv.getContext('2d');c.translate(size/2,size/2);
+    if(got){if(bookTab==='i')drawItemIcon(c,id,size*0.24);else drawActiveIcon(c,id,size*0.3);}else{c.font='700 '+Math.round(size*0.45)+'px Grenze, Georgia, serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#6a5444';c.fillText('?',0,2);}
+    const nm=document.createElement('span');nm.textContent=got?(bookTab==='i'?ITEMS[id].name:ACTIVES[id].name):'???';
+    b.append(cv,nm);b.addEventListener('click',()=>{const d=$('bookDetail');d.hidden=false;d.textContent=got?(bookTab==='i'?ITEMS[id].name+' : '+itemDesc(id):ACTIVES[id].name+' : '+ACTIVES[id].desc):"Pas encore trouvé. Continue d'explorer la crypte !";sfx('coin');});g.appendChild(b);}
+}
+/* ---- trophy room ---- */
+function openTrophies(){state='trophy';clearOverlays();show('scrTrophy');pauseBtn.hidden=true;$('scrTrophy').scrollTop=0;
+  const gb=$('trophyBoss');gb.textContent='';const size=Math.round(70*dpr);
+  for(const id of ORDER){const sp=SPECIES[id];if(!sp||!sp.boss)continue;const n=save.kills[id]|0;
+    const d=document.createElement('div');d.className='trophy'+(n?' got':'');const cv=document.createElement('canvas');cv.width=cv.height=size;drawPortrait(cv,id,1.2,!n);
+    const nm=document.createElement('span');nm.className='tn';nm.textContent=n?sp.name:'???';const ds=document.createElement('span');ds.className='td';ds.textContent=n?('Vaincu '+n+' fois'):'Pas encore vaincu';
+    d.append(cv,nm,ds);gb.appendChild(d);}
+  const T=save.trophies||{},feats=[
+    ['🏆','Tournois gagnés',T.tournoi|0,(T.tournoi|0)>0],['⚔️','Duels gagnés',T.duel|0,(T.duel|0)>0],
+    ['👑','Boss de raid',save.ach.raid?'Vaincu !':'Pas encore',!!save.ach.raid],['❤️‍🔥','Le Dévoreur',(save.kills.devoreur|0)?'Vaincu !':'Pas encore',!!(save.kills.devoreur|0)],
+    ['🌊','Record de Survie',(save.survBest|0)+' vagues',(save.survBest|0)>0],['⚡','Rush des boss',(save.rushBest|0)+' / '+RUSH.length,(save.rushBest|0)>=RUSH.length],
+    ['🏰','Victoires',save.wins|0,(save.wins|0)>0],['⭐','Étage record',save.best|0,(save.best|0)>=5],
+    ['📜','Succès',Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+' / '+ACHS.length,false],['🍬','Bonbons d\'Halloween',save.candy|0,(save.candy|0)>=50]];
+  const gf=$('trophyFeats');gf.textContent='';
+  for(const f of feats){const d=document.createElement('div');d.className='trophy feat'+(f[3]?' got':'');const ic=document.createElement('span');ic.className='ti';ic.textContent=f[0];
+    const nm=document.createElement('span');nm.className='tn';nm.textContent=f[1];const ds=document.createElement('span');ds.className='td';ds.textContent=String(f[2]);d.append(ic,nm,ds);gf.appendChild(d);}
+}
 function setupArena(type){
   const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
   const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
@@ -6589,6 +6662,8 @@ addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('eqSheet').hidde
 $('ipNo').addEventListener('click',()=>{soInvite=null;hideInvite();updFrBadge();});
 $('questBack').addEventListener('click',goTitle);
 $('storyBack').addEventListener('click',goTitle);
+$('bookBack').addEventListener('click',goTitle);$('trophyBack').addEventListener('click',goTitle);
+$('btnBook').addEventListener('click',()=>{audioUnlock();openBook();});$('btnTrophy').addEventListener('click',()=>{audioUnlock();openTrophies();});
 $('btnStory').addEventListener('click',()=>{audioUnlock();openStoryBook();});
 $('achBack').addEventListener('click',goTitle);
 $('btnRank').addEventListener('click',()=>{audioUnlock();openRank();});
@@ -8190,7 +8265,7 @@ function loop(now){
   updateTut(dt);
   if(state==='play'&&run&&run.room)updateCritters(dt);
   updateActBar();updateShopCard();updateGiveBtn();
-  achT-=dt;if(achT<=0){achT=0.5;if(state==='play'&&run&&!run.dead){checkAchs();tipsTick();questTick();}}
+  achT-=dt;if(achT<=0){achT=0.5;if(state==='play'&&run&&!run.dead){checkAchs();tipsTick();questTick();noteFound();}}
   cloudT-=dt;if(cloudT<=0){cloudT=state==='play'?8:2;cloudPush();}
   musicTick();ambTick();
   relayT-=dt;if(relayT<=0){relayT=4;relayTick();}
