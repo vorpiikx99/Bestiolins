@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028132315';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028132315" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028132822';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028132822" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -2178,7 +2178,7 @@ function drawDecal(c,d){
 
 let fxCv=null,fxCtx=null,fxMask=null,fxMaskCtx=null;
 function drawSpeciesFx(c,id,r,t,o,fx){
-  let k=1;try{const m=c.getTransform();k=Math.max(0.5,Math.min(8,Math.hypot(m.a,m.b)));}catch(e){}
+  let k=1;try{const m=c.getTransform();k=Math.max(0.5,Math.min(quality==='high'?3:2,Math.hypot(m.a,m.b)));}catch(e){}
   const ext=r*2.4,size=Math.min(640,Math.ceil(ext*2*k)+4);
   if(!fxCv){fxCv=document.createElement('canvas');fxCv.width=fxCv.height=160;fxCtx=fxCv.getContext('2d');}
   if(fxCv.width<size)fxCv.width=fxCv.height=size;
@@ -2190,14 +2190,15 @@ function drawSpeciesFx(c,id,r,t,o,fx){
   let masked=false;const tint=(g,mul)=>{if(!masked){masked=true;const m=fxMaskCtx;m.setTransform(1,0,0,1,0,0);m.globalCompositeOperation='source-over';m.clearRect(0,0,size,size);m.drawImage(fxCv,0,0,size,size,0,0,size,size);}
     f.globalCompositeOperation='color';f.fillStyle=g;f.fillRect(-ext,-ext,ext*2,ext*2);if(mul){f.globalCompositeOperation='multiply';f.fillStyle=mul;f.fillRect(-ext,-ext,ext*2,ext*2);}f.globalCompositeOperation='destination-in';f.save();f.setTransform(1,0,0,1,0,0);f.drawImage(fxMask,0,0,size,size,0,0,size,size);f.restore();};
   const shine=(a,w)=>{f.globalCompositeOperation='source-atop';const cx=(-1.8+((t*0.42)%1)*3.6)*r,g=f.createLinearGradient(cx-w*r,-r,cx+w*r,r);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(0.5,'rgba(255,255,255,'+a+')');g.addColorStop(1,'rgba(255,255,255,0)');f.fillStyle=g;f.fillRect(-ext,-ext,ext*2,ext*2);};
-  if(fx==='or'){const g=f.createLinearGradient(0,-r*1.3,0,r);g.addColorStop(0,'#fff3a0');g.addColorStop(0.5,'#f2b52a');g.addColorStop(1,'#a8641a');tint(g,'#ffcf6a');shine(0.7,0.35);
-    f.globalCompositeOperation='source-atop';for(let i=0;i<4;i++){const a=(t*1.3+i*1.7)%(Math.PI*2),tw=Math.max(0,Math.sin(t*5+i*2));if(tw<0.3)continue;const x=Math.cos(a*1.3+i)*r*0.55,y=Math.sin(a+i*0.7)*r*0.6;star5(f,x,y,r*0.16*tw,t);f.fillStyle='rgba(255,255,240,'+(tw*0.9).toFixed(2)+')';f.fill();}}
+  const hq=quality==='high';
+  if(fx==='or'){const g=f.createLinearGradient(0,-r*1.3,0,r);g.addColorStop(0,'#fff3a0');g.addColorStop(0.5,'#f2b52a');g.addColorStop(1,'#a8641a');tint(g,'#ffcf6a');if(hq)shine(0.7,0.35);
+    f.globalCompositeOperation='source-atop';if(hq)for(let i=0;i<4;i++){const a=(t*1.3+i*1.7)%(Math.PI*2),tw=Math.max(0,Math.sin(t*5+i*2));if(tw<0.3)continue;const x=Math.cos(a*1.3+i)*r*0.55,y=Math.sin(a+i*0.7)*r*0.6;star5(f,x,y,r*0.16*tw,t);f.fillStyle='rgba(255,255,240,'+(tw*0.9).toFixed(2)+')';f.fill();}}
   else if(fx==='galaxie'){const g=f.createLinearGradient(-r,-r,r,r);g.addColorStop(0,'#3a3aa8');g.addColorStop(0.55,'#7a3ac8');g.addColorStop(1,'#c84aa8');tint(g,'#7a6ad8');
     f.globalCompositeOperation='source-atop';const ng=f.createRadialGradient(r*0.3,-r*0.2,0,r*0.3,-r*0.2,r*0.9);ng.addColorStop(0,'rgba(255,140,220,0.35)');ng.addColorStop(1,'rgba(255,140,220,0)');f.fillStyle=ng;f.fillRect(-ext,-ext,ext*2,ext*2);
-    for(let i=0;i<9;i++){const sx=Math.sin(i*12.9898)*0.7*r,sy=Math.cos(i*78.233)*0.75*r,tw=0.4+0.6*Math.abs(Math.sin(t*3+i*1.3));f.beginPath();f.arc(sx,sy,r*(i%3?0.05:0.09)*tw+0.3,0,TAU);f.fillStyle='rgba(255,255,255,'+tw.toFixed(2)+')';f.fill();}
+    if(hq)for(let i=0;i<9;i++){const sx=Math.sin(i*12.9898)*0.7*r,sy=Math.cos(i*78.233)*0.75*r,tw=0.4+0.6*Math.abs(Math.sin(t*3+i*1.3));f.beginPath();f.arc(sx,sy,r*(i%3?0.05:0.09)*tw+0.3,0,TAU);f.fillStyle='rgba(255,255,255,'+tw.toFixed(2)+')';f.fill();}
     shine(0.3,0.25);}
   else if(fx==='arcenciel'){const g=f.createLinearGradient(-r,-r,r,r),h=(t*70)%360;for(let i=0;i<=6;i++)g.addColorStop(i/6,'hsl('+((h+i*60)%360)+',95%,62%)');tint(g,'#f0e8ff');shine(0.45,0.3);}
-  else if(fx==='shine')shine(0.32,0.28);
+  else if(fx==='shine'&&hq)shine(0.32,0.28);
   f.globalCompositeOperation='source-over';
   c.drawImage(fxCv,0,0,size,size,-ext,-ext,ext*2,ext*2);
 }
@@ -4724,7 +4725,7 @@ function updateParticles(dt){
   run.parts=run.parts.filter(p=>p.life>0);
   for(const f of run.fx)f.t+=dt;run.fx=run.fx.filter(f=>f.t<f.max);
   for(const f of run.floats){f.t-=dt;f.y-=22*dt;}run.floats=run.floats.filter(f=>f.t>0);
-  const pcap=quality==='high'?400:180;if(run.parts.length>pcap)run.parts.splice(0,run.parts.length-pcap);
+  const pcap=quality==='high'?(run.pl&&run.pl.length>2?280:400):180;if(run.parts.length>pcap)run.parts.splice(0,run.parts.length-pcap);
 }
 function gainXP(n,x,y){
   if(!run||run.dead)return;
@@ -8483,7 +8484,7 @@ function loop(now){
   const inGame=run&&(state==='story'||state==='ctledit'||state==='play'||state==='paused'||state==='modmenu'||state==='levelup'||state==='levelwait'||state==='over'||(state==='bestiary'&&bestFrom==='over')||(state==='shop'&&shopFrom==='over'));
   if(!inGame){if(setRoomDims(11))layout();updateTitle(dt);}
   if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);
-    skinAnimT=(skinAnimT||0)+1;if(skinAnimT%3===0)for(const cv of document.querySelectorAll('#skins canvas')){const i=+cv.dataset.si;if(i>0)drawPortrait(cv,cv.dataset.sid,titleT,false,skinPal(cv.dataset.sid,i));}}
+    skinAnimT=(skinAnimT||0)+1;if(skinAnimT%3===0)for(const cv of document.querySelectorAll('#skins canvas')){const i=+cv.dataset.si;if(i<=0)continue;const rc=cv.getBoundingClientRect();if(rc.bottom<0||rc.top>H)continue;drawPortrait(cv,cv.dataset.sid,titleT,false,skinPal(cv.dataset.sid,i));}}
   if(state==='pick'){for(const cv of document.querySelectorAll('.starter canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)));}
   if(state==='bestiary'&&bestSel)drawPortrait($('bdCanvas'),bestSel,titleT,!save.seen[bestSel]);
   if(inGame&&run)renderGame();else renderTitle();
