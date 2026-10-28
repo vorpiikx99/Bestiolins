@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028084919';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028084919" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028085222';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028085222" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1474,6 +1474,9 @@ const STARTERS={
   dracolin:{name:'Dracolin',like:'braisot',pal:{'#ffcf4a':'#c8ff6a','#ff7a2f':'#5bd16a','#c9652a':'#2f7a3a','#f08a3c':'#4aa85a','#ffd9a0':'#dcffd0'},col:'#4aa85a',r:10,fit:1.55,price:650,poison:1,desc:"Un bébé dragon. Ses flammes vertes brûlent les monstres petit à petit.",hp:6,speed:116,dmg:3.2,fireDelay:0.36,range:220,size:1,pierce:false,shot:'#7fe36a',core:'#eaffd9',stats:{'Dégâts':3,'Cadence':3,'Vitesse':3,'Vie':3}},
   fennouille:{name:'Fennouille',like:'ombrin',pal:{'#3a3350':'#e8a860','#8a6fc4':'#fff0d6','#e9d36a':'#3a2a1a','#b48cff':'#ffcf8a'},col:'#e8a860',r:10,fit:1.5,price:550,multi:2,desc:"Un petit renard des sables, très rapide. Il tire deux flèches à la fois.",hp:5,speed:140,dmg:2.4,fireDelay:0.3,range:230,size:0.9,pierce:false,shot:'#ffcf8a',core:'#fff6e6',stats:{'Dégâts':2,'Cadence':4,'Vitesse':5,'Vie':2}},
   carapix:{name:'Carapix',like:'ronceau',pal:{'#3f6b2c':'#2f5a4a','#6aa04a':'#4a9a7a','#9fd46a':'#a8e0c0','#4f7a32':'#2f6a50'},col:'#4a9a7a',r:10,fit:1.45,price:500,startAbil:'bouclier',desc:"Une petite tortue très solide. Elle commence chaque partie avec un bouclier qui bloque un coup.",hp:9,speed:100,dmg:3.6,fireDelay:0.42,range:210,size:1.1,pierce:false,shot:'#a8e0c0',core:'#effff6',stats:{'Dégâts':3,'Cadence':2,'Vitesse':2,'Vie':5}},
+  pikolo:{name:'Pikolo',like:'ronceau',pal:{'#3f6b2c':'#5a3a22','#6aa04a':'#8a5a32','#9fd46a':'#d8a46a','#4f7a32':'#6a4428'},col:'#8a5a32',r:10,fit:1.45,price:600,desc:"Un petit hérisson. Il lance 5 piquants d'un coup, comme un éventail : très fort de près, mais ça ne va pas loin.",hp:7,speed:118,dmg:2.6,fireDelay:0.5,range:200,size:0.85,pierce:false,shot:'#d8a46a',core:'#fff0d6',mod:p=>{p.multi=5;p.spread=0.22;p.range*=0.55;},stats:{'Dégâts':5,'Cadence':2,'Vitesse':3,'Vie':4}},
+  lumina:{name:'Lumina',like:'cristallin',pal:{'#9fdcf0':'#ffe08a','#5f8fa8':'#a8842a','#e6f6ff':'#fff8e0','#c9a2ff':'#ff9a5a'},col:'#ffe08a',r:10,fit:1.4,price:750,desc:"Un petit cristal de soleil. Il tire un rayon très rapide qui traverse tous les monstres, mais pas très souvent.",hp:6,speed:112,dmg:5.2,fireDelay:0.62,range:300,size:0.9,pierce:true,shot:'#ffe08a',core:'#ffffff',mod:p=>{p.shotSpeed*=1.8;},stats:{'Dégâts':5,'Cadence':1,'Vitesse':3,'Vie':3}},
+  bulbi:{name:'Bulbi',like:'gouttin',pal:{'#5fb6e8':'#ff8ad8'},col:'#ff8ad8',r:10,fit:1.5,price:700,desc:"Une bulle de savon rose. Ses grosses bulles lentes rebondissent 3 fois sur les murs.",hp:6,speed:124,dmg:3,fireDelay:0.38,range:280,size:1.3,pierce:false,shot:'#ffb3e6',core:'#fff0fb',mod:p=>{p.bounce=(p.bounce|0)+3;p.shotSpeed*=0.75;},stats:{'Dégâts':3,'Cadence':3,'Vitesse':4,'Vie':3}},
   cristallin:{name:'Cristallin',col:'#9fdcf0',r:10,fit:1.4,price:600,desc:"Un petit golem de cristal. Ses tirs rebondissent sur les murs, et sa peau bloque le premier coup de chaque salle. Gratuit si tu bats Prismagor, le boss secret.",hp:7,speed:110,dmg:3.4,fireDelay:0.4,range:230,size:1.05,pierce:false,bounce:1,shot:'#9fe6ff',core:'#ffffff',stats:{'Dégâts':3,'Cadence':2,'Vitesse':2,'Vie':4}}
 };
 const starterOpen=id=>!STARTERS[id].price||!!(save.unlocked&&save.unlocked[id]);
@@ -1686,6 +1689,9 @@ const ABILITIES={
   force:{name:'Force',col:'#e2483a',max:3,lv:['Tes tirs font 20 % de dégâts en plus.','Encore +20 % de dégâts.','Encore +20 % de dégâts.']},
   furie:{name:'Furie',col:'#f2a23a',max:3,lv:['Tu tires 15 % plus vite.','Encore 15 % plus vite.','Encore 15 % plus vite.']},
   agile:{name:'Pattes agiles',col:'#5fbfb0',max:3,lv:['Tu cours 10 % plus vite.','Encore 10 % plus vite.','Encore 10 % plus vite.']},
+  ricochet:{name:'Ricochet',col:'#c9a2ff',max:3,lv:['Tes tirs rebondissent une fois sur les murs.','Ils rebondissent 2 fois.','Ils rebondissent 3 fois.']},
+  critique:{name:'Coup critique',col:'#ffe34a',max:3,lv:['8 % de chance de faire un coup critique (3 fois plus de dégâts).','16 % de chance.','24 % de chance.']},
+  aimant:{name:'Aimant',col:'#f5c542',max:3,lv:['Les pièces viennent vers toi de plus loin.','Encore plus loin.','Les pièces viennent de très loin.']},
   grocoeur:{name:'Gros cœur',col:'#ff6b8a',max:3,lv:['Un cœur de plus, et un cœur soigné.','Encore un cœur de plus.','Encore un cœur de plus.']}
 };
 const ACTIVES={
@@ -1694,6 +1700,9 @@ const ACTIVES={
   acier:{name:"Bulle d'acier",desc:'Tu es invincible pendant 4 secondes.',max:4,col:'#9fe8ff'},
   givre:{name:'Sablier de givre',desc:'Gèle les ennemis et leurs tirs pendant 4 secondes.',max:5,col:'#bfe6ff'},
   tornade:{name:'Tornade',desc:'Une tornade tourne autour de toi pendant 5 secondes : elle avale les tirs ennemis et blesse les monstres.',max:5,col:'#d7e1eb'},
+  meteore:{name:'Météore',desc:'Un gros météore tombe sur le groupe de monstres le plus proche et fait très mal.',max:5,col:'#ff7a3a'},
+  aimantor:{name:"Aimant d'or",desc:'Toutes les pièces de la salle viennent dans ta poche, plus 8 pièces bonus.',max:3,col:'#f5c542'},
+  totem:{name:'Totem de soin',desc:"Soigne 1 cœur à tous les joueurs et relève les amis tombés.",max:6,col:'#7fe3a0'},
   pluie:{name:'Pluie de bombes',desc:'5 bombes tombent autour de toi et explosent (elles ne te font pas mal).',max:4,col:'#ff9a5a'}
 };
 const ACTIVE_IDS=Object.keys(ACTIVES);
@@ -2450,6 +2459,9 @@ function drawAbilityIcon(c,id,s){
   case 'force':c.beginPath();c.moveTo(0,-s);c.lineTo(s*0.85,0);c.lineTo(s*0.35,0);c.lineTo(s*0.35,s*0.9);c.lineTo(-s*0.35,s*0.9);c.lineTo(-s*0.35,0);c.lineTo(-s*0.85,0);c.closePath();fs(c,col,s*0.6);break;
   case 'furie':c.lineJoin='round';c.lineCap='round';for(const o of[-0.35,0.3]){c.beginPath();c.moveTo(o*s-s*0.3,-s*0.7);c.lineTo(o*s+s*0.3,0);c.lineTo(o*s-s*0.3,s*0.7);c.strokeStyle=INK;c.lineWidth=s*0.42;c.stroke();c.strokeStyle=col;c.lineWidth=s*0.2;c.stroke();}break;
   case 'agile':c.beginPath();c.ellipse(0,s*0.3,s*0.45,s*0.38,0,0,TAU);fs(c,col,s*0.5);for(const p of[[-0.55,-0.25],[0,-0.6],[0.55,-0.25]]){c.beginPath();c.arc(p[0]*s,p[1]*s,s*0.22,0,TAU);fs(c,col,s*0.5);}break;
+  case 'ricochet':c.beginPath();c.moveTo(-s*0.9,-s*0.6);c.lineTo(0,s*0.5);c.lineTo(s*0.9,-s*0.6);c.lineWidth=s*0.25;c.strokeStyle=col;c.lineCap='round';c.lineJoin='round';c.stroke();c.beginPath();c.arc(s*0.9,-s*0.6,s*0.22,0,TAU);fs(c,'#fff',s*0.3);break;
+  case 'critique':star5(c,0,0,s*0.95,0);fs(c,col,s*0.5);break;
+  case 'aimant':c.beginPath();c.arc(0,-s*0.1,s*0.62,Math.PI,0);c.lineWidth=s*0.42;c.strokeStyle='#d8433a';c.stroke();c.fillStyle='#e8e0d0';c.fillRect(-s*0.83,-s*0.12,s*0.42,s*0.55);c.fillRect(s*0.41,-s*0.12,s*0.42,s*0.55);break;
   case 'grocoeur':heartPath(c,0,0,s*1.7);fs(c,col,s*0.6);c.strokeStyle='#fff';c.lineWidth=s*0.18;c.lineCap='round';c.beginPath();c.moveTo(-s*0.3,-s*0.02);c.lineTo(s*0.3,-s*0.02);c.moveTo(0,-s*0.32);c.lineTo(0,s*0.28);c.stroke();break;
   }
   c.restore();
@@ -2474,6 +2486,9 @@ function drawActiveIcon(c,id,s){
   case 'givre':c.beginPath();c.moveTo(-s*0.55,-s*0.85);c.lineTo(s*0.55,-s*0.85);c.lineTo(0,0);c.closePath();fs(c,'#bfe6ff',s*0.5);c.beginPath();c.moveTo(-s*0.55,s*0.85);c.lineTo(s*0.55,s*0.85);c.lineTo(0,0);c.closePath();fs(c,'#7fc4ef',s*0.5);
     c.fillStyle='#8a6a4a';c.fillRect(-s*0.7,-s*1.0,s*1.4,s*0.18);c.fillRect(-s*0.7,s*0.82,s*1.4,s*0.18);break;
   case 'tornade':for(let k=0;k<4;k++){c.beginPath();c.ellipse(k*s*0.06,-s*0.7+k*s*0.48,s*(0.95-k*0.2),s*0.2,0,0,TAU);fs(c,k%2?'#b9c6d3':'#d7e1eb',s*0.4);}break;
+  case 'meteore':c.beginPath();c.moveTo(-s*0.9,-s*0.9);c.lineTo(s*0.1,-s*0.1);c.lineWidth=s*0.45;c.strokeStyle='rgba(255,160,60,0.7)';c.lineCap='round';c.stroke();c.beginPath();c.arc(s*0.25,s*0.25,s*0.55,0,TAU);fs(c,'#ff7a3a',s*0.5);c.beginPath();c.arc(s*0.1,s*0.1,s*0.18,0,TAU);c.fillStyle='#ffd36a';c.fill();break;
+  case 'aimantor':c.beginPath();c.arc(0,-s*0.15,s*0.6,Math.PI,0);c.lineWidth=s*0.4;c.strokeStyle='#d8433a';c.stroke();c.fillStyle='#e8e0d0';c.fillRect(-s*0.8,-s*0.15,s*0.4,s*0.45);c.fillRect(s*0.4,-s*0.15,s*0.4,s*0.45);drawCoin(c,0,s*0.55,s*0.35,1);break;
+  case 'totem':c.fillStyle='#8a5a32';c.fillRect(-s*0.35,-s*0.8,s*0.7,s*1.6);c.strokeStyle=INK;c.lineWidth=s*0.15;c.strokeRect(-s*0.35,-s*0.8,s*0.7,s*1.6);heartPath(c,0,-s*0.15,s*0.9);fs(c,'#7fe3a0',s*0.4);break;
   case 'pluie':drawBomb(c,-s*0.45,s*0.35,s*0.4,false);drawBomb(c,s*0.45,s*0.4,s*0.4,true);drawBomb(c,0,-s*0.35,s*0.42,false);break;
   }
   c.restore();
@@ -3042,7 +3057,7 @@ const EVO_N=['Bébé','Grand','Héros'],EVO_AT=[0,5,15],EVO_SC=[1,1.1,1.2];
 function evoOf(sid){const n=(save.stats&&save.stats['pl_'+sid])|0;return n>=EVO_AT[2]?2:n>=EVO_AT[1]?1:0;}
 function makePlayer(sid,evo){
   const st=STARTERS[sid],p=makePlayer0(sid,st);p.evo=evo==null?evoOf(sid):clamp(evo|0,0,2);
-  if(st.multi)p.multi=st.multi;if(st.poison)p.poison=(p.poison||0)+st.poison;if(st.startAbil)applyAbility(st.startAbil,p);
+  if(st.multi)p.multi=st.multi;if(st.mod)st.mod(p);if(st.poison)p.poison=(p.poison||0)+st.poison;if(st.startAbil)applyAbility(st.startAbil,p);
   if(p.evo>=1)p.dmg*=p.evo>=2?1.1:1.05;if(p.evo>=2){p.maxHp+=2;p.hp=p.maxHp;}
   return p;
 }
@@ -3650,6 +3665,12 @@ function useActive(pl){
     case 'acier':P.ironT=4;ringFx(P.x,P.y,46,'200,220,235',0.5);sfx('shield');break;
     case 'givre':run.frozen=4;ringFx(P.x,P.y,220,'191,230,255',0.7);netFx(3,P.x,P.y,220);sfx('wave');break;
     case 'tornade':P.tornT=5;P.tornCd=0;ringFx(P.x,P.y,64,'215,225,235',0.5);sfx('wave');break;
+    case 'meteore':{const live=run.enemies.filter(e=>!e.dead&&e.spawnT<=0&&!e.intangible);let tg=null,bn=-1;
+      for(const e of live){const n=live.filter(o=>Math.hypot(o.x-e.x,o.y-e.y)<70).length-Math.hypot(e.x-P.x,e.y-P.y)/400;if(n>bn){bn=n;tg=e;}}
+      const x=tg?tg.x:P.x+P.lx*80,y=tg?tg.y:P.y+P.ly*80;boomFx(x,y,70);netFx(2,x,y,70);addShake(9);
+      for(const e of live){const dx=e.x-x,dy=e.y-y,d=Math.hypot(dx,dy)||1;if(d<70+e.r)damageEnemy(e,P.dmg*5+15,dx/d,dy/d);}sfx('boom');break;}
+    case 'aimantor':{let g=8;run.room.pickups=run.room.pickups.filter(p=>{if(p.kind==='coin'){g+=p.val|0;spark(p.x,p.y-3,'245,197,66',3,60,0.3);return false;}return true;});addGold(g);run.floats.push({x:P.x,y:P.y-26,text:'+'+g+' or',t:1,col:'#f5c542'});ringFx(P.x,P.y,90,'245,197,66',0.6);sfx('coin');break;}
+    case 'totem':for(const q of players()){if(q.down){q.down=false;q.revT=0;q.hp=Math.min(q.maxHp,2);q.inv=1.5;}else q.hp=Math.min(q.maxHp,q.hp+2);ringFx(q.x,q.y,40,'127,227,160',0.6);spark(q.x,q.y,'127,227,160',14,120,0.5);}ringFx(P.x,P.y,140,'127,227,160',0.7);netFx(3,P.x,P.y,140);sfx('heal');break;
     case 'pluie':for(let i=0;i<5;i++){const a=i*TAU/5+rand(-0.25,0.25),d=rand(42,72);run.bombs.push({x:clamp(P.x+Math.cos(a)*d,12,RW-12),y:clamp(P.y+Math.sin(a)*d,12,RH-12),t:0.75+i*0.14});}sfx('fuse');break;
     }
   });
@@ -3796,6 +3817,9 @@ function drawShot0(sh,t){
   ctx.beginPath();ctx.moveTo(x-sh.vx*0.05,y-sh.vy*0.05);ctx.lineTo(x,y);ctx.lineCap='round';ctx.lineWidth=r*1.5;ctx.strokeStyle='rgba('+rgb+',0.3)';ctx.stroke();
   ctx.save();ctx.translate(x,y);
   switch(sh.frag?'':sh.sid){
+  case 'lumina':{ctx.rotate(a);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-r*4.5,0);ctx.lineTo(r*1.2,0);ctx.lineWidth=r*1.3;ctx.strokeStyle='rgba(255,210,90,0.55)';ctx.stroke();ctx.lineWidth=r*0.55;ctx.strokeStyle='#ffffff';ctx.stroke();break;}
+  case 'bulbi':{ctx.beginPath();ctx.arc(0,0,r*1.1,0,TAU);ctx.fillStyle='rgba(255,179,230,0.45)';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle='#ff8ad8';ctx.stroke();ctx.beginPath();ctx.arc(-r*0.35,-r*0.35,r*0.3,0,TAU);ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fill();break;}
+  case 'pikolo':{ctx.rotate(a);ctx.beginPath();ctx.moveTo(r*1.6,0);ctx.lineTo(-r*1.2,-r*0.45);ctx.lineTo(-r*1.2,r*0.45);ctx.closePath();ctx.fillStyle=sh.col;ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#3a2414';ctx.stroke();break;}
   case 'braisot':{ctx.rotate(a);const f=1+0.15*Math.sin(t*40+x);
     ctx.beginPath();ctx.moveTo(r*1.1,0);ctx.quadraticCurveTo(r*0.6,-r*1.05,-r*0.4,-r*0.7);ctx.quadraticCurveTo(-r*2.2*f,-r*0.25,-r*2.8*f,0);ctx.quadraticCurveTo(-r*2.2*f,r*0.25,-r*0.4,r*0.7);ctx.quadraticCurveTo(r*0.6,r*1.05,r*1.1,0);ctx.closePath();
     ctx.fillStyle=sh.col;ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='rgba(70,25,5,0.85)';ctx.stroke();
@@ -3907,7 +3931,7 @@ function makePots(grid,type){
 function doorDust(){for(const k in DIRS){if(!run.room.doors[k])continue;const p=DOORPOS[k];smoke(clamp(p.x,10,RW-10),clamp(p.y,8,RH-8),5,'170,150,130',1);}}
 function playerFire(ax,ay){
   const st=STARTERS[P.sid],base=Math.atan2(ay,ax),n=P.multi,angs=[];
-  for(let i=0;i<n;i++)angs.push(base+(i-(n-1)/2)*0.16);
+  for(let i=0;i<n;i++)angs.push(base+(i-(n-1)/2)*(P.spread||0.16));
   if(P.back)angs.push(base+Math.PI);
   for(const a of angs){
     const crit=!!(P.crit&&Math.random()<P.crit),rg=!!(P.rage&&P.hp<=(P.rageHp||2));
@@ -5565,6 +5589,9 @@ function applyAbility(id,pl){
   else if(id==='agile')pl.speed*=1.1;
   else if(id==='grocoeur'){pl.maxHp=Math.min(24,pl.maxHp+2);pl.hp=Math.min(pl.maxHp,pl.hp+2);}
   else if(id==='bouclier'&&lv===1){pl.shield=true;pl.shieldT=0;}
+  else if(id==='ricochet')pl.bounce=(pl.bounce|0)+1;
+  else if(id==='critique')pl.crit=(pl.crit||0)+0.08;
+  else if(id==='aimant')pl.magnet=(pl.magnet||40)+45;
 }
 function pickAbility(id){
   if(state!=='levelup'||performance.now()-lvOpenAt<700)return;lvSel=null;
@@ -6577,7 +6604,7 @@ addEventListener('resize',()=>{layout();});
 
 /* ================= coop (online, 2 players, host runs the game) ================= */
 let ROOM=null,NET=null,P2=null,pickMode=null,pickCode=null,lastCoop=false,lastLocal=false,pickLocal1=null,coopUiT=0,roomReady=false,coopSig='',coopView='home',MM=null,coopViewT=0;
-const SIDS=['braisot','gouttin','ronceau','givrelle','petalou','ombrin','volticelle','mamoutin','cristallin','dracolin','fennouille','carapix'],RTYPES=['start','normal','treasure','boss','shop','secret','challenge'],ITEM_IDS=Object.keys(ITEMS),DOOR_KEYS=['n','s','w','e'];
+const SIDS=['braisot','gouttin','ronceau','givrelle','petalou','ombrin','volticelle','mamoutin','cristallin','dracolin','fennouille','carapix','pikolo','lumina','bulbi'],RTYPES=['start','normal','treasure','boss','shop','secret','challenge'],ITEM_IDS=Object.keys(ITEMS),DOOR_KEYS=['n','s','w','e'];
 const hasAb=k=>Object.prototype.hasOwnProperty.call(ABILITIES,k);
 function players(){return (run&&run.pl)||[P];}
 function withP(pl,fn){const k=P;P=pl;try{return fn();}finally{P=k;}}
