@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028085222';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028085222" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028085607';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028085607" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -740,6 +740,19 @@ html.no-anim #tutBox.pop{animation:none}
 .hallo-box .hbar i{display:block;height:100%;background:linear-gradient(90deg,#f08a2a,#a35bd8)}
 html.hallo .logo{text-shadow:0 0 18px rgba(240,138,42,.55)}
 #weekBonus{width:100%;margin:6px 0 4px}
+#storyBox{position:fixed;z-index:14;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);width:min(94vw,520px);display:flex;gap:12px;align-items:flex-start;background:rgba(24,16,11,.97);border:2px solid #f2a23a;border-radius:12px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#storyBox.pop{animation:tutPop .35s ease-out}
+html.no-anim #storyBox.pop{animation:none}
+#storyCv{width:72px;height:72px;flex:0 0 72px;border-radius:50%;background:radial-gradient(circle at 50% 55%,#4a372b,#21170f 72%)}
+#storyBox .sb-body{flex:1;min-width:0}
+#storyBox .sb-name{margin:0 0 4px;font:700 13px var(--font-ui);letter-spacing:.05em;text-transform:uppercase;color:#f2a23a}
+#storyBox .sb-text{margin:0;font-size:17px;line-height:1.4;color:#ece0c8}
+#storyBox .sb-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+#storyBox .sb-acts .btn{min-height:44px;padding:8px 16px}
+.story-ch{background:var(--stone);border:2px solid var(--stone-edge);border-radius:8px;padding:10px 14px;margin:0 0 10px}
+.story-ch summary{font-weight:700;font-size:18px;color:var(--torch);cursor:pointer}
+.story-ch.locked summary{color:#7a6a5a}
+.story-ch p{margin:8px 0 0;font-size:16px;line-height:1.45}
 </style>
 </head>
 <body>
@@ -821,6 +834,7 @@ html.hallo .logo{text-shadow:0 0 18px rgba(240,138,42,.55)}
       <button id="btnBest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5V5.5M9 7h6"/></svg><span class="lbl">Bestiaire</span><span class="count" id="bestCount"></span></button>
       <button id="btnAch" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3.5 4M16 6h3a3 3 0 0 1-3.5 4M12 13v4M8 21h8M10 17h4v4h-4z"/></svg><span class="lbl">Succès</span><span class="count" id="achCount"></span></button>
       <button id="btnQuest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8.5l1.6 1.6L13.5 7M8.5 14h7M8.5 17h5"/></svg><span class="lbl">Quêtes</span><span class="qbadge" id="questCount" hidden></span></button>
+      <button id="btnStory" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6M8 11h6"/></svg><span class="lbl">Histoire</span></button>
       <button id="btnFriends" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20C6 16 3 12.5 3 8.8 3 6.2 5 4 7.6 4c1.8 0 3.4 1 4.4 2.6C13 5 14.6 4 16.4 4 19 4 21 6.2 21 8.8 21 12.5 18 16 12 20z"/></svg><span class="lbl">Amis</span><span class="qbadge" id="frBadge" hidden></span></button>
       <button id="btnRank" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20v-6h4v6M10 20V8h4v12M15 20v-9h4v9"/></svg><span class="lbl">Classement</span></button>
       <hr class="side-sep">
@@ -1232,6 +1246,14 @@ html.hallo .logo{text-shadow:0 0 18px rgba(240,138,42,.55)}
   </div>
 </section>
 
+<section id="scrStory" class="screen" hidden>
+  <div class="panel">
+    <div class="headrow"><div class="hdr"><button class="back" id="storyBack" type="button">← Retour</button><h2>Histoire</h2></div></div>
+    <p class="sub">Les chapitres racontés par Hulotte, la gardienne de la crypte. Un nouveau chapitre arrive quand tu découvres un nouvel étage. Touche un chapitre pour le relire.</p>
+    <p class="small-h" id="storyCount"></p>
+    <div id="storyList"></div>
+  </div>
+</section>
 <section id="scrQuest" class="screen" hidden>
   <div class="panel">
     <div class="headrow endrow"><div class="hdr"><button class="back" id="questBack" type="button">← Retour</button><h2>Quêtes</h2></div><span class="goldtag"><i class="coin"></i><span id="questGold"></span></span></div>
@@ -1354,6 +1376,8 @@ html.hallo .logo{text-shadow:0 0 18px rgba(240,138,42,.55)}
   </div>
 </section>
 
+<div id="storyBox" hidden><canvas id="storyCv" width="128" height="128"></canvas><div class="sb-body"><p class="sb-name">Hulotte, la gardienne</p><p class="sb-text" id="storyText"></p>
+  <div class="sb-acts"><button type="button" class="btn primary" id="storyNext">Suivant ▶</button><button type="button" class="btn ghost" id="storySkip">Passer</button></div></div></div>
 <button type="button" id="giveHeart" hidden>❤️ Donner un cœur</button>
 <div id="tutBox" hidden><p class="tut-n" id="tutN"></p><p class="tut-t" id="tutT"></p><button type="button" class="tut-skip" id="tutSkip">Passer le tutoriel</button></div>
 <section id="scrOver" class="screen" hidden>
@@ -1886,8 +1910,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,story:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -3090,6 +3114,7 @@ function startFloor(i){
   enterRoom(run.map.start,null);
   if(run.rush)banner('Rush des boss · '+((run.rushI|0)+1)+' sur '+RUSH.length,FL(i).name,2.2);
   else banner(floorLabel(),FL(i).name+floorTag(),2.4);
+  if(!run.rush){const r0=run;setTimeout(()=>{if(run===r0&&state==='play'&&run.floor===i)maybeStory('f'+i);},900);}
   if(i===3&&!run.rush){const a='Un passage secret ?',b="On raconte qu'un étage caché se trouve derrière un mur fissuré de l'Abîme. Pose une bombe à côté !";toast(a,b);netEv('t',a,b);}
 }
 /* boss rush: just a quiet start room and the boss room behind the red door */
@@ -3174,7 +3199,7 @@ function genFloor(fi){
     /* a mini-boss room and 1-2 special event rooms */
     {const cand=shuffle([...rooms.values()].filter(r=>r.type==='normal'&&dist.get(K(r.gx,r.gy))>=1));
       const far=cand.filter(r=>dist.get(K(r.gx,r.gy))>=2),el=far[0]||cand[0];if(el)el.elite=true;
-      for(const ev of shuffle(['piege','maudit','marchand','fontaine','autel','noir','effondre']).slice(0,fi===SECRET_FLOOR?1:fi===0?1:3)){
+      for(const ev of shuffle(['piege','maudit','marchand','fontaine','autel','noir','effondre','casino']).slice(0,fi===SECRET_FLOOR?1:fi===0?1:3)){
         const r=cand.find(r=>!r.elite&&!r.event);if(!r)break;r.event=ev;
         if(ev==='piege')r.traps=makeTraps(r.grid);
         else if(ev==='effondre')r.crumb=makeCrumb(r.grid);
@@ -3203,10 +3228,11 @@ function genFloor(fi){
 }
 
 /* ================= special rooms: traps, cursed chest, fountain, mystery merchant ================= */
-const EVENTS=['','piege','maudit','marchand','fontaine','autel','noir','effondre'];
+const EVENTS=['','piege','maudit','marchand','fontaine','autel','noir','effondre','casino'];
 const FIGHT_EV=['piege','noir','effondre'];
 const EV_TXT={piege:['Attention','Salle piégée','Quand les trous deviennent rouges, les pics vont sortir : ne reste pas dessus !'],maudit:['Salle spéciale','Coffre maudit','Si tu le touches, des monstres surgissent… mais il cache un trésor.'],
   marchand:['Salle spéciale','Marchand mystère',"Va sur le sac, puis touche « Acheter » deux fois : la surprise peut être un objet, un pouvoir, de l'or…"],fontaine:['Salle spéciale','Fontaine de vie','Marche dessus pour regagner tous tes cœurs (une seule fois).'],
+  casino:['Salle spéciale','Casino de la crypte',"Va sur la roue, puis touche « Tourner » deux fois. Tu paies un peu d'or… et tu peux gagner jusqu'à 5 fois plus ! (3 essais)"],
   noir:['Attention','Salle obscure',"Il fait tout noir ! Les monstres se cachent dans l'ombre. Bats-les tous pour rallumer la lumière."],
   effondre:['Attention','Sol fragile',"Les dalles fissurées s'effondrent quand on marche dessus. Ne tombe pas dans les trous ! L'esquive permet de sauter par-dessus."],
   autel:['Salle spéciale','Autel du sang',"Donne 1 cœur pour choisir un objet rare. Va sur l'autel pour voir."]};
@@ -3217,6 +3243,37 @@ function makeTraps(grid){
     for(const k in DOORPOS)if(Math.hypot(x-DOORPOS[k].x,y-DOORPOS[k].y)<64)ok=false;if(ok)cand.push([c,r]);}
   shuffle(cand);
   return cand.slice(0,Math.min(cand.length,Math.round(COLS*ROWS*0.12))).map(a=>({c:a[0],r:a[1],g:(a[0]+a[1])%2}));
+}
+const WHEEL=[['rien',30,'#5a4a3c','Perdu !'],['x2',25,'#f5c542','Double !'],['coeur',12,'#e2483a','Un cœur !'],['bombe',10,'#6a6a7a','2 bombes !'],['x3',10,'#ffb35a','Triple !'],['objet',8,'#a35bd8','Un objet !'],['x5',5,'#5bd87a','JACKPOT ×5 !']];
+function spinWheel(p,pl){
+  if(!p||p.spin>0||(p.left|0)<=0||!pl||pl.down)return;
+  const g=goldOf(pl);if(g<p.price){if(!pl.isRemote)sfx('nope');return;}
+  if(pl.isRemote){netEv('pay',p.price,'',pl);if(pl.G&&pl.G.g)pl.G.g.gold=g-p.price;}else{save.gold=g-p.price;persist();run.floats.push({x:p.x,y:p.y-40,text:'-'+p.price+' or',t:1,col:'#f5c542'});}
+  let r=Math.random()*100,res=WHEEL[0];for(const w of WHEEL){r-=w[1];if(r<0){res=w;break;}}
+  p.left=(p.left|0)-1;p.spin=2.2;p.res=res[0];p.by=pl;sfx('coin');
+}
+function updateWheels(dt){
+  for(const p of run.room.pickups){if(p.kind!=='wheel')continue;
+    if(p.spin>0){p.spin=Math.max(0,p.spin-dt);p.ang=(p.ang||0)+dt*(2+p.spin*7);if(Math.random()<dt*10)sfx('coin');
+      if(p.spin<=0){const w=WHEEL.find(x=>x[0]===p.res)||WHEEL[0],x=p.x,y=p.y+30;
+        if(w[0]==='x2')spawnCoins(x,y,p.price*2,true);else if(w[0]==='x3')spawnCoins(x,y,p.price*3,true);
+        else if(w[0]==='x5'){spawnCoins(x,y,p.price*5,true);flashFx(p.x,p.y-20,90);ringFx(p.x,p.y,110,'91,216,122',0.9);addShake(6);}
+        else if(w[0]==='coeur'){const q=nearestFree(x,y);run.room.pickups.push({kind:'heart',x:q.x,y:q.y});}
+        else if(w[0]==='bombe'){for(const dx of[-14,14]){const q=nearestFree(x+dx,y);run.room.pickups.push({kind:'bomb',x:q.x,y:q.y});}}
+        else if(w[0]==='objet'){const id=run.pool.pop();if(id){const q=nearestFree(x,y+10);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});}}
+        sfx(w[0]==='rien'?'nope':w[0]==='x5'?'chest':'item');run.floats.push({x:p.x,y:p.y-46,text:w[3],t:1.4,col:w[2]==='#5a4a3c'?'#ece0c8':w[2]});netEv('b','Roue de la chance',w[3]);
+        if(w[0]==='x5'){banner('JACKPOT !','5 fois la mise',2);}}}}
+}
+function drawWheel(p,t){
+  const x=p.x,y=p.y-18,R=17;
+  ctx.beginPath();ctx.ellipse(p.x,p.y+8,16,5,0,0,TAU);ctx.fillStyle='rgba(0,0,0,0.35)';ctx.fill();
+  ctx.fillStyle='#5a3a22';ctx.fillRect(p.x-3,y,6,26);ctx.strokeStyle=INK;ctx.lineWidth=1.2;ctx.strokeRect(p.x-3,y,6,26);
+  const n=WHEEL.length,a0=p.ang||0;
+  for(let i=0;i<n;i++){ctx.beginPath();ctx.moveTo(x,y);ctx.arc(x,y,R,a0+i*TAU/n,a0+(i+1)*TAU/n);ctx.closePath();ctx.fillStyle=WHEEL[i][2];ctx.fill();}
+  ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.lineWidth=2;ctx.strokeStyle='#f5c542';ctx.stroke();ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fillStyle='#f5c542';ctx.fill();
+  ctx.beginPath();ctx.moveTo(x,y-R+4);ctx.lineTo(x-4,y-R-5);ctx.lineTo(x+4,y-R-5);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle=INK;ctx.stroke();
+  for(let i=0;i<6;i++){const a=t*2+i*TAU/6;ctx.beginPath();ctx.arc(x+Math.cos(a)*(R+5),y+Math.sin(a)*(R+5),1.3,0,TAU);ctx.fillStyle=(i+Math.floor(t*4))%2?'#ffe066':'#ff8a5a';ctx.fill();}
+  ctx.font='700 10px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;const lb=(p.left|0)>0?'Roue · '+(p.left|0)+' essai'+((p.left|0)>1?'s':''):'Plus d\'essais';ctx.strokeText(lb,x,y-R-9);ctx.fillStyle='#ffe0a0';ctx.fillText(lb,x,y-R-9);
 }
 function makeCrumb(grid){
   const cand=[];
@@ -3283,6 +3340,7 @@ function placeEvent(room){
   else if(room.event==='fontaine')room.pickups.push({kind:'fountain',x:c.x,y:c.y+4,used:false});
   else if(room.event==='marchand')room.pickups.push({kind:'shop',what:'mystery',price:30+run.floor*6,x:c.x,y:c.y+14});
   else if(room.event==='autel')room.pickups.push({kind:'altar',x:c.x,y:c.y+10,used:false});
+  else if(room.event==='casino')room.pickups.push({kind:'wheel',x:c.x,y:c.y+6,price:15+run.floor*6,left:3,spin:0,ang:0});
 }
 function triggerCurse(p){
   const room=run.room;room.cleared=false;room.cursed=true;room.evDone=true;run.doorsOpen=false;run.roomActive=true;
@@ -3589,7 +3647,7 @@ function roomCleared(){
       spawnCoins(RW/2,RH/2,60+(run.loop|0)*20);addGold(300*(1+(run.loop|0)));
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
-      announce('Victoire suprême !','Le Dévoreur est vaincu : la crypte est libérée !');sfx('item');
+      announce('Victoire suprême !','Le Dévoreur est vaincu : la crypte est libérée !');sfx('item');setTimeout(()=>{if(state==='play')maybeStory('fin');},2600);
       toast('Tu as fini le jeu ! +300 or','Trappe : mode infini · Porte dorée : sortir en héros');netEv('t','Tu as fini le jeu !','Trappe : mode infini · Porte dorée : sortir en héros');
     }
     else if(run.floor>=NFLOORS-1){
@@ -3599,7 +3657,7 @@ function roomCleared(){
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       room.pickups.push({kind:'heart',half:false,x:RW/2,y:RH/2+70});
-      if(run.floor!==FINAL_FLOOR&&!run.finalDone){room.pickups.push({kind:'portal',fin:true,x:RW/2,y:RH/2-56});
+      if(run.floor!==FINAL_FLOOR&&!run.finalDone){setTimeout(()=>{if(state==='play')maybeStory('roi');},2600);room.pickups.push({kind:'portal',fin:true,x:RW/2,y:RH/2-56});
         toast('Bravo !','Trappe : mode infini · Porte dorée : sortir en vainqueur · Portail rouge : l\'étage final !');netEv('t','Bravo !','Trappe : mode infini · Porte dorée : sortir · Portail rouge : étage final !');}
       else{toast('Bravo !','Trappe : mode infini · Porte dorée : sortir en vainqueur');netEv('t','Bravo !','Trappe : mode infini · Porte dorée : sortir en vainqueur');}
     }
@@ -4601,7 +4659,7 @@ function updateGame(dt){
   if(run.frozen>0)run.frozen=Math.max(0,run.frozen-dt);
   updateBombs(dt);updateBarrels(dt);
   updateChallenge(dt);
-  updateTraps(dt);updateCrumb(dt);
+  updateTraps(dt);updateCrumb(dt);updateWheels(dt);
   updatePets(dt);
 
   if(run.bossIntro>0){run.bossIntro-=dt;if(run.bossIntro<=0){const b=makeEnemy(FL(run.floor).boss,RW/2,RH*0.32);toughen(b,DF().bossT);b.spawnT=0.6;run.enemies.push(b);run.roomActive=true;}}
@@ -4770,6 +4828,7 @@ function drawTorches(pal,t){
     ctx.beginPath();ctx.moveTo(x-2,y);ctx.quadraticCurveTo(x,y-9*f,x+2,y);ctx.closePath();ctx.fillStyle='#fff3c4';ctx.fill();}
 }
 function drawPickup(p,t,pal){
+  if(p.kind==='wheel'){drawWheel(p,t);return;}
   if(p.kind==='candy'){const b=Math.sin(t*4+p.x)*1.5,cols=['#f08a2a','#a35bd8','#5bd87a'];ctx.save();ctx.translate(p.x,p.y-5+b);ctx.rotate(0.4);
     ctx.beginPath();ctx.ellipse(0,9,6,2,0,0,TAU);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fill();
     ctx.fillStyle=cols[p.c|0]||cols[0];for(const sg of[-1,1]){ctx.beginPath();ctx.moveTo(sg*4,0);ctx.lineTo(sg*9,-3.5);ctx.lineTo(sg*9,3.5);ctx.closePath();ctx.fill();ctx.lineWidth=1;ctx.strokeStyle=INK;ctx.stroke();}
@@ -5344,7 +5403,7 @@ function renderTitle(){
 }
 
 /* ================= UI ================= */
-const SCREENS=['scrGift7','scrSeason','scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
+const SCREENS=['scrStory','scrGift7','scrSeason','scrHero','scrStore','scrSettings','scrHelp','scrFriends','scrCard','scrTitle','scrPick','scrBestiary','scrCoop','scrShop','scrSave','scrGift','scrAch','scrQuest','scrRank','scrPause','scrMod','scrLevel','scrOver'];
 let curScreen=null;
 function animOn(){return !(save&&save.anim===false);}
 function show(id){
@@ -5433,6 +5492,43 @@ function goTitle(){
 }
 function goPick(){netLeave();stopSearch();buildStarters();pickMode=null;lastCoop=false;lastDaily=false;lastRush=false;lastLocal=false;clearTaken();$('pickSub').textContent='Touche une créature pour commencer la partie.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;}
 /* ---- arena modes: endless waves (survival) and a giant boss for 3-4 players (raid) ---- */
+/* ---- story mode: Hulotte the owl tells the secret of the crypt, one chapter per floor ---- */
+const STORY={
+  f0:{t:'Chapitre 1 · Le réveil',p:["Bonjour, petite bête ! Je suis Hulotte, la gardienne de cette crypte.","Depuis cent ans, un cœur noir bat tout au fond. Boum… boum… Chaque battement réveille les monstres.","Descends, étage après étage, et découvre d'où vient ce bruit. Je te retrouverai en chemin !"]},
+  f1:{t:'Chapitre 2 · Le battement',p:["Tu entends ce boum, boum ? C'est le Cœur de la Crypte.","Plus tu descends, plus il bat fort. Ici, une créature le protège : bats-la pour continuer."]},
+  f2:{t:'Chapitre 3 · La Forge',p:["Autrefois, les bestioles fabriquaient des trésors dans cette forge.","Mais le Cœur a changé le feu en monstres. Fais attention aux barils : ils explosent !"]},
+  f3:{t:'Chapitre 4 · L\'Abîme',p:["L'Abîme semble ne jamais finir…","On raconte qu'un passage secret mène à un jardin de cristal. Cherche un mur fissuré et pose une bombe à côté."]},
+  f4:{t:'Chapitre 5 · Le Trône',p:["Voici le Trône d'Ombre. Le Nécroroi garde la dernière porte.","Avant, c'était le gentil roi des bestioles. Le Cœur l'a changé en pierre… Libère-le !"]},
+  f5:{t:'Chapitre secret · Le Jardin de Cristal',p:["Tu as trouvé le Jardin de Cristal ! Bravo, peu de bestioles arrivent jusqu'ici.","Prismagor est fait du même cristal que le Cœur. Bats-le, et un nouvel ami te rejoindra."]},
+  roi:{t:'Chapitre 6 · Le roi libéré',p:["Le Nécroroi redevient un vieux roi tout gentil. Il te remercie !","Il te montre un portail rouge : derrière, il y a le Cœur lui-même. Tu peux y aller… si tu es prêt."]},
+  f6:{t:'Chapitre 7 · Le Cœur de la Crypte',p:["Nous y voilà : le Cœur de la Crypte. Tu le sens battre sous tes pattes ?","Le Dévoreur se nourrit de la peur des monstres. Montre-lui que toi, tu n'as pas peur !"]},
+  fin:{t:'Épilogue · La crypte libérée',p:["Tu as réussi ! Le Cœur s'est calmé, et les monstres redeviennent de gentilles bestioles.","Merci, héros. Toute la crypte se souviendra de ton nom.","Mais… j'entends encore un tout petit boum, très loin. Le mode infini t'attend, si tu veux continuer !"]}
+};
+const STORY_KEYS=['f0','f1','f2','f3','f4','f5','roi','f6','fin'];
+let storyCur=null;
+function drawOwl(cv,t){const c=cv.getContext('2d'),w=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,w);c.translate(w/2,w*0.56);const k=w/64;c.scale(k,k);c.lineJoin='round';
+  c.beginPath();c.ellipse(0,4,17,20,0,0,TAU);c.fillStyle='#8a6a4a';c.fill();c.lineWidth=2;c.strokeStyle='#1a100b';c.stroke();
+  c.beginPath();c.ellipse(0,10,10,12,0,0,TAU);c.fillStyle='#d8c0a0';c.fill();
+  for(const sg of[-1,1]){c.beginPath();c.moveTo(sg*8,-12);c.lineTo(sg*15,-24);c.lineTo(sg*16,-10);c.closePath();c.fillStyle='#6a4a32';c.fill();c.stroke();}
+  const bl=((t*0.4)%1)<0.06;for(const sg of[-1,1]){c.beginPath();c.arc(sg*7.5,-6,7,0,TAU);c.fillStyle='#fff6dc';c.fill();c.stroke();if(!bl){c.beginPath();c.arc(sg*7.5,-5.5,3.4,0,TAU);c.fillStyle='#1a100b';c.fill();c.beginPath();c.arc(sg*7.5+1,-6.8,1,0,TAU);c.fillStyle='#fff';c.fill();}else{c.beginPath();c.moveTo(sg*7.5-4,-6);c.lineTo(sg*7.5+4,-6);c.stroke();}}
+  c.beginPath();c.moveTo(-2.5,0);c.lineTo(2.5,0);c.lineTo(0,4.5);c.closePath();c.fillStyle='#f2a23a';c.fill();c.stroke();
+  c.beginPath();c.moveTo(-11,-15);c.quadraticCurveTo(0,-21,11,-15);c.lineWidth=2.5;c.strokeStyle='#4a3020';c.stroke();
+  c.fillStyle='#f2a23a';for(const sg of[-1,1]){c.beginPath();c.ellipse(sg*6,24,4,2,0,0,TAU);c.fill();}}
+function maybeStory(k){
+  if(!STORY[k]||!run||run.pl||run.rush||run.surv||run.raid||run.daily||run.guest||TUT||save.story[k])return false;
+  save.story[k]=1;persist();storyCur={k,i:0,back:state};state='story';resetSticks();renderStory();$('storyBox').hidden=false;pauseBtn.hidden=true;return true;
+}
+function renderStory(){const S=STORY[storyCur.k];$('storyText').textContent=S.p[storyCur.i];$('storyNext').textContent=storyCur.i<S.p.length-1?'Suivant ▶':'Allons-y !';drawOwl($('storyCv'),titleT);
+  const b=$('storyBox');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');}
+function closeStory(){if(!storyCur)return;storyCur=null;$('storyBox').hidden=true;if(state==='story'){state='play';pauseBtn.hidden=false;resetSticks();}}
+$('storyNext').addEventListener('click',e=>{e.preventDefault();if(!storyCur)return;audioUnlock();sfx('coin');const S=STORY[storyCur.k];if(storyCur.i<S.p.length-1){storyCur.i++;renderStory();}else closeStory();});
+$('storySkip').addEventListener('click',e=>{e.preventDefault();closeStory();});
+function openStoryBook(){state='storybook';clearOverlays();show('scrStory');pauseBtn.hidden=true;$('scrStory').scrollTop=0;
+  const box=$('storyList');box.textContent='';let n=0;
+  for(const k of STORY_KEYS){const S=STORY[k],seen=!!save.story[k];if(seen)n++;
+    const d=document.createElement('details');d.className='story-ch'+(seen?'':' locked');const sm=document.createElement('summary');sm.textContent=seen?S.t:'??? · pas encore découvert';d.appendChild(sm);
+    if(seen)for(const line of S.p){const p=document.createElement('p');p.textContent=line;d.appendChild(p);}box.appendChild(d);}
+  $('storyCount').textContent=n+' / '+STORY_KEYS.length+' chapitres découverts';}
 function setupArena(type){
   const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
   const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
@@ -5497,6 +5593,7 @@ function endTut(skip){
   if(!TUT)return;TUT=null;save.tutoDone=true;
   for(const id of['dashBtn','bombBtn'])$(id).classList.remove('tut-hi');$('tutBox').hidden=true;
   if(!skip){save.gold=(save.gold||0)+50;toast('Tutoriel terminé !','Tu gagnes 50 or. Bonne chance dans la crypte !');sfx('chest');}
+  setTimeout(()=>{if(state==='play')maybeStory('f0');},1500);
   persist();
 }
 function updateTut(dt){
@@ -6453,6 +6550,8 @@ $('giftSheetDim').addEventListener('click',closeGiftSheet);
 addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('eqSheet').hidden){closeEqSheet();e.preventDefault();}else if(!$('giftSheet').hidden){closeGiftSheet();e.preventDefault();}});
 $('ipNo').addEventListener('click',()=>{soInvite=null;hideInvite();updFrBadge();});
 $('questBack').addEventListener('click',goTitle);
+$('storyBack').addEventListener('click',goTitle);
+$('btnStory').addEventListener('click',()=>{audioUnlock();openStoryBook();});
 $('achBack').addEventListener('click',goTitle);
 $('btnRank').addEventListener('click',()=>{audioUnlock();openRank();});
 $('rankBack').addEventListener('click',goTitle);
@@ -7581,8 +7680,8 @@ function applyGuestInput(dt,G){
   if(ok&&(g.bq|0)>(G.gbq|0)){G.gbq=g.bq|0;placeBomb(Q);}
   if(ok&&(g.aq|0)>(G.gaq|0)){G.gaq=g.aq|0;useActive(Q);}
   if(ok&&(g.sq|0)>(G.gsq|0)){G.gsq=g.sq|0;const ps=run.room.pickups;let bi=-1,bd=40;
-    for(let i=0;i<ps.length;i++){const p=ps[i];if(p.kind!=='shop'&&!p.choice&&p.kind!=='altar')continue;const d=Math.hypot(p.x-(+g.sx||0),p.y-(+g.sy||0));if(d<bd&&Math.hypot(p.x-Q.x,p.y-Q.y)<Q.r+40){bd=d;bi=i;}}
-    if(bi>=0){if(ps[bi].kind==='altar')useAltar(ps[bi],Q);else if(ps[bi].choice)takeChoice(ps[bi],Q);else{Q.shopCd=0;if(!((ps[bi].by|0)&plBit(Q))&&buyShop(ps[bi],Q))shopSold(ps[bi],Q);}}}
+    for(let i=0;i<ps.length;i++){const p=ps[i];if(p.kind!=='shop'&&!p.choice&&p.kind!=='altar'&&p.kind!=='wheel')continue;const d=Math.hypot(p.x-(+g.sx||0),p.y-(+g.sy||0));if(d<bd&&Math.hypot(p.x-Q.x,p.y-Q.y)<Q.r+40){bd=d;bi=i;}}
+    if(bi>=0){if(ps[bi].kind==='wheel')spinWheel(ps[bi],Q);else if(ps[bi].kind==='altar')useAltar(ps[bi],Q);else if(ps[bi].choice)takeChoice(ps[bi],Q);else{Q.shopCd=0;if(!((ps[bi].by|0)&plBit(Q))&&buyShop(ps[bi],Q))shopSold(ps[bi],Q);}}}
   Q.dashIF=Math.max(0,(Q.dashIF||0)-dt);if((g.fq|0)>(G.gfq|0)){G.gfq=g.fq|0;withP(Q,()=>hurtPlayer(1,Q.x,Q.y));}if((g.gh|0)>(G.ggh|0)){G.ggh=g.gh|0;const tq=reviveNear(Q);if(tq)giveHeartTo(Q,tq);}if(ok&&(g.dq|0)>(G.gdq|0)){G.gdq=g.dq|0;Q.dashIF=0.36;}
   if((g.mq|0)>(G.gmq|0)){G.gmq=g.mq|0;bubble(Q,g.mi|0);netEv('m',g.mi|0,Q.slot|0,Q,1);}
   if(ok&&DOOR_KEYS.includes(g.door)&&run.doorsOpen&&run.room.doors[g.door]&&!run.trans&&!Q.down)goThrough(g.door);
@@ -7638,7 +7737,7 @@ function shopNear(){
   if(state!=='play'||!run||!run.room||run.dead||run.won||run.trans||performance.now()<shopHold)return null;
   const pls=(NET&&NET.role==='guest')?[P]:players().filter(pl=>pl&&!pl.isRemote);
   let best=null,bd=1e9;
-  for(const p of run.room.pickups){if(p.kind!=='shop'&&!(p.kind==='altar'&&!p.used)&&!(p.choice&&(p.kind==='item'||p.kind==='active')))continue;
+  for(const p of run.room.pickups){if(p.kind!=='shop'&&!(p.kind==='wheel'&&(p.left|0)>0&&!(p.spin>0))&&!(p.kind==='altar'&&!p.used)&&!(p.choice&&(p.kind==='item'||p.kind==='active')))continue;
     for(const pl of pls){if(!pl||pl.down)continue;const d=Math.hypot(p.x-pl.x,p.y-pl.y);if(d<pl.r+18&&d<bd){bd=d;best={p,pl,k:shopKey(p)};}}}
   return best;
 }
@@ -7651,6 +7750,7 @@ function takeChoice(p,pl){
   else if(ACTIVES[p.id])giveActive(pl,p.id,p.x+28,p.y);
 }
 function shopInfo(p){
+  if(p.kind==='wheel')return['Roue de la chance','Paie '+p.price+' or et fais tourner la roue : tu peux tout perdre… ou gagner jusqu\'à 5 fois plus ! Encore '+(p.left|0)+' essai'+((p.left|0)>1?'s':'')+'.'];
   if(p.kind==='altar')return['Autel du sang',"Donne 1 cœur de ta vie maximum pour cette partie. En échange, tu choisis 1 objet rare parmi 2."];
   if(p.kind==='item'&&ITEMS[p.id])return[ITEMS[p.id].name,itemDesc(p.id)];
   if(p.kind==='active'&&ACTIVES[p.id])return[ACTIVES[p.id].name,ACTIVES[p.id].desc+' C\'est un pouvoir : il se lance avec le bouton rond.'];
@@ -7665,6 +7765,7 @@ function plBit(pl){return 1<<((pl&&pl.slot)|0);}
 function shopSold(p,pl){if(run.pl&&run.pl.length>1){p.by=(p.by|0)|plBit(pl);let m=0;for(const q of run.pl)m|=plBit(q);if((p.by&m)!==m)return;}const i=run.room.pickups.indexOf(p);if(i>=0)run.room.pickups.splice(i,1);}
 function shopBlock(p,pl){
   if(p.choice)return'';
+  if(p.kind==='wheel'){if(p.spin>0)return'Ça tourne…';const lack=p.price-(save.gold|0);return lack>0?'Il te manque '+lack+' or':'';}
   if(p.kind==='shop'&&run.pl&&((p.by|0)&plBit(pl)))return"Tu l'as déjà acheté";
   if(p.kind==='altar')return pl.maxHp<=2?'Il te faut au moins 2 cœurs':'';
   if(p.what==='heart'&&pl.hp>=pl.maxHp)return'Tu as déjà tous tes cœurs';
@@ -7682,7 +7783,7 @@ function updateShopCard(){
   if(sig===shopSig&&!el.hidden)return;shopSig=sig;
   const info=shopInfo(p);$('scName').textContent=info[0];$('scDesc').textContent=info[1];$('scPrice').textContent=String(p.price|0);$('scPrice').parentElement.hidden=!!p.choice||p.kind==='altar';
   const b=$('shopBuy');b.classList.toggle('arm',shopArm);b.classList.toggle('no',!!blk);
-  b.textContent=blk||(p.kind==='altar'?(shopArm?'Touche encore pour donner 1 cœur':'Donner 1 cœur'):p.choice?(shopArm?'Touche encore pour le prendre':'Prendre cet objet'):(shopArm?'Touche encore pour acheter':'Acheter pour '+p.price+' or'));
+  b.textContent=blk||(p.kind==='wheel'?(shopArm?'Touche encore pour tourner':'Tourner pour '+p.price+' or'):p.kind==='altar'?(shopArm?'Touche encore pour donner 1 cœur':'Donner 1 cœur'):p.choice?(shopArm?'Touche encore pour le prendre':'Prendre cet objet'):(shopArm?'Touche encore pour acheter':'Acheter pour '+p.price+' or'));
   el.hidden=false;
 }
 function pressShopBuy(e){
@@ -7695,6 +7796,7 @@ function pressShopBuy(e){
   shopArm=false;shopSig='';
   if(NET&&NET.role==='guest'){NET.sq=(NET.sq|0)+1;NET.sx=Math.round(p.x);NET.sy=Math.round(p.y);sendGuestPresence();shopHold=performance.now()+1300;sfx(p.choice||p.kind==='altar'?'item':'buy');
     if(!p.choice&&p.kind!=='altar')run.floats.push({x:p.x,y:p.y-34,text:'-'+p.price+' or',t:1,col:'#f5c542'});return;}
+  if(p.kind==='wheel'){spinWheel(p,pl);shopHold=performance.now()+700;return;}
   if(p.choice){takeChoice(p,pl);return;}
   if(p.kind==='altar'){useAltar(p,pl);shopHold=performance.now()+600;return;}
   pl.shopCd=0;
@@ -7785,6 +7887,7 @@ function buildSnap(){
     else if(p.kind==='cursed')s.pk.push([10,R(p.x),R(p.y)]);
     else if(p.kind==='portal')s.pk.push([12,R(p.x),R(p.y),p.fin?1:0]);
     else if(p.kind==='candy')s.pk.push([14,R(p.x),R(p.y),p.c|0]);
+    else if(p.kind==='wheel')s.pk.push([15,R(p.x),R(p.y),Math.round((p.ang||0)*100)%629,p.price|0,p.left|0,p.spin>0?1:0]);
     else if(p.kind==='fountain')s.pk.push([11,R(p.x),R(p.y),p.used?1:0]);
     else if(p.kind==='altar')s.pk.push([13,R(p.x),R(p.y),p.used?1:0]);
   }
@@ -7997,7 +8100,7 @@ function applySnap(s,ph){
   run.eshots=(s.es||[]).map(a=>({x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:+a[4]||5}));
   run.room.pickups=(s.pk||[]).filter(Array.isArray).map(a=>a[0]===5?{kind:'shop',by:a[6]|0,x:+a[1],y:+a[2],what:SHOP_WHAT[a[3]]||'heart',price:a[4]|0,id:SHOP_WHAT[a[3]]==='item'?(ITEM_IDS[a[5]]||'croc'):(ACTIVE_IDS[a[5]]||'fiole')}
     :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3]}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2]}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':''}
-    :a[0]===14?{kind:'candy',x:+a[1],y:+a[2],c:clamp(a[3]|0,0,2)}:a[0]===12?{kind:'portal',x:+a[1],y:+a[2],fin:!!a[3]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3]}
+    :a[0]===15?{kind:'wheel',x:+a[1],y:+a[2],ang:(+a[3]||0)/100,price:a[4]|0,left:a[5]|0,spin:a[6]?1:0}:a[0]===14?{kind:'candy',x:+a[1],y:+a[2],c:clamp(a[3]|0,0,2)}:a[0]===12?{kind:'portal',x:+a[1],y:+a[2],fin:!!a[3]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3]}
     :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3]}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':''}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
   const pots=(s.pt||[]).filter(Array.isArray).map(a=>({x:+a[0]||0,y:+a[1]||0,broken:false})),keys=new Set(pots.map(q=>q.x+','+q.y));
   if(NET.potKeys)for(const k of NET.potKeys)if(!keys.has(k)){bump('pots');const xy=k.split(',').map(Number);chunks(xy[0],xy[1]-6,'#b5683f',10,110);smoke(xy[0],xy[1]-4,3,'160,120,90',0.8);sfx('pot');addDecal(run.room,xy[0],xy[1],5,'#6b3a22');}
@@ -8049,7 +8152,7 @@ function loop(now){
   relayT-=dt;if(relayT<=0){relayT=4;relayTick();}
   if(NET)netTick(dt);
   const showMod=!!(save.mod&&state==='play'&&run&&!(NET&&NET.role==='guest'));if(modBtn.hidden===showMod)modBtn.hidden=!showMod;
-  const inGame=run&&(state==='ctledit'||state==='play'||state==='paused'||state==='modmenu'||state==='levelup'||state==='levelwait'||state==='over'||(state==='bestiary'&&bestFrom==='over')||(state==='shop'&&shopFrom==='over'));
+  const inGame=run&&(state==='story'||state==='ctledit'||state==='play'||state==='paused'||state==='modmenu'||state==='levelup'||state==='levelwait'||state==='over'||(state==='bestiary'&&bestFrom==='over')||(state==='shop'&&shopFrom==='over'));
   if(!inGame){if(setRoomDims(11))layout();updateTitle(dt);}
   if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);}
   if(state==='pick'){for(const cv of document.querySelectorAll('.starter canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)));}
