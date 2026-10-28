@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028090236';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028090236" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028090607';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028090607" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -769,6 +769,11 @@ html.no-anim #storyBox.pop{animation:none}
 .trophy .tn{font-weight:700;font-size:15px;color:var(--torch)}
 .trophy .td{font-size:13px;color:#c8b8a0}
 .trophy:not(.got) .tn{color:#8a7a6a}
+html.big-text .panel,html.big-text .sheet-panel,html.big-text .side-panel{zoom:1.15}
+html.big-text .tut-t,html.big-text #storyBox .sb-text{font-size:20px}
+html.big-text #tip .tt,html.big-text #toast .t2{font-size:1.15em}
+html.big-text #toast .t1{font-size:1.1em}
+.share-img{display:block;width:100%;max-width:360px;margin:10px auto;border-radius:10px;border:2px solid #5a4434}
 </style>
 </head>
 <body>
@@ -834,6 +839,15 @@ html.no-anim #storyBox.pop{animation:none}
     <div class="sheet-head"><canvas id="giftCv" width="144" height="144"></canvas><div class="me-info"><p class="eq-name">Offrir à un ami</p><p class="eq-rar" id="giftWhat"></p></div><button class="side-x" id="giftClose" type="button" aria-label="Fermer">✕</button></div>
     <p class="coop-note">Touche « Offrir » à côté de l'ami qui recevra le cadeau. L'or est payé par toi.</p>
     <div class="coop-list" id="giftList"></div>
+  </div>
+</div>
+<div id="shareSheet" class="sheet" role="dialog" aria-label="Partager ta partie" hidden>
+  <div class="sheet-dim" id="shareDim"></div>
+  <div class="sheet-panel">
+    <div class="sheet-head"><div class="me-info"><p class="eq-name">Partager ta partie</p><p class="eq-rar">Montre ton score à tes amis !</p></div><button class="side-x" id="shareClose" type="button" aria-label="Fermer">✕</button></div>
+    <img id="shareImg" alt="Image de ta fin de partie" class="share-img">
+    <div class="actions"><button class="btn primary" id="shareGo" type="button">Partager l'image</button><button class="btn" id="shareSave" type="button">Enregistrer l'image</button></div>
+    <p class="coop-note" id="shareNote">Si les boutons ne marchent pas : appuie longtemps sur l'image, puis choisis « Enregistrer » ou « Partager ».</p>
   </div>
 </div>
 <div id="sideMenu" class="side" hidden>
@@ -973,6 +987,18 @@ html.no-anim #storyBox.pop{animation:none}
       <span class="track" aria-hidden="true"></span>
       <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="5" width="11" height="14" rx="2"/><path d="M6 8v8M3 10v4"/></svg></span>
       <span class="tlabel"><b>Animations des menus <span class="tst"></span></b><small>Les pages glissent quand tu changes de page et les boutons bougent quand tu les touches. Éteins-le si tu préfères que tout s'affiche tout de suite.</small></span>
+    </label>
+    <label class="toggle set" for="optBig">
+      <input type="checkbox" id="optBig">
+      <span class="track" aria-hidden="true"></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18L9 6l5 12M5.8 14h6.4"/><path d="M15 18l3-7 3 7M15.9 16h4.2"/></svg></span>
+      <span class="tlabel"><b>Texte plus gros <span class="tst"></span></b><small>Les textes des menus, des messages et de l'histoire deviennent plus grands, pour mieux lire.</small></span>
+    </label>
+    <label class="toggle set" for="optCb">
+      <input type="checkbox" id="optCb">
+      <span class="track" aria-hidden="true"></span>
+      <span class="set-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></span>
+      <span class="tlabel"><b>Mode daltonien <span class="tst"></span></b><small>Change les couleurs qui se ressemblent quand on voit mal certaines couleurs : la porte de la boutique devient bleue, celle du mini-boss rose, et les tirs des monstres ont un contour blanc.</small></span>
     </label>
     </div>
     <div class="slab coopbox" id="updBox" hidden>
@@ -1443,6 +1469,7 @@ html.no-anim #storyBox.pop{animation:none}
       <button class="btn primary" id="btnAgain" type="button">Rejouer</button>
       <button class="btn" id="btnOverShop" type="button">Améliorations</button>
       <button class="btn" id="btnOverBest" type="button">Bestiaire</button>
+      <button class="btn" id="btnShare" type="button">📸 Partager</button>
       <button class="btn" id="btnMenu" type="button">Menu</button>
     </div>
   </div>
@@ -1961,8 +1988,8 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
-  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+  return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
 /* mod menu powers apply only to players on this device, never to an online guest */
@@ -4816,7 +4843,9 @@ function drawShadow(x,y,r,z,alpha){
   ctx.globalAlpha=alpha;ctx.beginPath();ctx.ellipse(x,y+r*0.72,r*0.85*k,r*0.3*k,0,0,TAU);ctx.fillStyle='rgba(0,0,0,0.35)';ctx.fill();ctx.globalAlpha=1;
 }
 /* what lies behind a door: its frame colour and the name written in front of it */
-function doorInfo(nb){
+const CB_DOOR={'Boutique':{col:'#4da6ff',frame:'#2a5f9a'},'Mini-boss':{col:'#ff7ad8',frame:'#a03a88'}};
+function doorInfo(nb){const d=doorInfo0(nb);if(d&&save.cb&&CB_DOOR[d.txt])return Object.assign({},d,CB_DOOR[d.txt]);return d;}
+function doorInfo0(nb){
   if(!nb)return null;
   if(nb.type==='boss')return{col:'#ff6a55',frame:'#8e2f25',txt:run&&run.floor===SECRET_FLOOR?'Boss secret':'Boss'};
   if(nb.type==='treasure')return{col:'#f5c542',frame:'#b8862a',txt:'Trésor'};
@@ -5272,6 +5301,7 @@ function renderGame(){
     if(d>60){const ux=dx/d,uy=dy/d,ax=P.x+ux*24,ay=P.y-4+uy*24;ctx.save();ctx.translate(ax,ay);ctx.rotate(Math.atan2(uy,ux));ctx.globalAlpha=0.6+0.3*Math.sin(t*6);ctx.beginPath();ctx.moveTo(7,0);ctx.lineTo(-4,-5);ctx.lineTo(-2,0);ctx.lineTo(-4,5);ctx.closePath();ctx.fillStyle='#ff6a7a';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle=INK;ctx.stroke();ctx.restore();}}
   for(const sh of run.shots)drawShot(sh,t);
   for(const sh of run.eshots){
+    if(save.cb){ctx.beginPath();ctx.arc(sh.x,sh.y-3,(sh.r||5)+2.2,0,TAU);ctx.lineWidth=1.6;ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.stroke();}
     if(sh.r>=8){ctx.save();ctx.translate(sh.x,sh.y-3);ctx.rotate(t*3);ctx.beginPath();ctx.moveTo(0,-sh.r*1.2);ctx.lineTo(sh.r,0);ctx.lineTo(0,sh.r*1.2);ctx.lineTo(-sh.r,0);ctx.closePath();ctx.fillStyle='#9fe6ff';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#0c2a3a';ctx.stroke();ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(-sh.r*0.3,-sh.r*0.6,sh.r*0.35,sh.r*0.5);ctx.restore();continue;}
     ctx.beginPath();ctx.moveTo(sh.x-(sh.vx||0)*0.06,sh.y-3-(sh.vy||0)*0.06);ctx.lineTo(sh.x,sh.y-3);ctx.lineCap='round';ctx.lineWidth=sh.r*1.5;ctx.strokeStyle='rgba(255,93,143,0.3)';ctx.stroke();
     ctx.beginPath();ctx.arc(sh.x,sh.y-3,sh.r+1.6+Math.sin(t*14+sh.x)*0.8,0,TAU);ctx.lineWidth=1;ctx.strokeStyle='rgba(255,190,215,0.55)';ctx.stroke();
@@ -5513,7 +5543,7 @@ function tipsTick(){
   if(run.pl&&!run.local&&NET)tip('chat','Le bouton bulle en bas à droite envoie un message rapide à ton ami.');
 }
 function clearOverlays(){toastQ=[];toastT=0;toastEl.hidden=true;bannerT=0;bannerEl.hidden=true;bossCardT=0;$('bossCard').hidden=true;tipQ=[];tipT=0;$('tip').hidden=true;$('chatMenu').hidden=true;}
-function syncToggles(){$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;$('optTips0').checked=save.tips;$('optDmg0').checked=save.dmgNums!==false;$('optLow').checked=quality==='low';$('optAnim').checked=animOn();$('optFix').checked=!!save.ctl.fix;if(navigator.vibrate)$('optVib').checked=save.vib!==false;syncRanges();}
+function syncToggles(){$('optBig').checked=!!save.bigText;$('optCb').checked=!!save.cb;$('optAuto').checked=save.auto;$('optAuto2').checked=save.auto;$('optSound').checked=save.sound;$('optSound0').checked=save.sound;$('optMusic').checked=save.music;$('optMusic2').checked=save.music;$('optTips').checked=save.tips;$('optDmg').checked=save.dmgNums!==false;$('optTips0').checked=save.tips;$('optDmg0').checked=save.dmgNums!==false;$('optLow').checked=quality==='low';$('optAnim').checked=animOn();$('optFix').checked=!!save.ctl.fix;if(navigator.vibrate)$('optVib').checked=save.vib!==false;syncRanges();}
 function seenCount(){return ORDER.filter(id=>save.seen[id]).length;}
 function goTitle(){
   netLeave();stopSearch();pickMode=null;
@@ -5620,6 +5650,37 @@ function openTrophies(){state='trophy';clearOverlays();show('scrTrophy');pauseBt
   for(const f of feats){const d=document.createElement('div');d.className='trophy feat'+(f[3]?' got':'');const ic=document.createElement('span');ic.className='ti';ic.textContent=f[0];
     const nm=document.createElement('span');nm.className='tn';nm.textContent=f[1];const ds=document.createElement('span');ds.className='td';ds.textContent=String(f[2]);d.append(ic,nm,ds);gf.appendChild(d);}
 }
+/* ---- a picture of the end of the game, to show friends ---- */
+let shareBlob=null,shareUrl='';
+function makeShareCard(){
+  const W2=1080,H2=1350,cv=document.createElement('canvas');cv.width=W2;cv.height=H2;const c=cv.getContext('2d');
+  const g=c.createLinearGradient(0,0,0,H2);g.addColorStop(0,'#2a1d14');g.addColorStop(1,'#0e0906');c.fillStyle=g;c.fillRect(0,0,W2,H2);
+  c.strokeStyle='#f2a23a';c.lineWidth=10;c.strokeRect(30,30,W2-60,H2-60);
+  const F2='Grenze, Georgia, serif';c.textAlign='center';
+  c.fillStyle='#a8957d';c.font='700 34px '+F2;c.fillText('PETITES BÊTES · GRANDE CRYPTE',W2/2,120);
+  c.fillStyle='#f2a23a';c.font='900 120px '+F2;c.fillText('Bestiolins',W2/2,240);
+  const sid=(P&&P.sid)||run.starter||'braisot',pc=document.createElement('canvas');pc.width=pc.height=420;drawPortrait(pc,sid,1.2,false,skinPal(sid,mySkinI(sid)));
+  c.save();c.beginPath();c.arc(W2/2,470,200,0,TAU);c.fillStyle='#3a2a1e';c.fill();c.restore();c.drawImage(pc,W2/2-210,260);
+  c.fillStyle='#ece0c8';c.font='700 64px '+F2;wrapFill(c,$('ovTitle').textContent,W2/2,770,W2-160,70);
+  c.fillStyle='#f5c542';c.font='700 46px '+F2;c.fillText($('ovScore').textContent.slice(0,48),W2/2,880);
+  const cells=[['ovFloor',$('ovFloor').nextElementSibling.textContent],['ovLevel','Niveau'],['ovKills','Monstres'],['ovTime','Durée']];
+  cells.forEach((q,i)=>{const x=150+i*260,y=960;c.fillStyle='rgba(255,255,255,0.06)';c.fillRect(x-115,y,230,190);c.strokeStyle='#5a4434';c.lineWidth=4;c.strokeRect(x-115,y,230,190);
+    c.fillStyle='#f2a23a';c.font='900 72px '+F2;c.fillText($(q[0]).textContent,x,y+100);c.fillStyle='#c8b8a0';c.font='600 30px '+F2;c.fillText(q[1].slice(0,14),x,y+155);});
+  c.fillStyle='#a8957d';c.font='600 36px '+F2;c.fillText((SOC.nick?SOC.nick+' · ':'')+STARTERS[sid].name+' · '+new Date().toLocaleDateString('fr-FR'),W2/2,1250);
+  return cv;
+}
+function wrapFill(c,txt,x,y,maxW,lh){const words=String(txt).split(' ');let line='',yy=y;for(const w of words){const t=line?line+' '+w:w;if(c.measureText(t).width>maxW&&line){c.fillText(line,x,yy);line=w;yy+=lh;}else line=t;}if(line)c.fillText(line,x,yy);}
+function openShare(){
+  audioUnlock();const cv=makeShareCard();
+  cv.toBlob(b=>{shareBlob=b;if(shareUrl)URL.revokeObjectURL(shareUrl);shareUrl=b?URL.createObjectURL(b):'';$('shareImg').src=shareUrl||cv.toDataURL('image/png');$('shareSheet').hidden=false;
+    let can=false;try{can=!!(b&&navigator.canShare&&navigator.canShare({files:[new File([b],'bestiolins.png',{type:'image/png'})]}));}catch(e){}
+    $('shareGo').hidden=!can;},'image/png');
+}
+$('btnShare').addEventListener('click',openShare);
+$('shareClose').addEventListener('click',()=>{$('shareSheet').hidden=true;});$('shareDim').addEventListener('click',()=>{$('shareSheet').hidden=true;});
+$('shareGo').addEventListener('click',()=>{if(!shareBlob)return;const f=new File([shareBlob],'bestiolins.png',{type:'image/png'});
+  navigator.share({files:[f],title:'Bestiolins',text:'Regarde ma partie de Bestiolins ! '+$('ovScore').textContent}).catch(()=>{});});
+$('shareSave').addEventListener('click',()=>{if(!shareUrl)return;const a=document.createElement('a');a.href=shareUrl;a.download='bestiolins.png';document.body.appendChild(a);a.click();a.remove();sfx('coin');});
 function setupArena(type){
   const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
   const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
@@ -6760,6 +6821,8 @@ $('rngJs').addEventListener('input',e=>{save.ctl.js=clamp(+e.target.value/100,0.
 $('optFix').addEventListener('change',e=>{save.ctl.fix=e.target.checked;persist();});
 $('optVib').addEventListener('change',e=>{save.vib=e.target.checked;persist();if(save.vib)buzz(60);});
 if(!navigator.vibrate){$('optVib').disabled=true;$('optVib').checked=false;$('vibDesc').textContent="Ton téléphone ne permet pas les vibrations dans un jeu web (c'est le cas des iPhone). Ça marche sur Android.";}
+$('optBig').addEventListener('change',e=>{save.bigText=e.target.checked;persist();document.documentElement.classList.toggle('big-text',save.bigText);syncToggles();});
+$('optCb').addEventListener('change',e=>{save.cb=e.target.checked;persist();document.documentElement.classList.toggle('cb',save.cb);syncToggles();});
 $('optAnim').addEventListener('change',e=>{save.anim=e.target.checked;persist();document.documentElement.classList.toggle('no-anim',!save.anim);if(save.anim){const el=$('scrSettings');el.classList.remove('scr-in');void el.offsetWidth;el.classList.add('scr-in');}});
 $('optLow').addEventListener('change',e=>{save.lowq=e.target.checked;quality=save.lowq?'low':'high';persist();layout();});
 /* ---- side menu on the title screen ---- */
@@ -8298,7 +8361,7 @@ function boot(data){
   try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot)window.claude.hot.snapshot(snapshotState);}catch(e){}
   if(data.run&&restoreRun(data.run)){state='play';show(null);pauseGame();}
   else goTitle();
-  document.documentElement.classList.toggle('no-anim',!animOn());
+  document.documentElement.classList.toggle('no-anim',!animOn());document.documentElement.classList.toggle('big-text',!!save.bigText);document.documentElement.classList.toggle('cb',!!save.cb);
   initRoom();initData();initSocial();
   requestAnimationFrame(t=>{last=t;loop(t);});
   if(document.fonts&&document.fonts.load){document.fonts.load('700 14px Grenze').catch(()=>{});}
