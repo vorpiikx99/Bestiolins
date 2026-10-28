@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028090607';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028090607" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028090634';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028090634" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -5680,7 +5680,7 @@ $('btnShare').addEventListener('click',openShare);
 $('shareClose').addEventListener('click',()=>{$('shareSheet').hidden=true;});$('shareDim').addEventListener('click',()=>{$('shareSheet').hidden=true;});
 $('shareGo').addEventListener('click',()=>{if(!shareBlob)return;const f=new File([shareBlob],'bestiolins.png',{type:'image/png'});
   navigator.share({files:[f],title:'Bestiolins',text:'Regarde ma partie de Bestiolins ! '+$('ovScore').textContent}).catch(()=>{});});
-$('shareSave').addEventListener('click',()=>{if(!shareUrl)return;const a=document.createElement('a');a.href=shareUrl;a.download='bestiolins.png';document.body.appendChild(a);a.click();a.remove();sfx('coin');});
+$('shareSave').addEventListener('click',async()=>{if(!shareUrl)return;try{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl&&shareBlob){await dl.save({filename:'bestiolins.png',data:shareBlob});return;}}catch(e){return;}const a=document.createElement('a');a.href=shareUrl;a.download='bestiolins.png';document.body.appendChild(a);a.click();a.remove();sfx('coin');});
 function setupArena(type){
   const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
   const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
