@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028090634';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028090634" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261028091652';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261028091652" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -774,6 +774,12 @@ html.big-text .tut-t,html.big-text #storyBox .sb-text{font-size:20px}
 html.big-text #tip .tt,html.big-text #toast .t2{font-size:1.15em}
 html.big-text #toast .t1{font-size:1.1em}
 .share-img{display:block;width:100%;max-width:360px;margin:10px auto;border-radius:10px;border:2px solid #5a4434}
+#btnUpReset{width:100%;margin:12px 0 4px}
+.danger-box{border-color:#7a2a20}
+#btnWipe{width:100%}
+#confirmSheet .sheet-panel{text-align:center}
+#confirmSheet .coop-text{font-size:17px;line-height:1.45}
+#confirmSheet .actions{justify-content:center}
 </style>
 </head>
 <body>
@@ -839,6 +845,14 @@ html.big-text #toast .t1{font-size:1.1em}
     <div class="sheet-head"><canvas id="giftCv" width="144" height="144"></canvas><div class="me-info"><p class="eq-name">Offrir à un ami</p><p class="eq-rar" id="giftWhat"></p></div><button class="side-x" id="giftClose" type="button" aria-label="Fermer">✕</button></div>
     <p class="coop-note">Touche « Offrir » à côté de l'ami qui recevra le cadeau. L'or est payé par toi.</p>
     <div class="coop-list" id="giftList"></div>
+  </div>
+</div>
+<div id="confirmSheet" class="sheet" role="alertdialog" aria-label="Confirmation" hidden>
+  <div class="sheet-dim" id="confirmDim"></div>
+  <div class="sheet-panel">
+    <p class="eq-name" id="confirmTitle"></p>
+    <p class="coop-text" id="confirmText"></p>
+    <div class="actions"><button class="btn danger" id="confirmOk" type="button"></button><button class="btn primary" id="confirmNo" type="button">Non, annuler</button></div>
   </div>
 </div>
 <div id="shareSheet" class="sheet" role="dialog" aria-label="Partager ta partie" hidden>
@@ -1006,6 +1020,11 @@ html.big-text #toast .t1{font-size:1.1em}
       <p class="coop-text" id="verTxt"></p>
       <button class="btn" id="btnUpdate" type="button">Mettre à jour le jeu</button>
       <p class="coop-note">Ta progression, ton or et tes amis ne seront pas perdus.</p>
+    </div>
+    <div class="slab coopbox danger-box">
+      <p class="small-h">Sauvegarde</p>
+      <p class="coop-note">Tout effacer pour recommencer le jeu depuis le début : or, créatures, équipements, niveaux, succès, trophées… Tes réglages et ta liste d'amis sont gardés.</p>
+      <button class="btn danger" id="btnWipe" type="button">Réinitialiser la sauvegarde</button>
     </div>
   </div>
 </section>
@@ -1274,6 +1293,7 @@ html.big-text #toast .t1{font-size:1.1em}
     <p class="sub">Dépense ton or ici. Tout ce que tu achètes reste pour tes prochaines parties. Les cases dorées sont les niveaux Maître : plus chers, mais encore plus forts.</p>
     <div class="tabs shopnav"><button class="tab" id="navUp" type="button">Améliorations</button><button class="tab" id="navPet" type="button">Familiers</button><button class="tab" id="navSkin" type="button">Couleurs</button></div>
     <div class="upgrades" id="upgrades"></div>
+    <button class="btn ghost" id="btnUpReset" type="button">Réinitialiser les améliorations</button>
     <h3 class="small-h skins-h" id="petsH">Familiers</h3>
     <p class="sub">Un petit compagnon qui t'aide pendant la partie. Achète-le, touche « Choisir », puis rends-le plus fort avec ton or (jusqu'au niveau 10).</p>
     <div class="upgrades" id="pets"></div>
@@ -1988,7 +2008,7 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
   return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
@@ -2006,7 +2026,7 @@ async function cloudLoad(){
     const snap=await ref.get();
     if(snap&&snap.exists){
       let cs=null;try{const d=snap.data();cs=d&&typeof d.data==='string'?JSON.parse(d.data):null;}catch(e){cs=null;}
-      if(cs&&typeof cs==='object'&&!run&&(loadSave.fresh||saveProg(cs)>saveProg(save))&&saveProg(cs)>0){
+      if(cs&&typeof cs==='object'&&!run&&!((save.wiped||0)>(+cs.wiped||0))&&(loadSave.fresh||saveProg(cs)>saveProg(save))&&saveProg(cs)>0){
         save=loadSave(cs);loadSave.fresh=false;persist();quality=save.lowq?'low':'high';
         if(state==='title')goTitle();
         const n=$('cloudNote');n.textContent='Ta progression a été récupérée grâce à ton compte Claude !';n.hidden=false;setTimeout(()=>{n.hidden=true;},7000);
@@ -5681,6 +5701,26 @@ $('shareClose').addEventListener('click',()=>{$('shareSheet').hidden=true;});$('
 $('shareGo').addEventListener('click',()=>{if(!shareBlob)return;const f=new File([shareBlob],'bestiolins.png',{type:'image/png'});
   navigator.share({files:[f],title:'Bestiolins',text:'Regarde ma partie de Bestiolins ! '+$('ovScore').textContent}).catch(()=>{});});
 $('shareSave').addEventListener('click',async()=>{if(!shareUrl)return;try{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl&&shareBlob){await dl.save({filename:'bestiolins.png',data:shareBlob});return;}}catch(e){return;}const a=document.createElement('a');a.href=shareUrl;a.download='bestiolins.png';document.body.appendChild(a);a.click();a.remove();sfx('coin');});
+/* ---- confirmation before something that cannot be undone ---- */
+let confirmCb=null,confirmArm=0,confirmLbl='';
+function askConfirm(title,text,okLbl,cb,double){confirmCb=cb;confirmArm=double?1:0;confirmLbl=okLbl;$('confirmTitle').textContent=title;$('confirmText').textContent=text;$('confirmOk').textContent=okLbl;$('confirmSheet').hidden=false;sfx('nope');}
+function closeConfirm(){$('confirmSheet').hidden=true;confirmCb=null;}
+$('confirmNo').addEventListener('click',closeConfirm);$('confirmDim').addEventListener('click',closeConfirm);
+$('confirmOk').addEventListener('click',()=>{if(!confirmCb)return;if(confirmArm===1){confirmArm=2;$('confirmOk').textContent='Touche encore : je suis sûr !';$('confirmOk').classList.add('glow');return;}
+  const cb=confirmCb;closeConfirm();$('confirmOk').classList.remove('glow');cb();});
+function upRefund(){let g=0;for(const u of UPGRADES){const lv=Math.min(u.max,save.up[u.id]|0);for(let l=0;l<lv;l++)g+=upCost(u,l);}return g;}
+$('btnUpReset').addEventListener('click',()=>{audioUnlock();const g=upRefund();
+  if(!g){toast('Rien à réinitialiser',"Tu n'as encore acheté aucune amélioration.");sfx('nope');return;}
+  askConfirm('Réinitialiser les améliorations ?','Toutes tes améliorations repartent au niveau 0, et tu récupères tout l\'or dépensé : '+g+' or. Tu pourras ensuite les racheter comme tu veux.','Oui, réinitialiser',()=>{
+    save.up={};save.gold=(save.gold||0)+g;persist();sfx('chest');buildShop();toast('Améliorations réinitialisées','+'+g+' or rendus. Choisis tes nouvelles améliorations !');});});
+$('btnWipe').addEventListener('click',()=>{audioUnlock();
+  askConfirm('Effacer toute la sauvegarde ?',"Attention : tout ton or, tes créatures, tes équipements, tes niveaux, tes succès et tes trophées seront effacés pour toujours. Le jeu recommencera depuis le début. On ne peut pas revenir en arrière !",'Oui, tout effacer',wipeSave,true);});
+async function wipeSave(){
+  const keep={};for(const k of['auto','sound','music','vm','vs','ctl','anim','vib','bigText','cb','tips','dmgNums','lowq'])keep[k]=save[k];
+  save=loadSave(null);Object.assign(save,keep);save.wiped=Date.now();save.tutoDone=false;persist();
+  try{cloudDirty=true;await Promise.race([cloudPush(),new Promise(r=>setTimeout(r,2500))]);}catch(e){}
+  toast('Sauvegarde effacée','Le jeu recommence depuis le début.');setTimeout(()=>location.reload(),900);
+}
 function setupArena(type){
   const seed=randi(1,1e9),grid=widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,'normal');
   const keep=(run.room&&run.room.pickups||[]).filter(p=>p.kind==='item'||p.kind==='active');
