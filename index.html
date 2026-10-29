@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029103445';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029103445" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029104258';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029104258" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -794,6 +794,32 @@ html.big-text #toast .t1{font-size:1.1em}
 .skin.tier2{border-color:#8a3a7a;background:linear-gradient(180deg,#3a1c3a,var(--stone))}
 .skin.tier2 canvas{box-shadow:0 0 12px rgba(255,138,216,.35)}
 .skin.tier1 canvas{box-shadow:0 0 10px rgba(255,211,106,.3)}
+.tt-right{display:flex;align-items:center;gap:10px}
+.hallo-fab{position:relative;width:56px;height:56px;border-radius:50%;border:2px solid #f08a2a;background:radial-gradient(circle at 50% 40%,#5a2a0a,#2a1206);padding:0;cursor:pointer;box-shadow:0 0 14px rgba(240,138,42,.55);animation:hfWob 2.4s ease-in-out infinite;flex:none}
+.hallo-fab canvas{width:48px;height:48px;display:block;margin:auto}
+.hf-badge{position:absolute;right:-6px;bottom:-4px;min-width:20px;padding:1px 6px;border-radius:10px;background:#a35bd8;color:#fff;font:800 13px var(--font-ui);border:2px solid #1a120d;box-sizing:border-box}
+@keyframes hfWob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.hallo-fab{animation:none}}
+.hallo-sheet .sheet-panel{border-color:#f08a2a;background:linear-gradient(180deg,#3a1a08,#1a0e08)}
+.hallo-sheet .sheet-head canvas{width:72px;height:72px}
+.hallo-sheet .eq-name{color:#ffb35a}
+.hs-candy{display:flex;flex-direction:column;align-items:center;gap:2px;margin:12px 0;padding:12px;border-radius:12px;background:rgba(0,0,0,.3);border:2px solid #a35bd8}
+.hs-big{font:900 34px var(--font-display);color:#ffe0c0}.hs-big b{color:#ffb35a}
+.hs-sub{font-size:14px;color:#d8b8a0}
+.hs-acts{display:flex;flex-direction:column;gap:8px}
+.hs-acts .btn{width:100%;min-height:48px}
+.hs-h{margin:16px 0 6px;font:800 19px var(--font-display);color:#ffb35a}
+.hs-info{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px;color:#ffe0c0;line-height:1.35}
+.hs-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.hs-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:2px solid #7a3d14;background:rgba(40,18,6,.85);text-align:center}
+.hs-card.big{grid-column:1/-1;flex-direction:row;text-align:left}
+.hs-card canvas{width:64px;height:64px}
+.hs-card .hs-ic{font-size:40px;line-height:64px;height:64px}
+.hs-card .hs-nm{font:800 16px var(--font-ui);color:#ffe9d0}
+.hs-card .hs-ds{font-size:13px;color:#d8b8a0}
+.hs-card .btn{width:100%;margin-top:auto}
+.hs-card.own{opacity:.7;border-color:#3d7a3a}
+.hs-own{font:800 14px var(--font-ui);color:#8fe08a;margin-top:auto;padding:8px}
 .hallo-btn{margin-top:6px;border-color:#f08a2a;background:#5a2a0a;color:#ffe0c0;min-height:44px}
 .side-h{margin:10px 8px 2px;font:700 12px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:#a8957d;flex:none}
 .side-h:first-of-type{margin-top:2px}
@@ -880,6 +906,23 @@ html.big-text #toast .t1{font-size:1.1em}
     <div class="actions"><button class="btn primary" id="lootOk" type="button">Super !</button><button class="btn" id="lootHero" type="button">Voir Mon perso</button></div>
   </div>
 </div>
+<div id="halloSheet" class="sheet hallo-sheet" role="dialog" aria-label="Halloween" hidden>
+  <div class="sheet-dim" id="halloDim"></div>
+  <div class="sheet-panel">
+    <div class="sheet-head"><canvas id="halloHeadCv" width="144" height="144"></canvas><div class="me-info"><p class="eq-name">Halloween</p><p class="eq-rar" id="halloWhen"></p></div><button class="side-x" id="halloClose" type="button" aria-label="Fermer">✕</button></div>
+    <div class="hs-candy"><span class="hs-big">🍬 <b id="halloN">0</b></span><span class="hs-sub" id="halloTot"></span></div>
+    <div class="hs-acts"><button class="btn primary" id="btnHalloPlay" type="button">Jouer et ramasser des bonbons</button><button class="btn hallo-btn" id="btnReine" type="button">🎃 Combattre la Reine Citrouille</button></div>
+    <p class="hs-h">C'est quoi ?</p>
+    <ul class="hs-info">
+      <li>Pendant une partie, les monstres lâchent des <b>bonbons 🍬</b>. Marche dessus pour les ramasser.</li>
+      <li>La crypte est décorée et les monstres portent des chapeaux de sorcier ou de citrouille.</li>
+      <li><b>La Reine Citrouille</b> est un boss spécial. La battre donne 200 or, et 25 bonbons une fois par jour.</li>
+      <li>Dépense tes bonbons dans la boutique juste en dessous. Touche deux fois un bouton pour acheter.</li>
+    </ul>
+    <p class="hs-h">Boutique d'Halloween</p>
+    <div class="hs-shop" id="halloShop"></div>
+  </div>
+</div>
 <div id="titleSheet" class="sheet" role="dialog" aria-label="Mes titres" hidden>
   <div class="sheet-dim" id="titleDim"></div>
   <div class="sheet-panel">
@@ -952,13 +995,13 @@ html.big-text #toast .t1{font-size:1.1em}
   <div class="panel title-panel">
    <div class="title-top">
     <button id="btnSide" class="menu-btn" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="sideMenu"><span class="mb-bars" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span><span class="qbadge mb-badge" id="menuBadge" hidden></span></button>
-    <span class="goldtag title-gold"><i class="coin"></i><span id="titleGold2"></span></span>
+    <div class="tt-right"><button class="hallo-fab" id="halloFab" type="button" aria-label="Événement Halloween" hidden><canvas id="halloFabCv" width="96" height="96"></canvas><span class="hf-badge" id="halloFabN">0</span></button>
+    <span class="goldtag title-gold"><i class="coin"></i><span id="titleGold2"></span></span></div>
    </div>
    <div class="title-main">
     <p class="eyebrow">Petites bêtes · grande crypte</p>
     <h1 class="logo">Bestiolins</h1>
     <p class="lede">Choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.</p>
-    <div class="hallo-box" id="halloBox" hidden><b>🎃 Halloween, jusqu'au 2 novembre !</b><span id="halloTxt"></span><span class="hbar"><i id="halloBar"></i></span><button class="btn hallo-btn" id="btnReine" type="button">Combattre la Reine Citrouille</button></div>
    </div>
    <div class="title-acts">
     <div class="main-acts">
@@ -1700,8 +1743,7 @@ function petLvText(id,lv){
 function addCandy(n,x,y){
   const was=save.candy|0;save.candy=was+n;
   if(run&&x!=null)run.floats.push({x,y:y-12,text:'+'+n+' 🍬',t:0.8,col:'#ffb35a'});
-  if(was<50&&save.candy>=50&&!save.hats.citrouille){save.hats.citrouille=1;toast('🎃 Chapeau citrouille débloqué !','Va dans « Améliorations », puis « Chapeaux », pour le mettre.');sfx('item');}
-  if(was<100&&save.candy>=100&&!save.sfxs.chauvesouris){save.sfxs.chauvesouris=1;toast('🦇 Tirs chauves-souris débloqués !','Va dans « Améliorations », puis « Effets de tir », pour les choisir.');sfx('item');}
+  save.stats.candyTot=Math.max(was,save.stats.candyTot|0)+n;
   persist();
 }
 function drawHalloDecor(t){
@@ -5697,8 +5739,8 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
-  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();checkTitles();updFrBadge();if(soInvite)setTimeout(showInvite,400);
-  {const hb=$('halloBox');hb.hidden=!HALLO;if(HALLO){const c=save.candy|0;$('halloTxt').textContent='Les monstres lâchent des bonbons 🍬 : tu en as '+c+'. À 50 : chapeau citrouille'+(c>=50?' ✓':'')+'. À 100 : tirs chauves-souris'+(c>=100?' ✓':'')+'.';$('halloBar').style.width=Math.min(100,c)+'%';}
+  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();closeHallo();checkTitles();updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  {const hb=$('halloFab');hb.hidden=!HALLO;if(HALLO){$('halloFabN').textContent=save.candy|0;drawPumpkinIc($('halloFabCv'));}else closeHallo();
     document.documentElement.classList.toggle('hallo',HALLO);}
   $('tourTag').textContent=isWeekend()?'ouvert !':'samedi';$('btnTourney').classList.toggle('glow',isWeekend());checkTourney();
   $('hardTag').textContent=save.hardBest?'étage '+save.hardBest:'';
@@ -5791,7 +5833,7 @@ function openTrophies(){state='trophy';clearOverlays();show('scrTrophy');pauseBt
     ['👑','Boss de raid',save.ach.raid?'Vaincu !':'Pas encore',!!save.ach.raid],['❤️‍🔥','Le Dévoreur',(save.kills.devoreur|0)?'Vaincu !':'Pas encore',!!(save.kills.devoreur|0)],
     ['🌊','Record de Survie',(save.survBest|0)+' vagues',(save.survBest|0)>0],['⚡','Rush des boss',(save.rushBest|0)+' / '+RUSH.length,(save.rushBest|0)>=RUSH.length],
     ['🏰','Victoires',save.wins|0,(save.wins|0)>0],['⭐','Étage record',save.best|0,(save.best|0)>=5],
-    ['📜','Succès',Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+' / '+ACHS.length,false],['🍬','Bonbons d\'Halloween',save.candy|0,(save.candy|0)>=50]];
+    ['📜','Succès',Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+' / '+ACHS.length,false],['🍬','Bonbons d\'Halloween',Math.max(save.candy|0,save.stats.candyTot|0),Math.max(save.candy|0,save.stats.candyTot|0)>=50]];
   const gf=$('trophyFeats');gf.textContent='';
   for(const f of feats){const d=document.createElement('div');d.className='trophy feat'+(f[3]?' got':'');const ic=document.createElement('span');ic.className='ti';ic.textContent=f[0];
     const nm=document.createElement('span');nm.className='tn';nm.textContent=f[1];const ds=document.createElement('span');ds.className='td';ds.textContent=String(f[2]);d.append(ic,nm,ds);gf.appendChild(d);}
@@ -6637,6 +6679,7 @@ const TITLES=[
   {id:'genereux',b:[1,0,0,0,8],n:'Cœur généreux',d:"Envoie 20 fois de l'or à tes amis",ok:()=>(save.stats.goldSent|0)>=20,sa:1},
   {id:'cosmos',b:[0,0,8,0,0],n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
   {id:'saison',b:[0,5,5,0,0],n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0},
+  {id:'hallo',b:[0,0,3,0,10],n:"Roi d'Halloween",d:"Achète-le dans la boutique d'Halloween avec des bonbons",ok:()=>!!save.titles.hallo},
   {id:'fondateur',b:[2,10,10,10,10],n:'Le Fondateur',d:'Le créateur de Bestiolins. Personne d\'autre ne peut l\'avoir !',ok:()=>!!window.__CB_OWNER,secret:1}
 ];
 function founderFx(el,id){if(el)el.classList.toggle('founder',id==='fondateur');}
@@ -6646,6 +6689,40 @@ function titleName(id){const t=TITLES.find(x=>x.id===id);return t?t.n:'';}
 function checkTitles(){let nw=null;for(const t of TITLES){if(!save.titles[t.id]&&t.ok()){save.titles[t.id]=1;if(t.id!=='debut')nw=t;}}if(nw){persist();frMsg('Nouveau titre débloqué : « '+nw.n+' » !','ok');}return nw;}
 function openTitles(){checkTitles();renderTitles();$('titleSheet').hidden=false;}
 function closeTitles(){$('titleSheet').hidden=true;}
+function drawPumpkinIc(cv){const c=cv.getContext('2d'),n=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,n,n);c.translate(n/2,n*0.62);drawHat(c,'citrouille',n*0.42,0);}
+function halloDaysLeft(){const d=new Date(),end=new Date(d.getFullYear(),10,3);return Math.max(1,Math.ceil((end-d)/864e5));}
+let halloArm='';
+const HSHOP=[
+  {id:'hat',nm:'Chapeau citrouille',ds:'Un chapeau pour ta créature',p:50,own:()=>!!save.hats.citrouille,buy:()=>{save.hats.citrouille=1;save.hat='citrouille';},msg:'Chapeau citrouille acheté et mis sur ta créature !',ic:'hat:citrouille'},
+  {id:'bat',nm:'Tirs chauves-souris',ds:'Tes tirs deviennent des chauves-souris',p:100,own:()=>!!save.sfxs.chauvesouris,buy:()=>{save.sfxs.chauvesouris=1;save.sfx='chauvesouris';},msg:'Tirs chauves-souris achetés et activés !',ic:'🦇'},
+  {id:'sorc',nm:'Chapeau de sorcier',ds:"Moins cher qu'à la boutique normale",p:40,own:()=>!!save.hats.sorcier,buy:()=>{save.hats.sorcier=1;save.hat='sorcier';},msg:'Chapeau de sorcier acheté et mis !',ic:'hat:sorcier'},
+  {id:'titre',nm:"Titre « Roi d'Halloween »",ds:'Bonus : Or +10 % · Dégâts +3 %',p:150,own:()=>!!save.titles.hallo,buy:()=>{save.titles.hallo=1;save.title='hallo';try{soPublishProfile(true);}catch(e){}},msg:"Titre « Roi d'Halloween » acheté et mis sur ton profil !",ic:'👑'},
+  {id:'chest',nm:'Coffre en or',ds:'Un équipement épique ou mieux',p:60,chest:2,ic:'chest:2'},
+  {id:'gold',nm:'Sac de 250 or',ds:"De l'or pour la boutique",p:25,buy:()=>{save.gold=(save.gold||0)+250;},msg:'+250 or !',ic:'💰'}
+];
+function openHallo(){if(!HALLO)return;audioUnlock();halloArm='';renderHallo();$('halloSheet').hidden=false;}
+function closeHallo(){const e=$('halloSheet');if(e)e.hidden=true;halloArm='';}
+function renderHallo(){
+  const c=save.candy|0;$('halloN').textContent=c;$('halloTot').textContent=(c>1?'bonbons':'bonbon')+' · '+Math.max(c,save.stats.candyTot|0)+' ramassés en tout';
+  const dl=halloDaysLeft();$('halloWhen').textContent="Jusqu'au 2 novembre · encore "+dl+(dl>1?' jours':' jour');
+  drawPumpkinIc($('halloHeadCv'));$('halloFabN').textContent=c;
+  const box=$('halloShop');box.textContent='';
+  for(const it of HSHOP){const own=it.own&&it.own(),card=document.createElement('div');card.className='hs-card'+(own?' own':'');
+    let icon;if(it.ic.startsWith('hat:')||it.ic.startsWith('chest:')){icon=document.createElement('canvas');icon.width=icon.height=Math.round(64*dpr);const g=icon.getContext('2d'),n=icon.width;
+      if(it.ic.startsWith('hat:')){g.translate(n/2,n*0.68);drawHat(g,it.ic.slice(4),n*0.38,0);}else{g.translate(n/2,n*0.6);drawChestOpen(g,+it.ic.slice(6),0,n*0.3);}}
+    else{icon=document.createElement('span');icon.className='hs-ic';icon.textContent=it.ic;}
+    const nm=document.createElement('span');nm.className='hs-nm';nm.textContent=it.nm;const ds=document.createElement('span');ds.className='hs-ds';ds.textContent=it.ds;card.append(icon,nm,ds);
+    if(own){const o=document.createElement('span');o.className='hs-own';o.textContent='Tu l\'as déjà ✓';card.append(o);}
+    else{const arm=halloArm===it.id,b=mkBtn(arm?'Touche encore pour acheter !':'🍬 '+it.p,arm?'primary glow':'primary',()=>{
+      if((save.candy|0)<it.p){frMsg('Pas assez de bonbons : il t\'en faut '+it.p+'. Joue pour en ramasser !','bad');return;}
+      if(it.chest!=null&&save.eq.inv.length>=EQ_BAG){frMsg('Ton sac est plein : vends ou fusionne des équipements dans « Mon perso ».','bad');return;}
+      if(!arm){halloArm=it.id;renderHallo();return;}
+      halloArm='';save.candy=(save.candy|0)-it.p;
+      if(it.chest!=null){const C=CHESTS[it.chest];bump('chests');const e=eqNew(Math.floor(Math.random()*5),rollRar(C.w),1);persist();renderHallo();closeHallo();openChestAnim(it.chest,e,()=>openEqSheet(e.i,true));return;}
+      it.buy();persist();sfx('chest');frMsg(it.msg,'ok');checkTitles();renderHallo();if(typeof renderTitleGold==='function')renderTitleGold();try{$('titleGold2').textContent=save.gold||0;}catch(e){}});
+      b.classList.remove('sm');card.append(b);}
+    box.append(card);}
+}
 function renderTitles(){
   const L=$('titleList');L.textContent='';
   for(const t of [...TITLES].sort((a,b)=>(b.secret|0)-(a.secret|0))){if(t.sa&&!CB_SOC)continue;if(t.secret&&!save.titles[t.id])continue;const got=!!save.titles[t.id]||t.id==='debut',on=(save.title||'debut')===t.id;
@@ -6926,6 +7003,8 @@ $('seBack').addEventListener('click',goTitle);
 $('btnSeAll').addEventListener('click',()=>{const list=[];const S=ensureSeason(),T=seasonTier();let g0=save.gold||0;for(let t=1;t<=T;t++)claimTier(t,list);persist();sfx('chest');renderSeason();updMenuBadge();
   if(list.length)showLoot(list,'Passe de saison'+((save.gold||0)>g0?' · +'+((save.gold||0)-g0)+' or':''));else frMsg('+'+((save.gold||0)-g0)+' or !','ok');});
 $('heroTitle').addEventListener('click',()=>{audioUnlock();openTitles();});
+$('halloFab').addEventListener('click',openHallo);$('halloClose').addEventListener('click',closeHallo);$('halloDim').addEventListener('click',closeHallo);
+$('btnHalloPlay').addEventListener('click',()=>{closeHallo();$('btnPlay').click();});
 $('titleClose').addEventListener('click',closeTitles);$('titleDim').addEventListener('click',closeTitles);
 if(CB_SA){$('btnRank').hidden=true;if(!CB_P2P)$('btnCoop').hidden=true;}
 if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
@@ -6936,7 +7015,7 @@ if(CB_SOC){$('btnFriends').hidden=false;$('modeFriend').hidden=false;}
 $('btnRush').addEventListener('click',()=>{audioUnlock();goPickRush();});
 $('btnTourney').addEventListener('click',()=>{audioUnlock();if(!isWeekend()){toast('Tournoi du week-end','Il a lieu le samedi et le dimanche. Reviens ce week-end : le meilleur score entre amis gagne un trophée !');sfx('nope');return;}
   netLeave();stopSearch();buildStarters();pickMode='tourney';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='Tournoi du week-end : une crypte spéciale, la même pour tous tes amis. Le meilleur score gagne un trophée lundi ! Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
-$('btnReine').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='reine';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='La Reine Citrouille : un combat de boss spécial Halloween. Si tu gagnes : 200 or, 25 bonbons (une fois par jour) et un trophée ! Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
+$('btnReine').addEventListener('click',()=>{closeHallo();audioUnlock();netLeave();stopSearch();buildStarters();pickMode='reine';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='La Reine Citrouille : un combat de boss spécial Halloween. Si tu gagnes : 200 or, 25 bonbons (une fois par jour) et un trophée ! Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('btnHard').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='hard';lastCoop=false;lastLocal=false;clearTaken();$('pickSub').textContent='Mode Hardcore : tu n\'as qu\'UN seul cœur pendant toute la partie (impossible d\'en avoir plus). En échange : 3 fois plus d\'or, 2 fois plus de points de saison et un butin en plus. Choisis ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('btnSurv').addEventListener('click',()=>{audioUnlock();netLeave();stopSearch();buildStarters();pickMode='surv';lastCoop=false;lastLocal=false;lastDaily=false;lastRush=false;lastSurv=true;clearTaken();$('pickSub').textContent='Survie : des vagues de monstres sans fin dans une grande salle. Tiens le plus longtemps possible ! Tous les 5 vagues : un cœur et un objet. Touche ta créature.';state='pick';clearOverlays();show('scrPick');pauseBtn.hidden=true;$('scrPick').scrollTop=0;});
 $('saveBack').addEventListener('click',goTitle);
