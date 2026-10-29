@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029114549';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029114549" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029114715';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029114715" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -7069,7 +7069,7 @@ function setDiff(i){save.diff=clamp(i|0,0,3);persist();audioUnlock();sfx('coin')
 function buildStarters(){
   setTimeout(renderDiff,0);
   const box=$('starters'),kc=box.children[carCur],keep=kc&&kc.id?kc.id.slice(3):null;box.textContent='';
-  for(const id of Object.keys(STARTERS)){
+  for(const id of Object.keys(STARTERS).sort((a,b)=>(starterOpen(a)?0:1)-(starterOpen(b)?0:1))){
     const st=STARTERS[id];
     if(!starterOpen(id)){
       const d=document.createElement('div');d.className='starter locked';d.id='st-'+id;
