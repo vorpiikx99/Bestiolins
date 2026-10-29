@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029103118';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029103118" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029103445';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029103445" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -695,6 +695,7 @@ html.no-anim *{animation:none!important;transition:none!important}
 .title-pill{background:#2a1f19;border:2px solid #b8862a;border-radius:20px;padding:4px 14px;font:700 15px var(--font-ui);color:#ffe9a8;cursor:pointer}
 .title-pill::after{content:" ✎";color:var(--bone-dim)}
 .card-title{font:700 15px var(--font-ui);color:#ffe9a8}
+.ach .ds.tbonus{color:#8fe08a;font-weight:700}
 .founder{background:linear-gradient(90deg,#ffd76a,#fff6c8,#ff9fd8,#9fe8ff,#ffd76a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:founderSh 3s linear infinite;filter:drop-shadow(0 0 6px rgba(255,210,90,.55))}
 .title-pill.founder{-webkit-background-clip:border-box;background-clip:border-box;color:#3a2200!important;border-color:#fff1a8;box-shadow:0 0 14px rgba(255,210,90,.7);filter:none}
 .title-pill.founder::after{color:#3a2200}
@@ -882,7 +883,7 @@ html.big-text #toast .t1{font-size:1.1em}
 <div id="titleSheet" class="sheet" role="dialog" aria-label="Mes titres" hidden>
   <div class="sheet-dim" id="titleDim"></div>
   <div class="sheet-panel">
-    <div class="sheet-head"><div class="me-info"><p class="eq-name">Mes titres</p><p class="eq-rar">Ton titre s'affiche sous ton pseudo. Débloque-les en jouant !</p></div><button class="side-x" id="titleClose" type="button" aria-label="Fermer">✕</button></div>
+    <div class="sheet-head"><div class="me-info"><p class="eq-name">Mes titres</p><p class="eq-rar">Ton titre s'affiche sous ton pseudo et te donne un bonus pendant les parties. Débloque-les en jouant !</p></div><button class="side-x" id="titleClose" type="button" aria-label="Fermer">✕</button></div>
     <div class="achlist" id="titleList"></div>
   </div>
 </div>
@@ -6621,24 +6622,26 @@ function claimDay7(){
 }
 /* ---- titles ---- */
 const TITLES=[
-  {id:'debut',n:'Petit débutant',d:'Commence à jouer',ok:()=>true},
-  {id:'explo',n:'Explorateur',d:"Atteins l'étage 5",ok:()=>(save.best|0)>=5},
-  {id:'champ',n:'Champion de la crypte',d:'Gagne une partie',ok:()=>(save.wins|0)>=1},
-  {id:'legende',n:'Légende vivante',d:'Gagne 10 parties',ok:()=>(save.wins|0)>=10},
-  {id:'chasseur',n:'Chasseur de monstres',d:'Bats 500 monstres',ok:()=>totalKills()>=500},
-  {id:'boss',n:'Chasseur de boss',d:'Bats 10 boss',ok:()=>(save.stats.boss|0)>=10},
-  {id:'rush',n:'Maître du rush',d:'Termine le Rush des boss',ok:()=>(save.rushBest|0)>=RUSH.length},
-  {id:'coffres',n:'Roi des coffres',d:'Achète 50 coffres à la Boutique',ok:()=>(save.stats.chests|0)>=50},
-  {id:'collec',n:'Collectionneur',d:'Mets 20 créatures dans le Bestiaire',ok:()=>seenCount()>=20},
-  {id:'riche',n:'Riche comme un roi',d:"Ramasse 10 000 pièces d'or",ok:()=>(save.stats.goldEarned|0)>=10000},
-  {id:'fidele',n:'Fidèle',d:'Ouvre le cadeau du jour 7 jours de suite',ok:()=>(save.stats.week|0)>=1},
-  {id:'ami',n:'Bon copain',d:'Aie 3 amis',ok:()=>CB_SOC&&soReady&&soFriends().length>=3,sa:1},
-  {id:'genereux',n:'Cœur généreux',d:"Envoie 20 fois de l'or à tes amis",ok:()=>(save.stats.goldSent|0)>=20,sa:1},
-  {id:'cosmos',n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
-  {id:'saison',n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0},
-  {id:'fondateur',n:'✨ Le Fondateur',d:'Le créateur de Bestiolins. Personne d\'autre ne peut l\'avoir !',ok:()=>!!window.__CB_OWNER,secret:1}
+  {id:'debut',b:[0,0,0,0,5],n:'Petit débutant',d:'Commence à jouer',ok:()=>true},
+  {id:'explo',b:[0,0,0,6,0],n:'Explorateur',d:"Atteins l'étage 5",ok:()=>(save.best|0)>=5},
+  {id:'champ',b:[0,0,4,0,0],n:'Champion de la crypte',d:'Gagne une partie',ok:()=>(save.wins|0)>=1},
+  {id:'legende',b:[2,0,6,0,0],n:'Légende vivante',d:'Gagne 10 parties',ok:()=>(save.wins|0)>=10},
+  {id:'chasseur',b:[0,0,5,0,0],n:'Chasseur de monstres',d:'Bats 500 monstres',ok:()=>totalKills()>=500},
+  {id:'boss',b:[0,6,0,0,0],n:'Chasseur de boss',d:'Bats 10 boss',ok:()=>(save.stats.boss|0)>=10},
+  {id:'rush',b:[0,8,0,0,0],n:'Maître du rush',d:'Termine le Rush des boss',ok:()=>(save.rushBest|0)>=RUSH.length},
+  {id:'coffres',b:[0,0,0,0,12],n:'Roi des coffres',d:'Achète 50 coffres à la Boutique',ok:()=>(save.stats.chests|0)>=50},
+  {id:'collec',b:[1,0,0,0,0],n:'Collectionneur',d:'Mets 20 créatures dans le Bestiaire',ok:()=>seenCount()>=20},
+  {id:'riche',b:[0,0,0,0,15],n:'Riche comme un roi',d:"Ramasse 10 000 pièces d'or",ok:()=>(save.stats.goldEarned|0)>=10000},
+  {id:'fidele',b:[0,0,0,8,0],n:'Fidèle',d:'Ouvre le cadeau du jour 7 jours de suite',ok:()=>(save.stats.week|0)>=1},
+  {id:'ami',b:[0,5,0,0,0],n:'Bon copain',d:'Aie 3 amis',ok:()=>CB_SOC&&soReady&&soFriends().length>=3,sa:1},
+  {id:'genereux',b:[1,0,0,0,8],n:'Cœur généreux',d:"Envoie 20 fois de l'or à tes amis",ok:()=>(save.stats.goldSent|0)>=20,sa:1},
+  {id:'cosmos',b:[0,0,8,0,0],n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
+  {id:'saison',b:[0,5,5,0,0],n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0},
+  {id:'fondateur',b:[2,10,10,10,10],n:'Le Fondateur',d:'Le créateur de Bestiolins. Personne d\'autre ne peut l\'avoir !',ok:()=>!!window.__CB_OWNER,secret:1}
 ];
 function founderFx(el,id){if(el)el.classList.toggle('founder',id==='fondateur');}
+function titleBonus(id){const t=TITLES.find(x=>x.id===id);return t&&t.b?t.b:[0,0,0,0,0];}
+function bonusTxt(b){const p=[];if(b[0])p.push('+'+fmtN(b[0]/2)+(b[0]>2?' cœurs':' cœur'));if(b[1])p.push('Tir +'+b[1]+' %');if(b[2])p.push('Dégâts +'+b[2]+' %');if(b[3])p.push('Vitesse +'+fmtN(b[3]/2)+' %');if(b[4])p.push('Or +'+b[4]+' %');return p.join(' · ');}
 function titleName(id){const t=TITLES.find(x=>x.id===id);return t?t.n:'';}
 function checkTitles(){let nw=null;for(const t of TITLES){if(!save.titles[t.id]&&t.ok()){save.titles[t.id]=1;if(t.id!=='debut')nw=t;}}if(nw){persist();frMsg('Nouveau titre débloqué : « '+nw.n+' » !','ok');}return nw;}
 function openTitles(){checkTitles();renderTitles();$('titleSheet').hidden=false;}
@@ -6647,9 +6650,9 @@ function renderTitles(){
   const L=$('titleList');L.textContent='';
   for(const t of [...TITLES].sort((a,b)=>(b.secret|0)-(a.secret|0))){if(t.sa&&!CB_SOC)continue;if(t.secret&&!save.titles[t.id])continue;const got=!!save.titles[t.id]||t.id==='debut',on=(save.title||'debut')===t.id;
     const row=document.createElement('div');row.className='ach'+(got?' done':' lock');
-    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=(got?'':'🔒 ')+t.n;founderFx(nm,t.id);const ds=document.createElement('span');ds.className='ds';ds.textContent=t.d;info.append(nm,ds);row.append(info);
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=(got?'':'🔒 ')+t.n;founderFx(nm,t.id);const ds=document.createElement('span');ds.className='ds';ds.textContent=t.d;const bs=document.createElement('span');bs.className='ds tbonus';bs.textContent='Bonus : '+bonusTxt(t.b);info.append(nm,ds,bs);row.append(info);
     if(on){const o=document.createElement('span');o.className='ok';o.textContent='Choisi ✓';row.append(o);}
-    else if(got){const b=mkBtn('Choisir','primary',()=>{save.title=t.id;persist();sfx('coin');renderTitles();if(state==='hero')renderHeroTop();soPublishProfile(true);});b.classList.remove('sm');row.append(b);}
+    else if(got){const b=mkBtn('Choisir','primary',()=>{save.title=t.id;persist();sfx('coin');renderTitles();if(state==='hero')renderHero();soPublishProfile(true);});b.classList.remove('sm');row.append(b);}
     L.append(row);}
 }
 /* ---- season pass: a new season every month ---- */
@@ -6696,7 +6699,7 @@ async function initData(){
     if(window.claude&&typeof window.claude.use==='function'){
       const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
       DB=db;USER=user;
-      if(USER){MYID=await USER.id();IS_OWNER=await USER.isOwner();window.__CB_OWNER=IS_OWNER;if(IS_OWNER&&!save.titles.fondateur){save.titles.fondateur=1;persist();try{frMsg('Titre secret débloqué : « ✨ Le Fondateur » !','ok');}catch(e){}}}
+      if(USER){MYID=await USER.id();IS_OWNER=await USER.isOwner();window.__CB_OWNER=IS_OWNER;if(IS_OWNER&&!save.titles.fondateur){save.titles.fondateur=1;persist();try{frMsg('Titre secret débloqué : « Le Fondateur » !','ok');}catch(e){}}}
     }
   }catch(e){DB=null;}
   if(state==='rank')renderRank();
@@ -7444,7 +7447,7 @@ function eqNew(sl,r,l){const it={i:'e'+(save.eq.n++),s:sl,r,l:l||1};save.eq.inv.
 function eqSellVal(it){return(it.r+1)*(10+5*it.l);}
 function eqUpCost(it){return(it.r+1)*25*it.l;}
 function eqGive(sl,r){if(save.eq.inv.length>=EQ_BAG){const g=(r+1)*15;save.gold=(save.gold||0)+g;return{gold:g};}return{it:eqNew(sl,r,1)};}
-function myEqBonus(){const b=[0,0,0,0,0];for(let k=0;k<5;k++){const it=eqById(save.eq.on[k]);if(it)b[k]+=eqVal(it.s,it.r,it.l);}return b;}
+function myEqBonus(){const b=[0,0,0,0,0];for(let k=0;k<5;k++){const it=eqById(save.eq.on[k]);if(it)b[k]+=eqVal(it.s,it.r,it.l);}const tb=titleBonus(save.title||'debut');for(let k=0;k<5;k++)b[k]+=tb[k];return b;}
 function cleanEqBonus(a){const mx=[10,84,84,84,84];if(!Array.isArray(a))return[0,0,0,0,0];return mx.map((m,i)=>Math.max(0,Math.min(m,Math.floor(+a[i])||0)));}
 function applyEq(p,b){if(!p||!b)return;if(b[0]){p.maxHp=Math.min(24,p.maxHp+b[0]);p.hp=p.maxHp;}if(b[1])p.fireDelay/=1+b[1]/100;if(b[2])p.dmg*=1+b[2]/100;if(b[3])p.speed*=1+b[3]/200;if(b[4])p.goldMul+=b[4]/100;}
 function rollRar(w){let t=0;for(const x of w)t+=x;let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<0)return i;}return 0;}
@@ -7554,7 +7557,7 @@ function renderHeroTop(){
   });
   const bo=myEqBonus(),parts=[];
   if(bo[0])parts.push('+'+fmtN(bo[0]/2)+(bo[0]>2?' cœurs':' cœur'));if(bo[1])parts.push('Tir +'+bo[1]+' %');if(bo[2])parts.push('Dégâts +'+bo[2]+' %');if(bo[3])parts.push('Vitesse +'+fmtN(bo[3]/2)+' %');if(bo[4])parts.push('Or +'+bo[4]+' %');
-  $('heroBonus').textContent=parts.length?'Tes bonus : '+parts.join(' · '):"Tu ne portes rien. Touche un équipement de ton sac pour l'équiper.";
+  $('heroBonus').textContent='Tes bonus (équipement + titre) : '+parts.join(' · ')+(save.eq.on.some(x=>x)?'':". Touche un équipement de ton sac pour l'équiper.");
 }
 function eqScore(it){return eqVal(it.s,it.r,it.l)*100+it.r*10+it.l;}
 function bestPlan(){const plan=[];for(let k=0;k<5;k++){let best=null;for(const it of save.eq.inv)if(it.s===k&&(!best||eqScore(it)>eqScore(best)))best=it;if(best&&save.eq.on[k]!==best.i){const cur=eqById(save.eq.on[k]);if(!cur||eqScore(best)>eqScore(cur))plan.push(best);}}return plan;}
