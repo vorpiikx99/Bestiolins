@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261028134128';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261028134128" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029103118';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029103118" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -695,6 +695,11 @@ html.no-anim *{animation:none!important;transition:none!important}
 .title-pill{background:#2a1f19;border:2px solid #b8862a;border-radius:20px;padding:4px 14px;font:700 15px var(--font-ui);color:#ffe9a8;cursor:pointer}
 .title-pill::after{content:" ✎";color:var(--bone-dim)}
 .card-title{font:700 15px var(--font-ui);color:#ffe9a8}
+.founder{background:linear-gradient(90deg,#ffd76a,#fff6c8,#ff9fd8,#9fe8ff,#ffd76a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:founderSh 3s linear infinite;filter:drop-shadow(0 0 6px rgba(255,210,90,.55))}
+.title-pill.founder{-webkit-background-clip:border-box;background-clip:border-box;color:#3a2200!important;border-color:#fff1a8;box-shadow:0 0 14px rgba(255,210,90,.7);filter:none}
+.title-pill.founder::after{color:#3a2200}
+@keyframes founderSh{to{background-position:300% 0}}
+@media (prefers-reduced-motion:reduce){.founder{animation:none}}
 .se-head{gap:8px}
 .se-name{margin:0;font-family:var(--font-display);font-weight:900;font-size:24px;color:var(--torch)}
 .se-tier{margin:0;font-size:16px;color:var(--bone)}
@@ -6278,7 +6283,8 @@ const GIFTS=[
   {h:'w9voy4',r:{up:['vie']}},
   {h:'cj02p6',r:{g:150,it:['?']}},
   {h:'juy6hb',r:{g:300,it:['?','?','?']}},
-  {h:'1lih7id',r:{mod:1},unlimited:true}
+  {h:'1lih7id',r:{mod:1},unlimited:true},
+  {h:'1o825de',r:{title:'fondateur'},unlimited:true}
 ];
 function normGift(s){return String(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]/g,'');}
 function bagLabel(x){return x==='?'?'Objet surprise':ITEMS[x].name;}
@@ -6293,6 +6299,8 @@ function redeemGift(){
   if(!n){setMsg('giftMsg','Tape d\'abord un code dans la case.','bad');return;}
   const i=GIFTS.findIndex(g=>g.h===fnv('cb:'+n));
   if(i<0){setMsg('giftMsg',"Ce code n'existe pas. Vérifie l'orthographe.",'bad');return;}
+  if(GIFTS[i].r.title){const id=GIFTS[i].r.title,was=!!save.titles[id];save.titles[id]=1;save.title=id;persist();audioUnlock();sfx('chest');$('giftIn').value='';try{soPublishProfile(true);}catch(e){}
+    setMsg('giftMsg',(was?'Tu as déjà ce titre, il est remis sur ton profil. ':'Titre secret débloqué : « '+titleName(id)+' » ! ')+'Il est déjà mis sur ton profil.','ok');return;}
   if(GIFTS[i].r.mod){
     const was=save.mod;save.mod=true;persist();audioUnlock();sfx('chest');$('giftIn').value='';
     setMsg('giftMsg',(was?'Le mod menu est déjà activé. ':'Mod menu débloqué ! ')+'Lance une partie : un bouton violet « MOD » apparaît en haut, à côté de la pause.','ok');return;
@@ -6627,17 +6635,19 @@ const TITLES=[
   {id:'ami',n:'Bon copain',d:'Aie 3 amis',ok:()=>CB_SOC&&soReady&&soFriends().length>=3,sa:1},
   {id:'genereux',n:'Cœur généreux',d:"Envoie 20 fois de l'or à tes amis",ok:()=>(save.stats.goldSent|0)>=20,sa:1},
   {id:'cosmos',n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
-  {id:'saison',n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0}
+  {id:'saison',n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0},
+  {id:'fondateur',n:'✨ Le Fondateur',d:'Le créateur de Bestiolins. Personne d\'autre ne peut l\'avoir !',ok:()=>!!window.__CB_OWNER,secret:1}
 ];
+function founderFx(el,id){if(el)el.classList.toggle('founder',id==='fondateur');}
 function titleName(id){const t=TITLES.find(x=>x.id===id);return t?t.n:'';}
 function checkTitles(){let nw=null;for(const t of TITLES){if(!save.titles[t.id]&&t.ok()){save.titles[t.id]=1;if(t.id!=='debut')nw=t;}}if(nw){persist();frMsg('Nouveau titre débloqué : « '+nw.n+' » !','ok');}return nw;}
 function openTitles(){checkTitles();renderTitles();$('titleSheet').hidden=false;}
 function closeTitles(){$('titleSheet').hidden=true;}
 function renderTitles(){
   const L=$('titleList');L.textContent='';
-  for(const t of TITLES){if(t.sa&&!CB_SOC)continue;const got=!!save.titles[t.id]||t.id==='debut',on=(save.title||'debut')===t.id;
+  for(const t of [...TITLES].sort((a,b)=>(b.secret|0)-(a.secret|0))){if(t.sa&&!CB_SOC)continue;if(t.secret&&!save.titles[t.id])continue;const got=!!save.titles[t.id]||t.id==='debut',on=(save.title||'debut')===t.id;
     const row=document.createElement('div');row.className='ach'+(got?' done':' lock');
-    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=(got?'':'🔒 ')+t.n;const ds=document.createElement('span');ds.className='ds';ds.textContent=t.d;info.append(nm,ds);row.append(info);
+    const info=document.createElement('div');info.className='info';const nm=document.createElement('span');nm.className='nm';nm.textContent=(got?'':'🔒 ')+t.n;founderFx(nm,t.id);const ds=document.createElement('span');ds.className='ds';ds.textContent=t.d;info.append(nm,ds);row.append(info);
     if(on){const o=document.createElement('span');o.className='ok';o.textContent='Choisi ✓';row.append(o);}
     else if(got){const b=mkBtn('Choisir','primary',()=>{save.title=t.id;persist();sfx('coin');renderTitles();if(state==='hero')renderHeroTop();soPublishProfile(true);});b.classList.remove('sm');row.append(b);}
     L.append(row);}
@@ -6686,7 +6696,7 @@ async function initData(){
     if(window.claude&&typeof window.claude.use==='function'){
       const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
       DB=db;USER=user;
-      if(USER){MYID=await USER.id();IS_OWNER=await USER.isOwner();}
+      if(USER){MYID=await USER.id();IS_OWNER=await USER.isOwner();window.__CB_OWNER=IS_OWNER;if(IS_OWNER&&!save.titles.fondateur){save.titles.fondateur=1;persist();try{frMsg('Titre secret débloqué : « ✨ Le Fondateur » !','ok');}catch(e){}}}
     }
   }catch(e){DB=null;}
   if(state==='rank')renderRank();
@@ -7268,7 +7278,7 @@ function renderFriends(){
   $('frSetup').hidden=!setup;$('frMain').hidden=setup;$('btnNickCancel').hidden=!SOC.nick;
   if(setup){if(!$('nickIn').value)$('nickIn').value=SOC.nick;return;}
   const fav=favStarter();drawPortrait($('frMe'),fav,1.2,false,skinPal(fav,mySkinI(fav)));
-  $('frMeName').textContent=SOC.nick+(save.title&&save.title!=='debut'?' · '+titleName(save.title):'');$('frMeCode').textContent=soReady?fmtCode(SO.code):'…';
+  $('frMeName').textContent=SOC.nick+(save.title&&save.title!=='debut'?' · '+titleName(save.title):'');founderFx($('frMeName'),save.title);$('frMeCode').textContent=soReady?fmtCode(SO.code):'…';
   const net=$('frNet');
   net.textContent=!soReady?'Connexion…':(!navigator.onLine||soNet==='off')?"Pas de connexion internet : ta liste d'amis n'est peut-être pas à jour.":'';
   net.hidden=!net.textContent;
@@ -7319,7 +7329,7 @@ function renderCard(){
   const me=cardPk==='me',c=me?{p:cleanCard(myCard()),at:Date.now()/1000}:cardOf(cardPk),p=c&&c.p;
   $('cardTitle').textContent=me?'Ma fiche':'Fiche du joueur';
   const st=p?p.st:'braisot';drawPortrait($('cardCv'),st,1.2,!p,p?skinPal(st,p.sk):null);
-  $('cardName').textContent=me?SOC.nick:nameOf(cardPk);$('cardTitle2').textContent=p&&p.t?'« '+titleName(p.t)+' »':'';
+  $('cardName').textContent=me?SOC.nick:nameOf(cardPk);$('cardTitle2').textContent=p&&p.t?'« '+titleName(p.t)+' »':'';founderFx($('cardTitle2'),p&&p.t);
   const rel=me?'me':relOf(cardPk);
   $('cardSub').textContent=me?('Code ami : '+(soReady?fmtCode(SO.code):'…')):!p?'Chargement de la fiche…':(rel==='friend'?'Ton ami · ':'')+seenTxt(c.at);
   const g=$('cardStats');g.textContent='';
@@ -7531,7 +7541,7 @@ function heroStep(d){const L=heroList();let i=L.indexOf(heroSid);i=(i+d+L.length
 function setEqTab(t){eqTab=t;fuseSel=[];eqArm='';$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
 function renderHero(){renderHeroTop();renderEqGrid();}
 function renderHeroTop(){
-  $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);{const ev=evoOf(heroSid),pn=(save.stats['pl_'+heroSid])|0;$('heroName').textContent=STARTERS[heroSid].name+' '+'★'.repeat(ev+1);$('heroEvo').textContent=EVO_N[ev]+(ev<2?' · joue encore '+(EVO_AT[ev+1]-pn)+(EVO_AT[ev+1]-pn>1?' parties':' partie')+' avec lui pour qu\'il devienne '+EVO_N[ev+1]+' (plus grand et plus fort)':' · évolution maximum : plus grand, plus fort et brillant !');}$('heroTitle').textContent='Titre : '+(titleName(save.title)||'Petit débutant');
+  $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);{const ev=evoOf(heroSid),pn=(save.stats['pl_'+heroSid])|0;$('heroName').textContent=STARTERS[heroSid].name+' '+'★'.repeat(ev+1);$('heroEvo').textContent=EVO_N[ev]+(ev<2?' · joue encore '+(EVO_AT[ev+1]-pn)+(EVO_AT[ev+1]-pn>1?' parties':' partie')+' avec lui pour qu\'il devienne '+EVO_N[ev+1]+' (plus grand et plus fort)':' · évolution maximum : plus grand, plus fort et brillant !');}$('heroTitle').textContent='Titre : '+(titleName(save.title)||'Petit débutant');founderFx($('heroTitle'),save.title);
   const box=$('heroSlots');box.textContent='';
   EQ_SLOTS.forEach((S,k)=>{
     const it=eqById(save.eq.on[k]),b=document.createElement('button');b.type='button';b.className='hslot'+(it?' full':'')+(eqFilterS===k?' pick':'');
