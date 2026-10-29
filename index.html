@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029112039';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029112039" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029112421';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029112421" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -111,6 +111,15 @@ body.hud-ov #modBtn{top:calc(env(safe-area-inset-top,0px) + 4px);height:40px;rig
 .panel{margin:auto;width:100%;max-width:540px;display:flex;flex-direction:column;gap:18px;box-sizing:border-box;min-width:0}
 .slab{background:var(--stone);border:2px solid var(--stone-edge);border-radius:6px;padding:20px;box-shadow:inset 0 2px 0 rgba(255,255,255,.05),0 12px 34px rgba(0,0,0,.55)}
 .eyebrow{margin:0;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-dim);font-weight:700}
+.splash-css{}
+#splash{position:fixed;inset:0;z-index:60;background:radial-gradient(circle at 50% 42%,#3a2a20,#120c08 70%);display:flex;align-items:center;justify-content:center;transition:opacity .45s}
+#splash.out{opacity:0;pointer-events:none}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(320px,80vw);text-align:center}
+.sp-logo{margin:0;font-family:var(--font-display);font-weight:900;font-size:clamp(46px,13vw,80px);line-height:1;color:var(--torch);text-shadow:0 0 22px rgba(242,162,58,.42),0 3px 0 #5a2f0c}
+#spCv{width:160px;height:160px}
+.sp-bar{width:100%;height:14px;border-radius:8px;background:#2a1d15;border:2px solid #5a3f2c;overflow:hidden}
+.sp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0a24a,#ffd36a);border-radius:6px;transition:width .5s ease}
+.sp-txt{margin:2px 0 0;min-height:2.6em;font:600 16px var(--font-ui);color:#e8d6bc}
 .logo{font-family:var(--font-display);font-weight:900;font-size:clamp(54px,15vw,120px);line-height:.86;color:var(--torch);margin:-6px 0 0;text-shadow:0 0 22px rgba(242,162,58,.42),0 3px 0 #5a2f0c;letter-spacing:-.005em;overflow-wrap:anywhere}
 .lede{font-size:19px;max-width:30ch;margin:0;color:var(--bone)}
 h2{font-family:var(--font-display);font-weight:900;font-size:42px;line-height:1;color:var(--torch);margin:0;text-wrap:balance}
@@ -994,6 +1003,7 @@ html.big-text #toast .t1{font-size:1.1em}
 
 <div id="probe" aria-hidden="true"></div>
 
+<div id="splash"><div class="sp-in"><p class="sp-logo">Bestiolins</p><canvas id="spCv" width="320" height="320"></canvas><div class="sp-bar"><i id="spBar"></i></div><p class="sp-txt" id="spTxt">Chargement du jeu…</p></div></div>
 <section id="scrTitle" class="screen">
   <div class="panel title-panel">
    <div class="title-top">
@@ -5880,7 +5890,7 @@ function goTitle(){
   $('achCount').textContent=Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length+'/'+ACHS.length;
   $('dailyTag').textContent=save.dailyDone===dateKey()?'✓':'';
   {const ready=save.giftDay!==dateKey();$('giftDayBadge').hidden=!ready;$('btnGiftDay').classList.toggle('glow',ready);}
-  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();closeHallo();checkTitles();if(!EV&&!NET){const pe=pendingEvo();if(pe)setTimeout(()=>{if(state==='title'&&!EV)playEvo(pe[0],pe[1],pe[2],()=>{});},700);}updFrBadge();if(soInvite)setTimeout(showInvite,400);
+  closeMenu(true);closeEqSheet();closeGiftSheet();closeLoot();closeTitles();closeHallo();checkTitles();if(!EV&&!NET){const pe=pendingEvo();if(pe){const go=()=>{if(!$('splash').hidden){setTimeout(go,400);return;}if(state==='title'&&!EV)playEvo(pe[0],pe[1],pe[2],()=>{});};setTimeout(go,700);}}updFrBadge();if(soInvite)setTimeout(showInvite,400);
   {const hb=$('halloFab');hb.hidden=!HALLO;if(HALLO){$('halloFabN').textContent=save.candy|0;drawPumpkinIc($('halloFabCv'));}else closeHallo();
     document.documentElement.classList.toggle('hallo',HALLO);}
   $('tourTag').textContent=isWeekend()?'ouvert !':'samedi';$('btnTourney').classList.toggle('glow',isWeekend());checkTourney();
@@ -7278,11 +7288,32 @@ async function checkUpdate(){
 function updSafe(){return state!=='play'&&!EV&&!NET&&!CO&&$('chestOpen').hidden;}
 let updBusy=false;
 function autoUpd(){if(!NEWVER||updBusy)return;if(!updSafe())return;try{const k='cb-upd-try',t=JSON.parse(localStorage.getItem(k)||'{}');if(t.v===NEWVER&&Date.now()-t.t<15*60*1000)return;localStorage.setItem(k,JSON.stringify({v:NEWVER,t:Date.now()}));}catch(e){}updBusy=true;try{persist();}catch(e){}try{toast('Nouvelle version !','Le jeu se met à jour tout seul…');}catch(e){}setTimeout(forceUpdate,900);}
+/* loading screen at launch: the update check happens here */
+const spWait=ms=>new Promise(r=>setTimeout(r,ms));
+async function runSplash(){
+  const sp=$('splash');if(!sp)return;if(window.CB_NOSPLASH){sp.hidden=true;return;}const t0=performance.now();let raf=0,alive=true;
+  let sid='braisot',ev=0;try{sid=favStarter();ev=evoOf(sid);}catch(e){}
+  const cv=$('spCv'),loop=now=>{if(!alive)return;const t=now/1000,c=cv.getContext('2d'),n=cv.width,hop=Math.abs(Math.sin(t*3.2));c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,n,n);
+    c.save();c.translate(n/2,n*0.8);c.beginPath();c.ellipse(0,0,n*0.2*(1-hop*0.3),n*0.05,0,0,TAU);c.fillStyle='rgba(0,0,0,0.35)';c.fill();c.restore();
+    c.save();c.translate(n/2,n*0.6-hop*n*0.16);const sq=1+(1-hop)*0.06;c.scale(1/sq,sq);try{drawSpecies(c,sid,n*0.19*EVO_SC[ev],t,{lx:0,ly:0.3,pal:skinPal(sid,mySkinI(sid)),evo:ev});}catch(e){}c.restore();raf=requestAnimationFrame(loop);};
+  raf=requestAnimationFrame(loop);
+  const set=(p,t)=>{$('spBar').style.width=p+'%';if(t!=null)$('spTxt').textContent=t;};
+  set(30,'Chargement du jeu…');await spWait(600);
+  if(CB_SA){
+    if(!navigator.onLine){set(90,"Pas d'Internet : tu joues avec ta version actuelle.");await spWait(1100);}
+    else{set(60,'Recherche de mises à jour…');await Promise.race([checkUpdate(),spWait(5000)]);
+      if(updBusy){set(100,'Nouvelle version trouvée ! Installation…');return;}
+      set(100,NEWVER?'Une nouvelle version est prête (bouton dans les Paramètres).':'Ton jeu est à jour !');await spWait(700);}
+  }else{set(100,'Prêt !');await spWait(350);}
+  const left=1500-(performance.now()-t0);if(left>0)await spWait(left);
+  sp.classList.add('out');setTimeout(()=>{alive=false;cancelAnimationFrame(raf);sp.hidden=true;},460);
+}
 function syncVer(){if(!CB_SA)return;$('updBox').hidden=false;$('verTxt').textContent='Ta version : '+verLabel(window.CB_VER)+(NEWVER?'. Une nouvelle version est prête !':". C'est la plus récente que je connais.");}
 $('btnUpdate').addEventListener('click',forceUpdate);
+setTimeout(runSplash,0);
 $('updBar').addEventListener('click',forceUpdate);
 if(CB_SA){try{if(/[?&]u=/.test(location.search))history.replaceState(null,'',location.pathname);}catch(e){}
-  setTimeout(checkUpdate,1500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate();});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate();});
   setInterval(()=>{if(NEWVER)autoUpd();},2000);setInterval(checkUpdate,10*60*1000);}
 $('helpBack').addEventListener('click',goTitle);
 let quitArmed=false,quitTimer=null;
