@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029112421';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029112421" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029114549';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029114549" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -865,6 +865,39 @@ html.big-text #toast .t1{font-size:1.1em}
 .co-rar{margin:0;font:800 18px var(--font-ui);letter-spacing:.1em;text-transform:uppercase}
 .co-name{margin:6px 0 0;font:900 34px var(--font-display);color:#fff3dc}
 .co-hint{margin:16px 0 0;font-size:15px;color:#a8957d}
+/* creature pick: a carousel you slide left and right */
+#starters.car{display:flex;flex-direction:row;flex-wrap:nowrap;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:8px 9% 12px;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+#starters.car::-webkit-scrollbar{display:none}
+#starters.car .starter{flex:0 0 82%;max-width:460px;scroll-snap-align:center;scroll-snap-stop:always;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:16px 14px 18px;min-width:0;transition:transform .18s ease-out,opacity .18s ease-out,border-color .2s;will-change:transform;transform-origin:50% 50%}
+#starters.car .starter.cur{border-color:var(--torch);box-shadow:0 0 18px rgba(242,162,58,.25),0 4px 0 #1a120d}
+#starters.car .starter canvas{width:min(190px,48vw);height:min(190px,48vw)}
+#starters.car .starter .info{align-items:center;gap:6px;width:100%}
+#starters.car .starter .nm{font-size:36px}
+#starters.car .starter .ds{font-size:15px;display:block;overflow:visible;-webkit-line-clamp:unset}
+#starters.car .starter .stats{font-size:13px;gap:3px 10px;margin:2px auto 0}
+#starters.car .starter .btn.buy,#starters.car .starter .ptag{align-self:center}
+.car-play{margin-top:6px;align-self:center;padding:8px 22px;border-radius:999px;background:var(--torch);color:#24150a;font:800 17px var(--font-ui);box-shadow:0 3px 0 #8a4f12}
+.car-wrap{position:relative;margin:0 -6px}
+.car-arr{position:absolute;top:calc(50% - 26px);z-index:2;width:48px;height:48px;border-radius:50%;border:2px solid var(--stone-edge);background:rgba(30,21,15,.9);color:var(--bone);font:900 28px var(--font-ui);line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 0 3px}
+.car-arr.l{left:0}.car-arr.r{right:0}
+.car-arr:disabled{opacity:.25;cursor:default}
+.car-nav{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:2px}
+.car-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:320px}
+.car-dots i{width:8px;height:8px;border-radius:50%;background:#5a3f2c;transition:transform .2s,background .2s;cursor:pointer}
+.car-dots i.on{background:var(--torch);transform:scale(1.35)}
+.car-n{font:700 14px var(--font-ui);color:var(--bone-dim)}
+@media (max-height:520px){
+  #starters.car .starter{flex-basis:min(600px,74%);flex-direction:row;text-align:left;align-items:center;gap:14px;padding:10px 14px}
+  #starters.car .starter canvas{width:min(130px,32vh);height:min(130px,32vh)}
+  #starters.car .starter .info{align-items:flex-start;gap:3px}
+  #starters.car .starter .nm{font-size:26px}
+  #starters.car .starter .ds{font-size:13px}
+  #starters.car .starter .stats{margin:0;font-size:11px;gap:1px 8px}
+  #starters.car .starter .btn.buy,#starters.car .starter .ptag,.car-play{align-self:flex-start}
+  .car-play{padding:5px 16px;font-size:15px;margin-top:3px}
+  .car-arr{width:40px;height:40px;top:calc(50% - 22px)}
+  .car-nav{flex-direction:row;gap:10px}
+}
 </style>
 </head>
 <body>
@@ -1152,7 +1185,7 @@ html.big-text #toast .t1{font-size:1.1em}
 <section id="scrPick" class="screen" hidden>
   <div class="panel">
     <div class="hdr"><button class="back" id="pickBack" type="button">← Retour</button>
-    <h2>Choisis ta créature</h2><p class="swipehint" id="swipeHint" hidden>Glisse les cartes pour voir toutes les créatures →</p></div>
+    <h2>Choisis ta créature</h2><p class="swipehint" id="swipeHint" hidden>Glisse vers la gauche ou la droite pour voir toutes les créatures</p></div>
     <p class="sub" id="pickSub">Touche une créature pour commencer la partie.</p>
     <div class="diffbox" id="diffBox">
       <span class="small-h">Difficulté</span>
@@ -1164,7 +1197,8 @@ html.big-text #toast .t1{font-size:1.1em}
       </div>
       <p class="ds" id="diffDesc"></p>
     </div>
-    <div class="starters" id="starters"></div>
+    <div class="car-wrap"><button class="car-arr l" id="carL" type="button" aria-label="Créature précédente">‹</button><div class="starters car" id="starters"></div><button class="car-arr r" id="carR" type="button" aria-label="Créature suivante">›</button></div>
+    <div class="car-nav"><div class="car-dots" id="carDots"></div><span class="car-n" id="carN"></span></div>
   </div>
 </section>
 
@@ -7034,12 +7068,12 @@ function renderDiff(){
 function setDiff(i){save.diff=clamp(i|0,0,3);persist();audioUnlock();sfx('coin');renderDiff();}
 function buildStarters(){
   setTimeout(renderDiff,0);
-  const box=$('starters');box.textContent='';
+  const box=$('starters'),kc=box.children[carCur],keep=kc&&kc.id?kc.id.slice(3):null;box.textContent='';
   for(const id of Object.keys(STARTERS)){
     const st=STARTERS[id];
     if(!starterOpen(id)){
       const d=document.createElement('div');d.className='starter locked';d.id='st-'+id;
-      const cv=document.createElement('canvas');cv.width=cv.height=Math.round(88*dpr);cv.dataset.id=id;cv.dataset.sil='1';d.appendChild(cv);
+      const cv=document.createElement('canvas');cv.width=cv.height=Math.round(200*dpr);cv.dataset.id=id;cv.dataset.sil='1';d.appendChild(cv);
       const info=document.createElement('div');info.className='info';
       const nm=document.createElement('span');nm.className='nm';nm.textContent=st.name;
       const ds=document.createElement('span');ds.className='ds';ds.textContent=st.desc;
@@ -7052,7 +7086,7 @@ function buildStarters(){
       info.append(nm,ds,b,msg);d.appendChild(info);box.appendChild(d);continue;
     }
     const b=document.createElement('button');b.type='button';b.className='starter';b.id='st-'+id;
-    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(88*dpr);cv.dataset.id=id;b.appendChild(cv);
+    const cv=document.createElement('canvas');cv.width=cv.height=Math.round(200*dpr);cv.dataset.id=id;b.appendChild(cv);
     const info=document.createElement('div');info.className='info';
     const nm=document.createElement('span');nm.className='nm';nm.textContent=evoName(id,evoOf(id));
     const ds=document.createElement('span');ds.className='ds';ds.textContent=st.desc;
@@ -7061,14 +7095,35 @@ function buildStarters(){
       for(let i=0;i<5;i++){const p=document.createElement('i');if(i<v)p.className='on';pips.appendChild(p);}stats.append(lab,pips);}
     const ev=evoOf(id),pn=(save.stats['pl_'+id])|0,evl=document.createElement('span');evl.className='evo-l';
     evl.textContent=EVO_N[ev]+' '+'★'.repeat(ev+1)+(ev<2?' · encore '+(EVO_AT[ev+1]-pn)+(EVO_AT[ev+1]-pn>1?' parties':' partie')+' pour évoluer en '+evoName(id,ev+1):' · évolution maximum !');
-    info.append(nm,evl,ds,stats);b.appendChild(info);
+    const pl=document.createElement('span');pl.className='car-play';pl.textContent='Jouer avec '+evoName(id,ev);
+    info.append(nm,evl,ds,stats,pl);b.appendChild(info);
     b.addEventListener('click',()=>onPickStarter(id));box.appendChild(b);
   }
-  box.scrollLeft=0;requestAnimationFrame(()=>{const h=$('swipeHint');if(h)h.hidden=!(box.scrollWidth>box.clientWidth+4);});
+  carBuild(keep);
 }
+/* ---- creature carousel ---- */
+let carCur=0,carRaf=0;
+function carCards(){return [...$('starters').children];}
+function carCenter(i,smooth){const box=$('starters'),L=carCards(),c=L[Math.max(0,Math.min(L.length-1,i))];if(!c)return;const x=c.offsetLeft-(box.clientWidth-c.offsetWidth)/2;
+  if(smooth){try{box.scrollTo({left:x,behavior:'smooth'});}catch(e){box.scrollLeft=x;}}else{const sn=box.style.scrollSnapType;box.style.scrollSnapType='none';box.scrollLeft=x;void box.offsetWidth;box.style.scrollSnapType=sn;}}
+function carUpdate(){carRaf=0;const box=$('starters'),L=carCards();if(!L.length)return;const mid=box.scrollLeft+box.clientWidth/2;let best=0,bd=1e9;
+  L.forEach((c,i)=>{const cc=c.offsetLeft+c.offsetWidth/2,d=(cc-mid)/Math.max(1,c.offsetWidth+14),a=Math.min(1,Math.abs(d));if(Math.abs(d)<bd){bd=Math.abs(d);best=i;}
+    c.style.transform='scale('+(1-a*0.1).toFixed(3)+')';c.style.opacity=(1-a*0.45).toFixed(3);c.dataset.near=Math.abs(d)<1.6?'1':'';});
+  if(best!==carCur||!L[best].classList.contains('cur')){L.forEach((c,i)=>c.classList.toggle('cur',i===best));carCur=best;}
+  const dots=$('carDots').children;for(let i=0;i<dots.length;i++)dots[i].classList.toggle('on',i===carCur);
+  $('carN').textContent=(carCur+1)+' / '+L.length;$('carL').disabled=carCur<=0;$('carR').disabled=carCur>=L.length-1;}
+function carBuild(keep){const L=carCards(),d=$('carDots');d.textContent='';
+  L.forEach((c,i)=>{const e=document.createElement('i');e.addEventListener('click',()=>carCenter(i,true));d.append(e);});
+  let i=keep?L.findIndex(c=>c.id==='st-'+keep):-1;if(i<0){const f=(()=>{let lp=null;try{lp=localStorage.getItem('cb-lastpick');}catch(e){}try{return lp&&STARTERS[lp]?lp:favStarter();}catch(e){return 'braisot';}})();i=Math.max(0,L.findIndex(c=>c.id==='st-'+f));}
+  carCur=i;requestAnimationFrame(()=>{carCenter(i,false);carUpdate();});}
+$('starters').addEventListener('scroll',()=>{if(!carRaf)carRaf=requestAnimationFrame(carUpdate);},{passive:true});
+$('starters').addEventListener('click',e=>{const c=e.target.closest('.starter');if(!c)return;if(window.CB_NOSPLASH)return;const i=carCards().indexOf(c);if(i>=0&&i!==carCur){e.preventDefault();e.stopPropagation();carCenter(i,true);}},true);
+$('carL').addEventListener('click',()=>{audioUnlock();carCenter(carCur-1,true);});
+$('carR').addEventListener('click',()=>{audioUnlock();carCenter(carCur+1,true);});
+addEventListener('keydown',e=>{if(state!=='pick')return;if(e.key==='ArrowLeft'){carCenter(carCur-1,true);}else if(e.key==='ArrowRight'){carCenter(carCur+1,true);}});
+addEventListener('resize',()=>{if(state==='pick')requestAnimationFrame(()=>{carCenter(carCur,false);carUpdate();});});
 
 $('btnPlay').addEventListener('click',()=>{audioUnlock();goPick();});
-addEventListener('resize',()=>{const b=$('starters'),h=$('swipeHint');if(b&&h)h.hidden=!(b.scrollWidth>b.clientWidth+4);});
 for(let i=0;i<4;i++)$('diff-'+i).addEventListener('click',()=>setDiff(i));
 $('btnBest').addEventListener('click',()=>openBestiary('title'));
 $('pickBack').addEventListener('click',()=>{if(pickMode==='daily'||pickMode==='rush'||pickMode==='surv'||pickMode==='tourney'||pickMode==='reine'||pickMode==='hard'){pickMode=null;goTitle();}else if(pickMode){pickMode=null;openCoop(true);}else goTitle();});
@@ -8166,7 +8221,7 @@ function updateLocalP2(dt){
   if(aim){Q.lx=aim.x;Q.ly=aim.y;if(Q.cool<=0){Q.cool=Q.fireDelay*(modFor(Q,'rapid')?0.33:1);withP(Q,()=>playerFire(aim.x,aim.y));}}
   else if(moving){Q.lx=mv.x;Q.ly=mv.y;}
 }
-function onPickStarter(id){
+function onPickStarter(id){try{localStorage.setItem('cb-lastpick',id);}catch(e){}
   if(pickMode==='local1'){
     pickLocal1=id;pickMode='local2';
     const b=$('st-'+id);if(b){b.classList.add('taken');const t=document.createElement('span');t.className='ptag';t.textContent='Joueur 1';b.querySelector('.info').prepend(t);}
@@ -8854,7 +8909,7 @@ function loop(now){
       c.translate(n/2,n*0.55-Math.abs(Math.sin(titleT*2+k))*n*0.04);c.rotate(Math.sin(titleT*3+k)*0.04);drawChestOpen(c,k,0,n*0.3);}}
   if(state==='shop'){for(const cv of document.querySelectorAll('#hats canvas,#shotfx canvas'))drawCosmPrev(cv,cv.dataset.ck,+cv.dataset.ci,titleT);
     skinAnimT=(skinAnimT||0)+1;if(skinAnimT%3===0)for(const cv of document.querySelectorAll('#skins canvas')){const i=+cv.dataset.si;if(i<=0)continue;const rc=cv.getBoundingClientRect();if(rc.bottom<0||rc.top>H)continue;drawPortrait(cv,cv.dataset.sid,titleT,false,skinPal(cv.dataset.sid,i));}}
-  if(state==='pick'){for(const cv of document.querySelectorAll('.starter canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)),cv.dataset.sil==='1'?0:evoOf(cv.dataset.id));}
+  if(state==='pick'){for(const cv of document.querySelectorAll('.starter[data-near="1"] canvas'))drawPortrait(cv,cv.dataset.id,titleT,cv.dataset.sil==='1',skinPal(cv.dataset.id,mySkinI(cv.dataset.id)),cv.dataset.sil==='1'?0:evoOf(cv.dataset.id));}
   if(state==='bestiary'&&bestSel)drawPortrait($('bdCanvas'),bestSel,titleT,!save.seen[bestSel]);
   if(inGame&&run)renderGame();else renderTitle();
 }
