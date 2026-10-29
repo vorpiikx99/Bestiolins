@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029110905';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029110905" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029111335';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029111335" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -7743,16 +7743,7 @@ function drawChestIcon(cv,k){
 }
 /* the creature wearing its equipment */
 function drawHero(cv,sid){
-  const ev=evoOf(sid);drawPortrait(cv,sid,1.2,false,skinPal(sid,mySkinI(sid)),ev);
-  const c=cv.getContext('2d'),w=cv.width,h=cv.height,sp=SPECIES[sid]||STARTERS[sid],r=sp.r,k=(w*0.4)/(r*(sp.fit||1.3))*PORT_K[ev];
-  c.setTransform(1,0,0,1,0,0);c.translate(w/2,h*0.53);c.scale(k,k);
-  const put=(sl,x,y,sz,flip)=>{const it=eqById(save.eq.on[sl]);if(!it)return;c.save();c.translate(x,y);c.scale(flip?-sz:sz,sz);eqShape(c,it.s,it.r);c.restore();};
-  put(3,-r*0.42,r*0.9,r*0.3,true);put(3,r*0.42,r*0.9,r*0.3,false);
-  put(1,0,r*0.38,r*0.3);
-  put(0,0,-r*0.98,r*0.62);
-  put(2,-r*1.12,r*0.15,r*0.24);
-  put(4,r*1.1,-r*0.45,r*0.26);
-  c.setTransform(1,0,0,1,0,0);
+  drawPortrait(cv,sid,1.2,false,skinPal(sid,mySkinI(sid)),evoOf(sid));
 }
 let heroSid=null,eqTab='bag',eqFilterS=-1,fuseSel=[],eqSel=null,eqArm='',storeArm='',giftWhat=null,giftBusy=false;
 function heroList(){return SIDS.filter(starterOpen);}
