@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261029111625';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261029111625" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261029112039';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261029112039" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -7272,13 +7272,18 @@ async function forceUpdate(){
 async function checkUpdate(){
   if(!CB_SA||!navigator.onLine)return;
   try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json();
-    if(j&&typeof j.v==='string'&&/^\d{14}$/.test(j.v)&&j.v>String(window.CB_VER||'')){NEWVER=j.v;$('updBar').hidden=false;syncVer();}}catch(e){}
+    if(j&&typeof j.v==='string'&&/^\d{14}$/.test(j.v)&&j.v>String(window.CB_VER||'')){NEWVER=j.v;$('updBar').hidden=false;syncVer();autoUpd();}}catch(e){}
 }
+/* install a new version by itself, but never in the middle of a game */
+function updSafe(){return state!=='play'&&!EV&&!NET&&!CO&&$('chestOpen').hidden;}
+let updBusy=false;
+function autoUpd(){if(!NEWVER||updBusy)return;if(!updSafe())return;try{const k='cb-upd-try',t=JSON.parse(localStorage.getItem(k)||'{}');if(t.v===NEWVER&&Date.now()-t.t<15*60*1000)return;localStorage.setItem(k,JSON.stringify({v:NEWVER,t:Date.now()}));}catch(e){}updBusy=true;try{persist();}catch(e){}try{toast('Nouvelle version !','Le jeu se met à jour tout seul…');}catch(e){}setTimeout(forceUpdate,900);}
 function syncVer(){if(!CB_SA)return;$('updBox').hidden=false;$('verTxt').textContent='Ta version : '+verLabel(window.CB_VER)+(NEWVER?'. Une nouvelle version est prête !':". C'est la plus récente que je connais.");}
 $('btnUpdate').addEventListener('click',forceUpdate);
 $('updBar').addEventListener('click',forceUpdate);
 if(CB_SA){try{if(/[?&]u=/.test(location.search))history.replaceState(null,'',location.pathname);}catch(e){}
-  setTimeout(checkUpdate,1500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate();});}
+  setTimeout(checkUpdate,1500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate();});
+  setInterval(()=>{if(NEWVER)autoUpd();},2000);setInterval(checkUpdate,10*60*1000);}
 $('helpBack').addEventListener('click',goTitle);
 let quitArmed=false,quitTimer=null;
 $('btnQuit').addEventListener('click',()=>{
