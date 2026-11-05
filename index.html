@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105120605';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105120605" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105122509';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105122509" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -3647,7 +3647,7 @@ function startFloor(i){
   if(run.rush)banner('Rush des boss · '+((run.rushI|0)+1)+' sur '+RUSH.length,FL(i).name,2.2);
   else banner(floorLabel(),FL(i).name+floorTag(),2.4);
   if(!run.rush){const r0=run;setTimeout(()=>{if(run===r0&&state==='play'&&run.floor===i)maybeStory('f'+i);},900);}
-  if(i===3&&!run.rush){const a='Un passage secret ?',b="On raconte qu'un étage caché se trouve derrière un mur fissuré de l'Abîme. Pose une bombe à côté !";toast(a,b);netEv('t',a,b);}
+  if(i===3&&!run.rush){const a='Un passage secret ?',b="On raconte qu'un étage caché se trouve derrière un mur fissuré de l'Abîme. Approche-toi tout près du mur pour l'ouvrir !";toast(a,b);netEv('t',a,b);}
 }
 /* boss rush: just a quiet start room and the boss room behind the red door */
 function genRushMap(fi){
@@ -5266,6 +5266,7 @@ function updateGame(dt){
   run.enemies=run.enemies.filter(e=>!e.dead);
 
   const ps=run.room.pickups,alive=players().filter(pl=>!pl.down);
+  if(run.room.hidden&&!(NET&&NET.role==='guest'))for(const d in run.room.hidden){const dp=DOORPOS[d];if(alive.some(pl=>Math.hypot(dp.x-pl.x,dp.y-pl.y)<64)){revealSecret(d);break;}}
   for(const pt of run.room.pots||[])if(!pt.broken&&alive.some(pl=>Math.hypot(pt.x-pl.x,pt.y-pl.y)<pl.r+7))breakPot(pt);
   if(run.room.pots)run.room.pots=run.room.pots.filter(pt=>!pt.broken);
   for(let i=ps.length-1;i>=0;i--){const p=ps[i];
@@ -5333,6 +5334,7 @@ function drawDoors(pal){
     if(k==='s'){cy=RH;rot=Math.PI;}else if(k==='w'){cx=0;cy=RH/2;rot=-Math.PI/2;}else if(k==='e'){cx=RW;cy=RH/2;rot=Math.PI/2;}
     ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=1.8;ctx.lineJoin='round';
     ctx.beginPath();ctx.moveTo(-12,-WALL+3);ctx.lineTo(-5,-WALL*0.62);ctx.lineTo(-10,-WALL*0.36);ctx.lineTo(-3,-2);ctx.moveTo(7,-WALL+5);ctx.lineTo(2,-WALL*0.5);ctx.lineTo(9,-WALL*0.25);ctx.moveTo(-5,-WALL*0.62);ctx.lineTo(3,-WALL*0.7);ctx.stroke();
+    {let dm=1e9;for(const pl of players())if(!pl.down)dm=Math.min(dm,Math.hypot(pl.x-cx,pl.y-cy));const k=clamp(1-(dm-64)/170,0,1);if(k>0){ctx.globalAlpha=k*(0.6+0.35*Math.sin(performance.now()/150));ctx.strokeStyle='#ffd98a';ctx.lineWidth=1.3;ctx.stroke();ctx.globalAlpha=1;}}
     ctx.restore();
   }
   for(const k in DIRS){
@@ -6026,7 +6028,7 @@ function tipsTick(){
   if((run.gold|0)>0)tip('gold','Les pièces vont dans ton or. Dépense-le à la boutique ou dans « Améliorations » sur l\'accueil.');
   if(run.enemies.some(e=>!e.dead&&e.spawnT<=0)&&!save.tuto.dashUsed)tip('dash',isTouch?'Nouveau ! Touche le bouton « Esquive » en bas à droite : tu fais une roulade et rien ne peut te toucher pendant ce temps.':'Nouveau ! Appuie sur Maj (Shift) pour faire une roulade : rien ne peut te toucher pendant ce temps.');
   if(r.type==='boss'&&!r.cleared)tip('boss','Le boss ! Bouge sans arrêt pour esquiver ses tirs roses.');
-  if(r.hidden&&Object.keys(r.hidden).length)tip('bomb','Ce mur a une fissure… Pose une bombe juste à côté pour l\'ouvrir !');
+  if(r.hidden&&Object.keys(r.hidden).length)tip('bomb','Ce mur a une fissure… Approche-toi tout près pour ouvrir le passage secret !');
   if(P.active)tip('active','Ton pouvoir se recharge quand tu bats des monstres. Son bouton brille quand il est prêt.');
   if(r.type==='challenge'&&!r.started)tip('chal','Salle défi : reste au centre du cercle pour lancer 3 vagues de monstres.');
   if(run.pl&&!run.local&&NET)tip('chat','Le bouton bulle en bas à droite envoie un message rapide à ton ami.');
@@ -6056,7 +6058,7 @@ function goTitle(){
   rows.push(['Niveaux',"Bats des monstres pour gagner de l'XP. À chaque niveau, tu choisis une nouvelle capacité."]);
   rows.push(['Or',"Ramasse les pièces, casse les vases et ouvre les coffres. Dépense ton or dans « Améliorations »."]);
   rows.push(['Esquive',isTouch?"Touche le bouton Esquive (en bas à droite) pour faire une roulade : pendant ce temps, rien ne te touche.":"Maj (Shift) : une roulade pendant laquelle rien ne te touche."]);
-  rows.push(['Bombes',"Pose une bombe pour casser les rochers. Un mur fissuré cache une salle secrète !"]);
+  rows.push(['Bombes',"Pose une bombe pour casser les rochers. Un mur fissuré cache une salle secrète : approche-toi tout près et il s'ouvre !"]);
   rows.push(['Pouvoir',"Certains objets se déclenchent avec le bouton rond. Bats des monstres pour le recharger."]);
   rows.push(['À plusieurs',"En ligne, jusqu'à 4 joueurs, chacun sur son téléphone : entre amis, recherche automatique ou avec un code."]);
   $('titleGold').textContent=save.gold||0;$('titleGold2').textContent=save.gold||0;
@@ -6072,7 +6074,7 @@ const STORY={
   f0:{t:'Chapitre 1 · Le réveil',p:["Bonjour, petite bête ! Je suis Hulotte, la gardienne de cette crypte.","Depuis cent ans, un cœur noir bat tout au fond. Boum… boum… Chaque battement réveille les monstres.","Descends, étage après étage, et découvre d'où vient ce bruit. Je te retrouverai en chemin !"]},
   f1:{t:'Chapitre 2 · Le battement',p:["Tu entends ce boum, boum ? C'est le Cœur de la Crypte.","Plus tu descends, plus il bat fort. Ici, une créature le protège : bats-la pour continuer."]},
   f2:{t:'Chapitre 3 · La Forge',p:["Autrefois, les bestioles fabriquaient des trésors dans cette forge.","Mais le Cœur a changé le feu en monstres. Fais attention aux barils : ils explosent !"]},
-  f3:{t:'Chapitre 4 · L\'Abîme',p:["L'Abîme semble ne jamais finir…","On raconte qu'un passage secret mène à un jardin de cristal. Cherche un mur fissuré et pose une bombe à côté."]},
+  f3:{t:'Chapitre 4 · L\'Abîme',p:["L'Abîme semble ne jamais finir…","On raconte qu'un passage secret mène à un jardin de cristal. Cherche un mur fissuré qui brille et approche-toi."]},
   f4:{t:'Chapitre 5 · Le Trône',p:["Voici le Trône d'Ombre. Le Nécroroi garde la dernière porte.","Avant, c'était le gentil roi des bestioles. Le Cœur l'a changé en pierre… Libère-le !"]},
   f5:{t:'Chapitre secret · Le Jardin de Cristal',p:["Tu as trouvé le Jardin de Cristal ! Bravo, peu de bestioles arrivent jusqu'ici.","Prismagor est fait du même cristal que le Cœur. Bats-le, et un nouvel ami te rejoindra."]},
   roi:{t:'Chapitre 6 · Le roi libéré',p:["Le Nécroroi redevient un vieux roi tout gentil. Il te remercie !","Il te montre un portail rouge : derrière, il y a le Cœur lui-même. Tu peux y aller… si tu es prêt."]},
