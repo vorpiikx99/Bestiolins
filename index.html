@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105154440';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105154440" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105155914';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105155914" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1318,6 +1318,7 @@ html body .fz-btns .btn{min-height:40px}
     <li><span class="ni">⚒️</span><span><b>Fusion</b> : tu choisis toi-même les 3 équipements à fusionner, et ce que tu veux obtenir.</span></li>
     <li><span class="ni">🏆</span><span><b>Classement en ligne</b> : tout le monde, le défi du jour et tes amis. Chaque lundi, le <b>top 3 de la semaine</b> gagne un titre et de l'or !</span></li>
     <li><span class="ni">🎁</span><span><b>Butin de fin de partie</b> : un coffre s'ouvre avec des équipements. Plus tu vas loin, plus ils sont rares.</span></li>
+    <li><span class="ni">💀</span><span><b>Toutes les difficultés sont plus dures</b> : monstres plus costauds et plus rapides, boss plus longs à battre. En Difficile et Extrême, il y a moins de cœurs à ramasser !</span></li>
     <li><span class="ni">💰</span><span><b>L'or est plus rare</b> et les améliorations plus chères : chaque pièce compte ! Les quêtes rapportent un peu moins, et le Hardcore donne maintenant l'or ×2.</span></li>
     <li><span class="ni">⭐</span><span>Les <b>salles secrètes</b> s'ouvrent quand tu t'approches du mur fissuré. Plus besoin de bombe !</span></li>
     <li><span class="ni">🔥</span><span>À haut niveau, tes tirs <b>n'éblouissent plus</b> l'écran.</span></li>
@@ -2043,10 +2044,10 @@ const STARTERS={
 const starterOpen=id=>!STARTERS[id].price||!!(save.unlocked&&save.unlocked[id]);
 
 const DIFF=[
-  {name:'Facile',hp:0.65,spd:0.9,shot:0.85,extra:-1,gold:0.8,score:0.6,hurt:1,boss:0.9,bossT:0,eliteT:0,desc:"Les monstres ont moins de vie et tirent moins vite, et tu as un cœur de plus. Parfait pour apprendre."},
-  {name:'Normal',hp:1,spd:1,shot:1,extra:0,gold:1,score:1,hurt:1,boss:1,bossT:16,eliteT:5,desc:'Le jeu comme prévu.'},
-  {name:'Difficile',hp:1.75,spd:1.12,shot:1.22,extra:1,gold:1.2,score:1.5,hurt:1.5,boss:1.25,bossT:32,eliteT:10,desc:"Monstres plus costauds, plus rapides et plus nombreux. Les boss attaquent plus vite, et chaque coup enlève un cœur entier. Tu gagnes 20 % d'or en plus !"},
-  {name:'Extrême',hp:2.4,spd:1.2,shot:1.32,extra:2,gold:1.4,score:2,hurt:2,boss:1.4,bossT:48,eliteT:15,desc:"Pour les experts seulement : monstres énormes, tirs très rapides, boss déchaînés et coups qui font très mal. 40 % d'or en plus !"}
+  {name:'Facile',hp:0.72,spd:0.93,shot:0.88,extra:-1,gold:0.8,score:0.6,hurt:1,boss:0.93,bossT:6,eliteT:2,heal:1,inv:1,desc:"Les monstres ont moins de vie et tirent moins vite, et tu as un cœur de plus. Parfait pour apprendre."},
+  {name:'Normal',hp:1.2,spd:1.04,shot:1.08,extra:0,gold:1,score:1,hurt:1,boss:1.06,bossT:22,eliteT:7,heal:0.9,inv:1,desc:'Le jeu comme prévu.'},
+  {name:'Difficile',hp:2.15,spd:1.17,shot:1.3,extra:1,gold:1.2,score:1.5,hurt:2,boss:1.33,bossT:40,eliteT:13,heal:0.75,inv:0.92,desc:"Monstres plus costauds, plus rapides et plus nombreux. Les boss attaquent plus vite, chaque coup enlève un cœur entier, et tu trouves moins de cœurs. Tu gagnes 20 % d'or en plus !"},
+  {name:'Extrême',hp:3,spd:1.27,shot:1.42,extra:3,gold:1.4,score:2,hurt:2,boss:1.5,bossT:60,eliteT:20,heal:0.6,inv:0.85,desc:"Pour les experts seulement : monstres énormes et très nombreux, tirs très rapides, boss déchaînés, coups qui font très mal et très peu de cœurs. 40 % d'or en plus !"}
 ];
 function teamDps(){
   let t=0;
@@ -4380,7 +4381,7 @@ function roomCleared(){
   if(room.traps&&room.traps.length){toast('Pièges désactivés','Les pics rentrent dans le sol');netEv('t','Pièges désactivés','Les pics rentrent dans le sol');}
   if(room.mimicFight){room.mimicFight=false;}
   else if(room.type==='normal'){
-    if(Math.random()<0.26+P.luck*0.12){const p=nearestFree(RW/2,RH/2);room.pickups.push({kind:'heart',half:Math.random()<0.55,x:p.x,y:p.y});}
+    if(Math.random()<(0.26+P.luck*0.12)*(DF().heal||1)){const p=nearestFree(RW/2,RH/2);room.pickups.push({kind:'heart',half:Math.random()<0.55,x:p.x,y:p.y});}
     if(Math.random()<0.16){const p=nearestFree(RW/2+rand(-60,60),RH/2+rand(-40,40));room.pickups.push({kind:'chest',x:p.x,y:p.y+8,open:false,mimic:run.floor>=1&&!run.daily&&Math.random()<0.3});}
     if(Math.random()<0.14){const p=nearestFree(RW/2+rand(-80,80),RH/2+rand(-50,50));room.pickups.push({kind:'bomb',x:p.x,y:p.y});}
   }else if(room.type==='challenge'){
@@ -4731,7 +4732,7 @@ function breakPot(pt){
   const r=Math.random();
   if(r<0.08){const p=nearestFree(pt.x,pt.y);run.room.pickups.push({kind:'bomb',x:p.x,y:p.y});}
   else if(r<0.6)spawnCoins(pt.x,pt.y-4,randi(1,3));
-  else if(r<0.7){const p=nearestFree(pt.x,pt.y);run.room.pickups.push({kind:'heart',half:true,x:p.x,y:p.y});}
+  else if(r<0.6+0.1*(DF().heal||1)){const p=nearestFree(pt.x,pt.y);run.room.pickups.push({kind:'heart',half:true,x:p.x,y:p.y});}
 }
 function makePots(grid,type){
   const n=type==='treasure'?2:type==='normal'?(Math.random()<0.45?randi(1,3):0):0;
@@ -4767,11 +4768,11 @@ function hurtPlayer(n,sx,sy){
   if(P.dodge&&Math.random()<P.dodge){P.inv=0.45;smoke(P.x,P.y,6,'120,100,170',1);run.floats.push({x:P.x,y:P.y-24,text:'Esquive !',t:0.8,col:'#c8b6ff'});if(!P.isRemote)sfx('shield');return;}
   if(P.shield){P.shield=false;P.shieldT=[0,20,14,9][P.abil.bouclier||1];P.inv=0.6;if(!P.isRemote)sfx('shield');burst(P.x,P.y,'#9fe8ff',14,120);ringFx(P.x,P.y,36,'159,232,255',0.4);return;}
   if(P.isRemote){
-    P.hp-=n;P.inv=P.invTime;P.hurtSeq=(P.hurtSeq||0)+1;pst(P).h++;burst(P.x,P.y,'#dc4a34',8,100);
+    P.hp-=n;P.inv=P.invTime*(DF().inv||1);P.hurtSeq=(P.hurtSeq||0)+1;pst(P).h++;burst(P.x,P.y,'#dc4a34',8,100);
     if(P.hp<=0){P.hp=0;playerDown(P);}
     return;
   }
-  P.hp-=n;P.inv=P.invTime;pst(P).h++;run.bossNoHit=false;addShake(5);sfx('hurt');run.hurtFx=1;run.freeze=0.06;ringFx(P.x,P.y,34,'220,74,52',0.3);
+  P.hp-=n;P.inv=P.invTime*(DF().inv||1);pst(P).h++;run.bossNoHit=false;addShake(5);sfx('hurt');run.hurtFx=1;run.freeze=0.06;ringFx(P.x,P.y,34,'220,74,52',0.3);
   const dx=P.x-sx,dy=P.y-sy,d=Math.hypot(dx,dy)||1;P.kx=dx/d*220;P.ky=dy/d*220;
   burst(P.x,P.y,'#dc4a34',10,120);
   if(P.hp<=0){P.hp=0;playerDown(P);}
@@ -4899,7 +4900,7 @@ function killEnemy(e,credit){
     if(id)run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});else{const h=nearestFree(e.x+26,e.y);run.room.pickups.push({kind:'heart',half:false,x:h.x,y:h.y});}
     ringFx(e.x,e.y,e.r*5,'245,197,66',0.8);}
   if(e.id==='duplasme'){for(const s of[-1,1]){const m=makeEnemy('gloupinet',clamp(e.x+s*10,8,RW-8),e.y);m.spawnT=0;m.vx=s*120;run.enemies.push(m);}}
-  if(!e.boss&&Math.random()<0.04+P.luck*0.03){const p=nearestFree(e.x,e.y);run.room.pickups.push({kind:'heart',half:true,x:p.x,y:p.y});}
+  if(!e.boss&&Math.random()<(0.04+P.luck*0.03)*(DF().heal||1)){const p=nearestFree(e.x,e.y);run.room.pickups.push({kind:'heart',half:true,x:p.x,y:p.y});}
   if(e.boss){addShake(10);for(const o of run.enemies)if(o!==e&&!o.dead)killEnemy(o,false);onBossKilled(e);}
 }
 
