@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105142722';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105142722" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105143716';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105143716" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -2232,7 +2232,9 @@ const UPGRADES=[
   {id:'aimant',name:'Aimant à or',max:4,max0:2,base:25,desc:'Les pièces viennent à toi de plus loin.',icon:['c','magnet'],apply:(p,l)=>{p.magnet+=35*l;}}
 ];
 const upCost0=(u,lv)=>lv<(u.max0||u.max)?Math.round(u.base*(1+lv*0.9)):Math.round(u.base*(1+u.max0*0.9)*Math.pow(1.6,lv-u.max0+1));
-const UP_K=1.6,upCost=(u,lv)=>Math.round(upCost0(u,lv)*UP_K);
+/* each level costs a lot more than the one before: one full Extrême run buys about 3 levels of one upgrade */
+const UP_K=3,UP_G=1.35,UP_M=1.3,upRaw=(u,n)=>u.base*UP_K*(1+n*1.1)*Math.pow(UP_G,n);
+const upCost=(u,lv)=>{const m0=u.max0||u.max;return Math.round(lv<m0?upRaw(u,lv):upRaw(u,m0-1)*Math.pow(UP_M,lv-m0+1));};
 
 const FLOORS=[
   {name:'Les Caves',pool:{gloupin:4,chauvelin:3,petouille:2},boss:'gloupitan',
@@ -6839,7 +6841,7 @@ function redeemGift(){
   const r=GIFTS[i].r,got=[];
   if(r.g){save.gold=(save.gold||0)+r.g;got.push('+'+r.g+' or');}
   for(const id of r.up||[]){const u=UPGRADES.find(x=>x.id===id);if(!u)continue;const lv=Math.min(u.max,save.up[id]||0);
-    if(lv<u.max){save.up[id]=lv+1;got.push('« '+u.name+' » niveau '+(lv+1));}else{const c=upCost(u,u.max-1);save.gold+=c;got.push('+'+c+' or (« '+u.name+' » est déjà au maximum)');}}
+    if(lv<u.max){save.up[id]=lv+1;got.push('« '+u.name+' » niveau '+(lv+1));}else{const c=Math.min(300,upCost(u,u.max-1));save.gold+=c;got.push('+'+c+' or (« '+u.name+' » est déjà au maximum)');}}
   let surprise=0;
   for(const it of r.it||[])if(save.bag.length<12){save.bag.push(it);if(it==='?')surprise++;else got.push('l\'objet « '+ITEMS[it].name+' »');}
   if(surprise)got.push(surprise>1?surprise+' objets surprise':'1 objet surprise');
