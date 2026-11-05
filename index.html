@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105133355';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105133355" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105134711';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105134711" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -230,6 +230,9 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .actions.small .btn{font-size:16px;min-height:44px;padding:6px 14px}
 .ovscore{margin:-6px 0 0;font-family:var(--font-display);font-weight:900;font-size:26px;color:#f5c542}
 .ovdaily{margin:0;font-size:16px;color:#c6f08a}
+.rk-win{display:flex;flex-direction:column;gap:6px;padding:14px 16px}
+.rk-win .small-h{margin:0}
+.rk-w{margin:0;font-size:18px;font-weight:700}
 #ovLoot{margin:4px 0;padding:10px 12px;border:2px solid var(--stone-edge);border-radius:10px;background:rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;gap:8px}
 #ovLoot[hidden]{display:none}
 #ovLoot .ol-h{margin:0;font-family:var(--font-display);font-weight:900;font-size:22px;color:var(--torch)}
@@ -1702,10 +1705,12 @@ html body .rank:nth-child(3) .pos{color:#e0965a}
   <div class="panel">
     <div class="hdr"><button class="back" id="rankBack" type="button">← Retour</button><h2>Classement</h2></div>
     <div class="tabs" role="tablist">
-      <button class="tab on" id="tabAll" type="button" role="tab" aria-selected="true">Meilleurs scores</button>
-      <button class="tab" id="tabDay" type="button" role="tab" aria-selected="false">Défi du jour</button>
-      <button class="tab" id="tabFr" type="button" role="tab" aria-selected="false" hidden>Mes amis</button>
+      <button class="tab" id="tabWk" type="button" role="tab" aria-selected="false" hidden>Semaine</button>
+      <button class="tab on" id="tabAll" type="button" role="tab" aria-selected="true">Record</button>
+      <button class="tab" id="tabDay" type="button" role="tab" aria-selected="false">Défi</button>
+      <button class="tab" id="tabFr" type="button" role="tab" aria-selected="false" hidden>Amis</button>
     </div>
+    <div class="slab rk-win" id="rankWin" hidden></div>
     <div class="ranklist" id="rankList"></div>
     <p class="coop-note" id="rankNote"></p>
     <button class="btn" id="rankNick" type="button" hidden>Choisir mon pseudo pour apparaître</button>
@@ -2331,7 +2336,7 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq),upPaid:(s.upPaid!=null&&Number.isFinite(+s.upPaid))?Math.max(0,Math.round(+s.upPaid)):null};}catch(e){}
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq),rk:(s.rk&&typeof s.rk==='object'&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.w||''))?{w:s.rk.w,s:Math.max(0,Math.min(1e8,+s.rk.s|0)),lw:(s.rk.lw&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.lw.w||''))?{w:s.rk.lw.w,s:Math.max(0,Math.min(1e8,+s.rk.lw.s|0))}:null}:null,rkAw:typeof s.rkAw==='string'?s.rkAw:'',upPaid:(s.upPaid!=null&&Number.isFinite(+s.upPaid))?Math.max(0,Math.round(+s.upPaid)):null};}catch(e){}
   return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,hardBest:0,reineDay:'',bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},evoSeen:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
@@ -6539,7 +6544,7 @@ function showOver(won,quit){
     if(!save.teamBest||reached>(save.teamBest.f|0)){save.teamBest={f:reached,m};setTimeout(soProfileSoon,500);}}
   checkAchs();
   const entry={s:score,f:reached,w:won?1:0,k:run.kills|0,lv:run.lvl|0,st:SIDS.includes(P&&P.sid)?P.sid:run.starter};
-  if(!quit&&score>0&&!rush){if(!save.myBest||save.myBest.s<score)save.myBest=entry;submitScore(entry,run.tourney?'':run.daily);}
+  if(!quit&&score>0&&!rush){rkRoll();if(score>(save.rk.s|0))save.rk.s=score;if(!save.myBest||save.myBest.s<score)save.myBest=entry;submitScore(entry,run.tourney?'':run.daily);}
   {const nb=quit?0:Math.min(run.hard?4:3,Math.max(0,rush?(run.rushBeat|0):reached-1+(won?1:0)+(run.hard?1:0)));
     if(nb>0&&!run.lootDone){run.lootDone=1;const dB=[-1,0,1,2][run.diff|0]|0,minR=won?[1,1,2,3][run.diff|0]|0:0,got=[];
       for(let i=0;i<nb;i++){let r=rollRar(lootWeights(reached-nb+i+dB));if(i===nb-1)r=Math.max(r,minR);got.push(eqGive(Math.floor(Math.random()*5),r));}
@@ -6661,7 +6666,7 @@ function buyUp(id){
 function b64uEnc(str){const by=new TextEncoder().encode(str);let bin='';for(const b of by)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function b64uDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const bin=atob(s),by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return new TextDecoder().decode(by);}
 function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
-const SAVE_EXTRA=['evoSeen','hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
+const SAVE_EXTRA=['rk','rkAw','evoSeen','hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(i<30&&save.seen[id])mask|=1<<i;});
   const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
@@ -6919,7 +6924,32 @@ const WEEKLY=[{id:'wk_k',stat:'kills',n:400,text:'Bats 400 monstres'},{id:'wk_b'
   {id:'wk_c',stat:'coopGames',n:3,text:'Finis 3 parties en ligne avec des amis'},{id:'wk_e',stat:'elites',n:6,text:'Bats 6 mini-boss'},{id:'wk_p',stat:'pots',n:80,text:'Casse 80 pots'},
   {id:'wk_sv',stat:'survWaves',n:25,text:'Tiens 25 vagues en Survie (en tout)'},{id:'wk_r',stat:'games',n:8,text:'Joue 8 parties'},{id:'wk_ch',stat:'chal',n:3,text:'Réussis 3 salles défi'}];
 const WK_GOLD=300,WK_BONUS=500;
-function weekKey(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function weekKey(off){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day-7*(off|0));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+/* weekly leaderboard: best score of the week (Monday to Sunday); the top 3 of last week get a title and gold */
+const RK_GOLD=[600,350,200],RK_TITLE=['sem1','sem2','sem3'],RK_MIN=3;
+function rkRoll(){const w=weekKey(),p=weekKey(1),r=save.rk;if(r&&r.w===w)return;
+  const lw=r&&r.w===p?{w:r.w,s:r.s|0}:(r&&r.lw&&r.lw.w===p?r.lw:null);save.rk={w,s:0,lw};}
+function rkOf(c,w){const r=c&&c.rk;if(!r)return 0;if(r.w===w)return r.s|0;if(r.lw&&r.lw.w===w)return r.lw.s|0;return 0;}
+function rkDays(w){const d=new Date(w+'T12:00:00'),e=new Date(d);e.setDate(e.getDate()+6);const f=x=>String(x.getDate()).padStart(2,'0')+'/'+String(x.getMonth()+1).padStart(2,'0');return f(d)+' au '+f(e);}
+let rkBusy=false;
+async function rkCheckAward(){
+  if(!soReady||!SOC.nick||rkBusy)return;const prev=weekKey(1);if(save.rkAw===prev)return;
+  rkBusy=true;
+  try{
+    const rows=await SO.board(30);const me=SO.pk,E=[];
+    for(const r of rows){const c=cleanCard(r.p);const v=rkOf(c,prev);if(v>0)E.push({pk:r.pk,s:v,at:r.at,n:c.n});}
+    rkRoll();if(!E.some(e=>e.pk===me)&&save.rk.lw&&save.rk.lw.w===prev&&save.rk.lw.s>0)E.push({pk:me,s:save.rk.lw.s,at:Date.now()/1000});
+    E.sort((a,b)=>b.s-a.s||a.at-b.at);
+    save.rkAw=prev;
+    const i=E.findIndex(e=>e.pk===me);
+    if(E.length>=RK_MIN&&i>=0&&i<3){
+      const id=RK_TITLE[i],g=RK_GOLD[i];save.titles[id]=1;save.gold=(save.gold||0)+g;bump('rkWins');persist();sfx('level');
+      const a=['🥇 1er','🥈 2e','🥉 3e'][i]+' de la semaine !',b='Tu gagnes le titre « '+titleName(id)+' » et '+g+' or. Bravo !';
+      toast(a,b);try{if(state==='title')banner(a,b,4);}catch(e){}try{soPublishProfile(true);}catch(e){}
+    }else persist();
+  }catch(e){}
+  rkBusy=false;
+}
 function wkStat(d){return d.stat==='games'?gamesPlayed():qStat(d);}
 function ensureWeek(){const k=weekKey();if(save.wk&&save.wk.k===k&&save.wk.m.every(id=>WEEKLY.some(w=>w.id===id)))return;
   const ids=shuffle(WEEKLY.map(w=>w.id)).slice(0,3),base={};for(const id of ids)base[id]=wkStat(WEEKLY.find(w=>w.id===id));save.wk={k,m:ids,base,got:{},bonus:0};persist();}
@@ -7093,6 +7123,9 @@ const TITLES=[
   {id:'cosmos',b:[0,0,8,0,0],n:'Enfant du cosmos',d:'Obtiens un équipement Cosmique',ok:()=>(save.stats.cosmic|0)>0},
   {id:'saison',b:[0,5,5,0,0],n:'Héros de la saison',d:'Atteins le dernier palier du passe de saison',ok:()=>(save.stats.season30|0)>0},
   {id:'hallo',b:[0,0,3,0,10],n:"Roi d'Halloween",d:"Achète-le dans la boutique d'Halloween avec des bonbons",ok:()=>!!save.titles.hallo},
+  {id:'sem1',b:[1,6,6,4,6],n:'Champion de la semaine',d:'Finis 1er du classement de la semaine',ok:()=>!!save.titles.sem1,sa:1},
+  {id:'sem2',b:[1,5,5,0,5],n:'Vice-champion',d:'Finis 2e du classement de la semaine',ok:()=>!!save.titles.sem2,sa:1},
+  {id:'sem3',b:[0,4,4,0,4],n:'Médaille de bronze',d:'Finis 3e du classement de la semaine',ok:()=>!!save.titles.sem3,sa:1},
   {id:'fondateur',b:[2,10,10,10,10],n:'Le Fondateur',d:'Le créateur de Bestiolins. Personne d\'autre ne peut l\'avoir !',ok:()=>!!window.__CB_OWNER,secret:1}
 ];
 function founderFx(el,id){if(el)el.classList.toggle('founder',id==='fondateur');}
@@ -7228,16 +7261,16 @@ async function relayTick(){
     }catch(e){}
   }
 }
-function openRank(){state='rank';clearOverlays();show('scrRank');pauseBtn.hidden=true;$('scrRank').scrollTop=0;renderRank();}
-function setRankTab(t){rankTab=t;for(const [id,k] of [['tabAll','all'],['tabDay','day'],['tabFr','fr']]){$(id).classList.toggle('on',t===k);$(id).setAttribute('aria-selected',t===k);}renderRank();}
+function openRank(){state='rank';clearOverlays();show('scrRank');pauseBtn.hidden=true;$('scrRank').scrollTop=0;if(CB_SOC&&!openRank.done){openRank.done=1;setRankTab('wk');}else renderRank();rkCheckAward();}
+function setRankTab(t){rankTab=t;for(const [id,k] of [['tabWk','wk'],['tabAll','all'],['tabDay','day'],['tabFr','fr']]){$(id).classList.toggle('on',t===k);$(id).setAttribute('aria-selected',t===k);}renderRank();}
 let rankSeq=0;
 async function renderRank(){
   const list=$('rankList'),note=$('rankNote'),seq=++rankSeq;
   const msg=t=>{list.textContent='';const p=document.createElement('p');p.className='coop-empty';p.textContent=t;list.appendChild(p);};
   note.textContent=rankTab==='day'?'Défi du '+dateKey().split('-').reverse().join('/')+' : le même donjon pour tout le monde.':'Ton meilleur score est envoyé à la fin de chaque partie.';
-  $('tabFr').hidden=!CB_SOC;$('rankNick').hidden=true;
+  $('tabFr').hidden=!CB_SOC;$('tabWk').hidden=!CB_SOC;$('rankNick').hidden=true;$('rankWin').hidden=true;
   if(!DB&&CB_SOC){renderRankSoc(seq,msg);return;}
-  if(rankTab==='fr'){rankTab='all';setRankTab('all');return;}
+  if(rankTab==='fr'||rankTab==='wk'){rankTab='all';setRankTab('all');return;}
   if(!DB){msg(window.claude&&window.claude.use?'Connexion au classement…':"Le classement marche dans l'appli Claude, quand tu es connecté à ton compte.");
     if(!window.claude||!window.claude.use)return;setTimeout(()=>{if(state==='rank'&&seq===rankSeq&&!DB)msg(CB_SA?"Le classement n'existe que dans la version Claude du jeu.":"Le classement n'est pas disponible ici : il faut être connecté à un compte Claude.");},6000);return;}
   msg('Chargement…');
@@ -7270,7 +7303,7 @@ function rankRow(e,i,me){
   const cv=document.createElement('canvas');cv.width=cv.height=Math.round(40*dpr);drawPortrait(cv,STARTERS[e.st]?e.st:'braisot',1.2,false);
   const info=document.createElement('div');info.className='info';
   const nm=document.createElement('span');nm.className='nm';nm.textContent=(me?'Toi':(e.n||'Joueur'))+(e.w?' 👑':'');
-  const ds=document.createElement('span');ds.className='ds';ds.textContent=e.f!=null?('Étage '+(e.f|0)+' · '+(e.k|0)+' monstres · niv. '+(e.lv|0)):(STARTERS[e.st]?STARTERS[e.st].name:'');
+  const ds=document.createElement('span');ds.className='ds';ds.textContent=(e.t&&/^sem[123]$/.test(e.t))?titleName(e.t):e.f!=null?('Étage '+(e.f|0)+' · '+(e.k|0)+' monstres · niv. '+(e.lv|0)):(STARTERS[e.st]?STARTERS[e.st].name:'');
   info.append(nm,ds);
   const pts=document.createElement('span');pts.className='pts';pts.textContent=String(e.s|0);
   row.append(pos,cv,info,pts);return row;
@@ -7280,25 +7313,32 @@ async function renderRankSoc(seq,msg){
   if(!soReady){msg('Connexion au classement…');setTimeout(()=>{if(state==='rank'&&seq===rankSeq){if(soReady)renderRank();else msg("Pas de connexion : le classement en ligne n'est pas disponible pour l'instant. Vérifie ton Internet et réessaie.");}},5000);return;}
   msg('Chargement…');
   let rows=[];
-  try{rows=tab==='fr'?await SO.profiles([...soFriends(),SO.pk]):await SO.board(tab==='day'?2:120);}
+  try{rows=tab==='fr'?await SO.profiles([...soFriends(),SO.pk]):await SO.board(tab==='day'?2:tab==='wk'?16:120);}
   catch(e){if(seq===rankSeq)msg("Impossible de charger le classement pour l'instant. Vérifie ton Internet et réessaie.");return;}
   if(seq!==rankSeq)return;
-  const me=SO.pk,today=dateKey(),E=[];
+  const me=SO.pk,today=dateKey(),E=[],wk=weekKey(),pw=weekKey(1),L=[];
   for(const r of rows){const c=cleanCard(r.p);if(!c)continue;
+    if(tab==='wk'){const v=rkOf(c,wk);if(v>0)E.push({pk:r.pk,n:c.n,st:c.mb?c.mb.st:c.st,s:v,at:r.at,t:c.t});const v2=rkOf(c,pw);if(v2>0)L.push({pk:r.pk,n:c.n,s:v2,at:r.at});continue;}
     if(tab==='day'){if(!c.dd||c.dd.d!==today||!(c.dd.s>0))continue;E.push({pk:r.pk,n:c.n,st:c.mb?c.mb.st:c.st,s:c.dd.s,at:r.at});}
     else{if(!c.mb||!(c.mb.s>0))continue;E.push({pk:r.pk,n:c.n,st:c.mb.st,s:c.mb.s,f:c.mb.f,k:c.mb.k,lv:c.mb.lv,w:c.mb.w,at:r.at});}}
   /* my own score is always shown, even before it is online */
   if(!E.some(e=>e.pk===me)){
-    if(tab==='day'){const d=save.dailyBest;if(d&&d.d===today&&d.s>0)E.push({pk:me,st:(save.myBest&&save.myBest.st)||favStarter(),s:d.s|0,at:Date.now()/1000});}
+    if(tab==='wk'){rkRoll();if(save.rk.s>0)E.push({pk:me,st:(save.myBest&&save.myBest.st)||favStarter(),s:save.rk.s|0,at:Date.now()/1000});}
+    else if(tab==='day'){const d=save.dailyBest;if(d&&d.d===today&&d.s>0)E.push({pk:me,st:(save.myBest&&save.myBest.st)||favStarter(),s:d.s|0,at:Date.now()/1000});}
     else{const b=save.myBest;if(b&&b.s>0)E.push({pk:me,st:SIDS.includes(b.st)?b.st:favStarter(),s:b.s|0,f:b.f|0,k:b.k|0,lv:b.lv|0,w:b.w?1:0,at:Date.now()/1000});}}
   E.sort((a,b)=>b.s-a.s||a.at-b.at);
   list.textContent='';
-  if(!E.length){msg(tab==='day'?"Personne n'a encore joué le défi du jour. Sois le premier !":tab==='fr'?"Tes amis n'ont pas encore de score. Ajoute des amis dans « Amis » !":"Pas encore de score. Termine une partie pour apparaître ici !");}
+  if(tab==='wk'){L.sort((a,b)=>b.s-a.s||a.at-b.at);const box=$('rankWin');box.textContent='';
+    const h=document.createElement('p');h.className='small-h';h.textContent='Gagnants de la semaine dernière';box.appendChild(h);
+    if(L.length>=RK_MIN){L.slice(0,3).forEach((e,i)=>{const p=document.createElement('p');p.className='rk-w';p.textContent=['🥇','🥈','🥉'][i]+' '+(e.pk===me?'Toi':e.n)+' · '+e.s+' points';box.appendChild(p);});}
+    else{const p=document.createElement('p');p.className='coop-note';p.textContent="Pas assez de joueurs la semaine dernière (il en faut "+RK_MIN+").";box.appendChild(p);}
+    box.hidden=false;}
+  if(!E.length){msg(tab==='wk'?"Personne n'a encore joué cette semaine. Fais une partie pour prendre la 1re place !":tab==='day'?"Personne n'a encore joué le défi du jour. Sois le premier !":tab==='fr'?"Tes amis n'ont pas encore de score. Ajoute des amis dans « Amis » !":"Pas encore de score. Termine une partie pour apparaître ici !");}
   const TOP=50,mi=E.findIndex(e=>e.pk===me);
   E.slice(0,TOP).forEach((e,i)=>list.appendChild(rankRow(e,i,e.pk===me)));
   if(mi>=TOP){const sep=document.createElement('p');sep.className='coop-empty';sep.textContent='…';list.appendChild(sep);list.appendChild(rankRow(E[mi],mi,true));}
   const n=E.length;
-  note.textContent=(tab==='day'?'Défi du '+today.split('-').reverse().join('/')+' : le même donjon pour tout le monde. ':tab==='fr'?'Toi et tes amis. ':'Tous les joueurs de Bestiolins. ')+(n>1?n+' joueurs classés.':'')+(mi>=0?' Tu es '+(mi+1)+(mi===0?'er':'e')+' !':'');
+  note.textContent=(tab==='wk'?'Semaine du '+rkDays(wk)+'. Lundi, les 3 premiers gagnent un titre et de l\'or : 1er '+RK_GOLD[0]+' or, 2e '+RK_GOLD[1]+' or, 3e '+RK_GOLD[2]+' or. ':tab==='day'?'Défi du '+today.split('-').reverse().join('/')+' : le même donjon pour tout le monde. ':tab==='fr'?'Toi et tes amis. ':'Tous les joueurs de Bestiolins. ')+(n>1?n+' joueurs classés.':'')+(mi>=0?' Tu es '+(mi+1)+(mi===0?'er':'e')+' !':'');
   if(!SOC.nick){note.textContent+=" Les autres ne te voient pas encore : choisis un pseudo pour apparaître dans leur classement.";$('rankNick').hidden=false;}
 }
 let bestSel=null,bestFrom='title';
@@ -7471,6 +7511,7 @@ $('rankBack').addEventListener('click',goTitle);
 $('tabAll').addEventListener('click',()=>setRankTab('all'));
 $('tabDay').addEventListener('click',()=>setRankTab('day'));
 $('tabFr').addEventListener('click',()=>setRankTab('fr'));
+$('tabWk').addEventListener('click',()=>setRankTab('wk'));
 $('rankNick').addEventListener('click',()=>{audioUnlock();openFriends('rank');});
 $('btnDaily').addEventListener('click',()=>{audioUnlock();goPickDaily();});
 $('btnGiftDay').addEventListener('click',openDailyGift);
@@ -7717,7 +7758,7 @@ function myCard(){
   return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
     a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
     pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
-    t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0),sv:save.survBest|0,tm:save.teamBest||0,tw:save.tw?{w:save.tw.w,s:save.tw.s|0}:0};
+    t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0),sv:save.survBest|0,tm:save.teamBest||0,tw:save.tw?{w:save.tw.w,s:save.tw.s|0}:0,rk:(rkRoll(),{w:save.rk.w,s:save.rk.s|0,lw:save.rk.lw||0})};
 }
 function cleanCard(o){
   if(!o||typeof o!=='object')return null;
@@ -7726,7 +7767,7 @@ function cleanCard(o){
   const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
   const pi=Array.isArray(o.pt)?Math.floor(+o.pt[0]):-1,pt=pi>=0&&pi<PETS.length?[pi,Math.max(1,N(o.pt[1],PET_MAX))]:null;
   return{n:cleanNick(o.n)||'Joueur',st,sk:N(o.sk,SKINS[st]?SKINS[st].length:0),f:N(o.f,999),lv:N(o.lv,999),w:N(o.w,1e6),k:N(o.k,1e8),b:N(o.b,ORDER.length),a:N(o.a,ACHS.length),
-    r:N(o.r,RUSH.length),g:N(o.g,9999),dd:o.dd&&typeof o.dd==='object'&&typeof o.dd.d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dd.d)?{d:o.dd.d,s:N(o.dd.s,1e8)}:null,t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999),tw:o.tw&&typeof o.tw==='object'&&typeof o.tw.w==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.tw.w)?{w:o.tw.w,s:N(o.tw.s,1e8)}:null,sv:N(o.sv,9999),tm:o.tm&&typeof o.tm==='object'&&Array.isArray(o.tm.m)?{f:N(o.tm.f,999),m:o.tm.m.slice(0,4).map(cleanNick).filter(Boolean)}:null};
+    r:N(o.r,RUSH.length),g:N(o.g,9999),dd:o.dd&&typeof o.dd==='object'&&typeof o.dd.d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dd.d)?{d:o.dd.d,s:N(o.dd.s,1e8)}:null,t:TITLES.some(x=>x.id===o.t)?o.t:'',u:Array.isArray(o.u)?SIDS.filter(id=>o.u.includes(id)):[st],pt,mb,gp:N(o.gp,1e7),up:N(o.up,999),tw:o.tw&&typeof o.tw==='object'&&typeof o.tw.w==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.tw.w)?{w:o.tw.w,s:N(o.tw.s,1e8)}:null,sv:N(o.sv,9999),tm:o.tm&&typeof o.tm==='object'&&Array.isArray(o.tm.m)?{f:N(o.tm.f,999),m:o.tm.m.slice(0,4).map(cleanNick).filter(Boolean)}:null,rk:o.rk&&typeof o.rk==='object'&&/^\d{4}-\d{2}-\d{2}$/.test(o.rk.w||'')?{w:o.rk.w,s:N(o.rk.s,1e8),lw:o.rk.lw&&typeof o.rk.lw==='object'&&/^\d{4}-\d{2}-\d{2}$/.test(o.rk.lw.w||'')?{w:o.rk.lw.w,s:N(o.rk.lw.s,1e8)}:null}:null};
 }
 function cardOf(pk){const c=SOC.cache[pk];const p=c&&cleanCard(c.p);return p?{p,at:+c.at||0}:null;}
 function nameOf(pk){const c=cardOf(pk);if(c)return c.p.n;const r=SOC.recent.find(x=>x.pk===pk);return(r&&r.n)||'Joueur';}
@@ -7752,7 +7793,7 @@ function soStart(){
   try{SO.listen();}catch(e){}
   if(!SOC.out.length)SO.myFriendList().then(l=>{if(l&&l.length&&!SOC.out.length){SOC.out=l.filter(p=>!SOC.ign[p]);soPersist();soRefresh();}}).catch(()=>{});
   if(SOC.dirty)soPublishList().catch(()=>{});
-  soPublishProfile(true);soRefresh();
+  soPublishProfile(true);soRefresh();setTimeout(rkCheckAward,6000);
   setInterval(()=>{if(document.visibilityState==='visible'){soPublishProfile();if(state==='friends'||state==='card')soRefresh();}},120000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){soPublishProfile();soRefresh();}});
 }
