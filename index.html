@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105201732';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105201732" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105204342';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105204342" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -3403,8 +3403,10 @@ function layout(){
        hud:{x:gl+4,y:ins.t+14},map:{right:W-gr-4,top:ins.t+66,maxW:Math.max(56,Math.min(150,W-gr-(rx+totW*s)-20)),maxH:90}};
   }
   if(L.portrait){
-    const sc=stickCenter('move'),top=L.ry+L.rh+12,avail=sc.y-STICK_R-16-top;
-    if(avail>=60)L.map={center:W/2,top,maxW:Math.min(W-gl-gr-24,280),maxH:Math.min(150,avail),head:true};
+    const sc=stickCenter('move'),top=L.ry+L.rh+12,avail=sc.y-STICK_R-16-top,col=Math.round(78*save.ctl.bs)+10;
+    const mw=Math.min(W-gl-gr-24-col,280);
+    if(avail>=60)L.map={center:gl+12+mw/2,top,maxW:mw,maxH:Math.min(150,avail),head:true};
+    L.btnTop=top;
   }else if(L.overlay){
     L.map={right:Math.min(L.rx+L.rw-WALL*L.s-6,W-gr-4),top:ins.t+52,maxW:150,maxH:80,head:false,fade:true,a:0.88};
   }else{
@@ -3415,8 +3417,8 @@ function layout(){
   {const bar=$('actBar');bar.style.setProperty('--bs',save.ctl.bs);STICK_R=Math.round(52*save.ctl.js);
     const free=Object.keys(save.ctl[L.portrait?'p':'l']||{}).some(k=>k!=='joy');
     bar.classList.remove('free');for(const id of CTL_BTNS){const b=$(id);b.style.left='';b.style.top='';}
-    if(L.portrait){bar.style.right=gr+'px';bar.style.bottom=(ins.b+18)+'px';bar.style.top='';}
-    else{bar.style.right=Math.max(gr,W-(L.rx+L.rw)+WALL*L.s+6)+'px';bar.style.bottom=Math.max(ins.b+10,H-(L.ry+L.rh)+WALL*L.s+8)+'px';bar.style.top='';}
+    if(L.portrait){bar.style.right=(gr+4)+'px';bar.style.bottom='';bar.style.top=Math.round(L.btnTop||0)+'px';fitBar(true);}
+    else{bar.style.flexDirection='';bar.style.flexWrap='';bar.style.justifyContent='';bar.style.width='';bar._fit='';bar.style.right=Math.max(gr,W-(L.rx+L.rw)+WALL*L.s+6)+'px';bar.style.bottom=Math.max(ins.b+10,H-(L.ry+L.rh)+WALL*L.s+8)+'px';bar.style.top='';}
     if(free)placeFreeButtons();}
   toastEl.style.top=(L.oy+8)+'px';
   $('tip').style.top=Math.round(L.oy+RH*L.s-64)+'px';
@@ -3634,7 +3636,7 @@ canvas.addEventListener('pointerdown',e=>{
   else{
     let side=e.clientX<W/2?'move':'aim';
     if(isLocal())side=side==='move'?'move':'move2';
-    else if(side==='aim'&&save.auto)return;
+    else if(side==='aim'&&save.auto){if(L.portrait)side='move';else return;}
     const st=sticks[side];
     if(st.id!==null)return;
     st.id=e.pointerId;st.ox=e.clientX;st.oy=e.clientY;
@@ -4158,7 +4160,7 @@ function useAltar(p,pl){
   if(p.used||pl.maxHp<=2)return;
   p.used=true;run.room.evDone=true;pl.maxHp-=2;pl.hp=Math.max(1,Math.min(pl.hp,pl.maxHp));pl.inv=Math.max(pl.inv||0,1);
   const g='a'+run.room.gx+'-'+run.room.gy,ids=[run.pool.pop(),run.pool.pop()].filter(Boolean);
-  ids.forEach((id,i)=>{const q=nearestFree(p.x+(ids.length>1?(i?48:-48):0),p.y+44);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y,choice:ids.length>1?g:''});});
+  ids.forEach((id,i)=>{const q=nearestFree(p.x+(ids.length>1?(i?48:-48):0),p.y+44);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y,choice:ids.length>1?g:'',own:plBit(pl)});});
   flashFx(p.x,p.y-14,80);ringFx(p.x,p.y,90,'220,40,50',0.7);spark(p.x,p.y-12,'255,80,90',30,190,0.7);burst(pl.x,pl.y,'#dc4a34',12,110);addShake(6);sfx('hurt');sfx('item');
   const a='Cœur donné',b=ids.length>1?'Choisis un des 2 objets rares : l\'autre disparaîtra':'Prends ton objet rare';
   if(pl.isRemote){toast('Ton ami a donné un cœur',b);netEv('t',a,b,pl);netEv('t','Ton ami a donné un cœur',b,pl,1);}else{toast(a,b);netEv('t','Ton ami a donné un cœur',b);}
@@ -5554,11 +5556,12 @@ function updateGame(dt){
       if(p.kind==='fountain'){if(!p.used&&d<pl.r+18)useFountain(p,pl);continue;}
       if(p.kind==='shop')continue;
       if(p.kind==='bomb'){if(d<pl.r+9&&(pl.bombs|0)<9){pl.bombs=(pl.bombs|0)+1;ps.splice(i,1);sfx('coin');if(!pl.isRemote)run.floats.push({x:p.x,y:p.y-14,text:'+1 bombe',t:0.8,col:'#ece0c8'});break;}continue;}
-      if(p.kind==='active'){if(d<pl.r+12&&!(p.cd>run.time)&&!p.choice){ps.splice(i,1);giveActive(pl,p.id,p.x+28,p.y);break;}continue;}
+      if(p.kind==='active'){if(d<pl.r+12&&!(p.cd>run.time)&&!p.choice&&canGrab(p,pl)){if(!ownGrab(p,pl))ps.splice(i,1);giveActive(pl,p.id,p.x+28,p.y);break;}continue;}
       if(p.kind==='heart'&&d<pl.r+8&&pl.hp<pl.maxHp&&!pl.greed){pl.hp=Math.min(pl.maxHp,pl.hp+(p.half?1:2));ps.splice(i,1);sfx('heal');burst(p.x,p.y,'#dc4a34',8,80);break;}
-      else if(p.kind==='item'&&d<pl.r+12&&!p.choice){const it=ITEMS[p.id];it.apply(pl);pl.items.push(p.id);ps.splice(i,1);sfx('item');
-        if(run.local)toast(plName(pl)+' prend : '+it.name,itemDesc(p.id));
-        else if(pl.isRemote){toast('Ton ami a pris : '+it.name,it.desc);netEv('t',it.name,itemDesc(p.id),pl);netEv('t','Ton ami a pris : '+it.name,it.desc,pl,1);}else{toast(it.name,itemDesc(p.id));netEv('t','Ton ami a pris : '+it.name,it.desc);}
+      else if(p.kind==='item'&&d<pl.r+12&&!p.choice&&canGrab(p,pl)){const it=ITEMS[p.id];it.apply(pl);pl.items.push(p.id);const stay=ownGrab(p,pl);if(!stay)ps.splice(i,1);sfx('item');
+        const mate=stay?'Ton ami a pris : '+it.name:'Ton ami a pris : '+it.name,mDesc=stay?'Il y en a un pour toi aussi : va le prendre !':it.desc;
+        if(run.local)toast(plName(pl)+' prend : '+it.name,stay?'L\'autre joueur peut prendre le sien.':itemDesc(p.id));
+        else if(pl.isRemote){toast(mate,mDesc);netEv('t',it.name,itemDesc(p.id),pl);netEv('t',mate,mDesc,pl,1);}else{toast(it.name,itemDesc(p.id));netEv('t',mate,mDesc);}
         burst(p.x,p.y-14,'#f2a23a',20,120);flashFx(p.x,p.y-14,50);ringFx(p.x,p.y-10,60,'255,215,140',0.6);break;}
       else if(p.kind==='portal'&&d<18&&!run.trans&&!run.won){run.trans={t:0,half:0.6,nextFloor:true,toSecret:!p.fin,toFinal:!!p.fin,done:false};if(p.fin){const a='Le Cœur de la Crypte',b='Étage final : le Dévoreur t\'attend…';banner(a,b,2.6);netEv('b',a,b);}sfx('descend');flashFx(p.x,p.y,80);break;}
       else if(p.kind==='exit'&&d<16&&!run.trans&&!run.won){run.won=true;run.endT=1.2;banner('Victoire !','Tu sors de la crypte',2.5);sfx('item');break;}
@@ -5644,6 +5647,8 @@ function drawTorches(pal,t){
     ctx.beginPath();ctx.moveTo(x-4,y);ctx.quadraticCurveTo(x-4.5,y-8*f,x,y-13*f);ctx.quadraticCurveTo(x+4.5,y-8*f,x+4,y);ctx.closePath();ctx.fillStyle='rgb('+pal.light+')';ctx.fill();
     ctx.beginPath();ctx.moveTo(x-2,y);ctx.quadraticCurveTo(x,y-9*f,x+2,y);ctx.closePath();ctx.fillStyle='#fff3c4';ctx.fill();}
 }
+function grabbedByMe(p){return!!(run&&run.pl&&run.pl.length>1&&!run.local&&!canGrab(p,P));}
+function takenLabel(p){const mine=(p.by|0)&plBit(P),tx=mine?'Pris ✓':"À ton ami";ctx.font='700 11px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;ctx.strokeText(tx,p.x,p.y+25);ctx.fillStyle=mine?'#7ee07e':'#c9b6ff';ctx.fillText(tx,p.x,p.y+25);}
 function drawPickup(p,t,pal){
   if(p.kind==='wheel'){drawWheel(p,t);return;}
   if(p.kind==='candy'){const b=Math.sin(t*4+p.x)*1.5,cols=['#f08a2a','#a35bd8','#5bd87a'];ctx.save();ctx.translate(p.x,p.y-5+b);ctx.rotate(0.4);
@@ -5656,10 +5661,10 @@ function drawPickup(p,t,pal){
   if(p.kind==='fountain'){drawFountain(p,t);return;}
   if(p.kind==='altar'){drawAltar(p,t);return;}
   if(p.kind==='bomb'){drawShadow(p.x,p.y-2,6,0,1);drawBomb(ctx,p.x,p.y-6+Math.sin(t*4+p.x)*1.2,6.5,false);return;}
-  if(p.kind==='active'){drawPedestal(p.x,p.y);ctx.save();ctx.translate(p.x,p.y-15+Math.sin(t*3)*2.5);drawActiveIcon(ctx,p.id,9);ctx.restore();return;}
+  if(p.kind==='active'){const tk=grabbedByMe(p);drawPedestal(p.x,p.y);ctx.save();if(tk)ctx.globalAlpha=0.35;ctx.translate(p.x,p.y-15+Math.sin(t*3)*2.5);drawActiveIcon(ctx,p.id,9);ctx.restore();if(tk)takenLabel(p);return;}
   if(p.kind==='shop'){
     drawPedestal(p.x,p.y);const by=p.y-15+Math.sin(t*3+p.x)*2;
-    const mine=run.pl&&!run.local&&((p.by|0)&(run.guest?2:1));
+    const mine=run.pl&&!run.local&&((p.by|0)&plBit(P));
     ctx.save();ctx.translate(p.x,by);if(mine)ctx.globalAlpha=0.35;
     if(p.what==='heart'){heartPath(ctx,0,0,15);fs(ctx,'#dc4a34',8);}
     else if(p.what==='bomb'){drawBomb(ctx,-4,2,5.5,false);drawBomb(ctx,5,4,5.5,false);}
@@ -5713,7 +5718,7 @@ function drawPickup(p,t,pal){
     ctx.fillStyle='#8a7562';ctx.fillRect(p.x-11,p.y,22,3);
     const iy=p.y-15+bob;
     if(ITEMS[p.id]&&ITEMS[p.id].cursed){ctx.beginPath();ctx.ellipse(p.x,p.y+2,18,6,0,0,TAU);ctx.fillStyle='rgba(150,60,220,'+(0.25+0.15*Math.sin(t*4)).toFixed(2)+')';ctx.fill();if(Math.random()<0.15)run.parts.push({kind:'spark',x:p.x+rand(-10,10),y:iy+rand(-6,6),vx:0,vy:-30,life:0.6,max:0.6,rgb:'180,110,255',size:1.3});}
-    ctx.save();ctx.translate(p.x,iy);drawItemIcon(ctx,p.id,9);ctx.restore();
+    const tk=grabbedByMe(p);ctx.save();if(tk)ctx.globalAlpha=0.35;ctx.translate(p.x,iy);drawItemIcon(ctx,p.id,9);ctx.restore();if(tk)takenLabel(p);
   }else if(p.kind==='hole'){
     ctx.save();ctx.translate(p.x,p.y);
     ctx.beginPath();ctx.ellipse(0,0,22,13,0,0,TAU);ctx.fillStyle='#050302';ctx.fill();
@@ -5958,7 +5963,7 @@ function renderGame(){
   if(run.floor===0&&run.room.type==='start'&&!run.rush){
     ctx.save();ctx.textAlign='center';ctx.fillStyle='rgba(236,224,200,0.32)';ctx.font='700 14px Grenze, Georgia, serif';
     const lines=run.local?(isTouch?['Joueur 1 : pouce à gauche','Joueur 2 : pouce à droite','Tir automatique pour les deux']:['Joueur 1 : ZQSD ou WASD','Joueur 2 : flèches','Tir automatique pour les deux'])
-      :isTouch?['Pouce gauche : bouger',save.auto?'Tir automatique activé':'Pouce droit : tirer','Bouton bombe : casse les rochers']:['ZQSD ou WASD : bouger',save.auto?'Tir automatique activé':'Flèches : tirer','E : bombe · Espace : pouvoir'];
+      :isTouch?[L.portrait&&save.auto?'Pose ton pouce en bas : bouger':'Pouce gauche : bouger',save.auto?'Tir automatique activé':'Pouce droit : tirer','Bouton bombe : casse les rochers']:['ZQSD ou WASD : bouger',save.auto?'Tir automatique activé':'Flèches : tirer','E : bombe · Espace : pouvoir'];
     lines.forEach((ln,i)=>ctx.fillText(ln,RW/2,RH*0.66+18*i));
     ctx.font='700 12px Grenze, Georgia, serif';ctx.fillText("Trouve et bats le boss de l'étage",RW/2,RH*0.9);ctx.restore();
   }
@@ -6296,7 +6301,7 @@ let tipQ=[],tipT=0;
 function tip(key,text){if(TUT||!save.tips||save.tuto[key])return;save.tuto[key]=1;persist();tipQ.push(text);}
 function tipsTick(){
   if(!run||state!=='play'||!P)return;
-  tip('move',isTouch?'Pose ton pouce gauche n\'importe où et fais-le glisser pour bouger.':'Bouge avec ZQSD ou WASD, et tire avec les flèches.');
+  tip('move',isTouch?(L&&L.portrait&&save.auto?'Pose ton pouce n\'importe où en bas de l\'écran et fais-le glisser pour bouger.':'Pose ton pouce gauche n\'importe où et fais-le glisser pour bouger.'):'Bouge avec ZQSD ou WASD, et tire avec les flèches.');
   const r=run.room;if(!r)return;
   if(r.type==='normal'&&run.enemies.length&&!run.doorsOpen)tip('doors','Les portes se ferment : bats tous les monstres pour les rouvrir !');
   if(save.tuto.doors&&r.type==='normal'&&run.doorsOpen&&r.cleared)tip('map','Bravo ! La carte montre les salles : le rond rouge, c\'est le boss de l\'étage.');
@@ -6327,12 +6332,12 @@ function goTitle(){
   $('rushTag').textContent=save.rushBest?(save.rushBest>=RUSH.length?'✓':save.rushBest+'/'+RUSH.length):'';
   ensureQuests();{const n=questReady(),qc=$('questCount');qc.hidden=!n;qc.textContent=n?String(n):'';}
   const hl=$('howto');hl.textContent='';
-  const rows=isTouch?[['Pouce gauche','Pose-le n\'importe où sur la moitié gauche de l\'écran : le joystick apparaît sous ton doigt. Glisse pour te déplacer.'],['Pouce droit','Pareil sur la moitié droite pour tirer. Avec le tir automatique, pas besoin.'],['Portes','Elles s\'ouvrent quand la salle est vide.']]
+  const rows=isTouch?[['Pouce gauche','Pose-le n\'importe où sur la moitié gauche de l\'écran (ou n\'importe où en bas quand ton téléphone est droit et que le tir est automatique) : le joystick apparaît sous ton doigt. Glisse pour te déplacer.'],['Pouce droit','Pareil sur la moitié droite pour tirer. Avec le tir automatique, pas besoin.'],['Portes','Elles s\'ouvrent quand la salle est vide.']]
     :[['ZQSD / WASD','Bouger'],['Flèches','Tirer (ou clic maintenu vers la cible)'],['Échap','Pause'],['Portes','Elles s\'ouvrent quand la salle est vide.']];
   rows.push(['Couleur des portes',"Rouge : boss · Jaune : trésor · Vert : boutique · Violet : défi · Orange : mini-boss. Le nom de la salle est aussi écrit devant la porte."]);
   rows.push(['Niveaux',"Bats des monstres pour gagner de l'XP. À chaque niveau, tu choisis une nouvelle capacité."]);
   rows.push(['Or',"Ramasse les pièces, casse les vases et ouvre les coffres. Dépense ton or dans « Améliorations »."]);
-  rows.push(['Esquive',isTouch?"Touche le bouton Esquive (en bas à droite) pour faire une roulade : pendant ce temps, rien ne te touche.":"Maj (Shift) : une roulade pendant laquelle rien ne te touche."]);
+  rows.push(['Esquive',isTouch?"Touche le bouton Esquive (à droite) pour faire une roulade : pendant ce temps, rien ne te touche.":"Maj (Shift) : une roulade pendant laquelle rien ne te touche."]);
   rows.push(['Évolution',"Améliore ta bestiole avec de l'or dans « Mon perso » (☰ Menu). Au niveau 4, puis au niveau 8, elle évolue : elle devient plus grande et plus forte."]);
   rows.push(['Bombes',"Pose une bombe pour casser les rochers. Un mur fissuré cache une salle secrète : approche-toi tout près et il s'ouvre !"]);
   rows.push(['Pouvoir',"Certains objets se déclenchent avec le bouton rond. Bats des monstres pour le recharger."]);
@@ -7783,6 +7788,14 @@ function openCtlEdit(from){
   $('ctlEdit').hidden=false;placeJoyGhost();
   $('ceText').textContent='Glisse les boutons avec ton doigt pour les mettre où tu veux.'+(save.ctl.fix?' Tu peux aussi glisser le joystick.':'');
 }
+function fitBar(force){
+  const bar=$('actBar');if(!L||!L.portrait||bar.classList.contains('free'))return;
+  const bs=save.ctl.bs,vis=CTL_BTNS.filter(id=>!$(id).hidden),hh=id=>(id==='dashBtn'?70:60)*bs,room=H-ins.b-12-(L.btnTop||0);
+  const one=vis.reduce((a,id)=>a+hh(id),0)+Math.max(0,vis.length-1)*12,grid=one>room&&vis.length>2;
+  const sig=vis.join()+grid+H;if(!force&&bar._fit===sig)return;bar._fit=sig;
+  bar.style.flexDirection=grid?'row':'column';bar.style.flexWrap=grid?'wrap':'';bar.style.justifyContent=grid?'flex-end':'';bar.style.width=grid?Math.round((130+12)*bs+2)+'px':'';
+  const h=grid?Math.round((70+12+60)*bs):one;bar.style.top=Math.round(Math.max(L.ry+L.rh*0.6,Math.min(L.btnTop||0,H-ins.b-12-h)))+'px';
+}
 function placeJoyGhost(){const g=$('joyGhost'),c=joyCenter(),d=STICK_R*2;g.style.width=g.style.height=d+'px';g.style.left=c.x+'px';g.style.top=c.y+'px';g.classList.toggle('float',!save.ctl.fix);
   g.firstChild.textContent=save.ctl.fix?'Joystick':'Joystick (où tu poses ton pouce)';}
 function closeCtlEdit(){
@@ -9088,7 +9101,7 @@ function updateActBar(){
     for(const [ox,al] of [[-w*0.16,0.45],[0,0.75],[w*0.16,1]]){c.beginPath();c.moveTo(ox-w*0.1,-w*0.17);c.lineTo(ox+w*0.07,0);c.lineTo(ox-w*0.1,w*0.17);c.strokeStyle='rgba(26,16,11,'+al+')';c.lineWidth=w*0.11;c.stroke();c.strokeStyle='rgba(159,232,255,'+al+')';c.lineWidth=w*0.06;c.stroke();}
     c.restore();c.font='800 '+Math.round(w*0.15)+'px Grenze, Georgia, serif';c.textAlign='center';c.fillStyle=cd>0?'rgba(236,224,200,0.5)':'#ece0c8';c.fillText('Esquive',w/2,w*0.86);}
   const ab=$('actBtn'),bb=$('bombBtn');
-  ab.hidden=!A;ab.classList.toggle('ready',!!ready);$('chatBtn').hidden=!(run.pl&&NET&&!run.local);bb.classList.toggle('off',(P.bombs|0)<=0);$('bombN').textContent=String(P.bombs|0);
+  ab.hidden=!A;ab.classList.toggle('ready',!!ready);$('chatBtn').hidden=!(run.pl&&NET&&!run.local);fitBar();bb.classList.toggle('off',(P.bombs|0)<=0);$('bombN').textContent=String(P.bombs|0);
   {const cv=$('bombCv'),c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);drawBomb(c,cv.width/2-2,cv.height/2+8,cv.width*0.22,false);}
   if(A){const cv=$('actCv'),c=cv.getContext('2d'),w=cv.width;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,w);
     c.beginPath();c.arc(w/2,w/2,w*0.44,0,TAU);c.strokeStyle='rgba(0,0,0,0.5)';c.lineWidth=w*0.08;c.stroke();
@@ -9108,8 +9121,12 @@ function shopNear(){
   return best;
 }
 function takeChoice(p,pl){
+  if(!canGrab(p,pl))return;
+  if(run.pl&&run.pl.length>1){const grp=run.room.pickups.filter(o=>o.choice&&o.choice===p.choice);for(const o of grp)o.by=(o.by|0)|plBit(pl);
+    if(((p.by|0)&grabMask(p))===grabMask(p)){for(const o of grp)if(o!==p){smoke(o.x,o.y-10,8,'200,190,230',1.2);flashFx(o.x,o.y-10,24);}run.room.pickups=run.room.pickups.filter(o=>!grp.includes(o));}}
+  else{
   for(const o of run.room.pickups)if(o!==p&&o.choice&&o.choice===p.choice){o.gone=true;smoke(o.x,o.y-10,8,'200,190,230',1.2);flashFx(o.x,o.y-10,24);}
-  run.room.pickups=run.room.pickups.filter(o=>!o.gone&&o!==p);
+  run.room.pickups=run.room.pickups.filter(o=>!o.gone&&o!==p);}
   if(p.kind==='item'){const it=ITEMS[p.id];if(!it)return;it.apply(pl);pl.items.push(p.id);sfx('item');
     if(pl.isRemote){toast('Ton ami a pris : '+it.name,it.desc);netEv('t',it.name,itemDesc(p.id),pl);netEv('t','Ton ami a pris : '+it.name,it.desc,pl,1);}else{toast(it.name,itemDesc(p.id));netEv('t','Ton ami a pris : '+it.name,it.desc);}
     burst(p.x,p.y-14,'#f2a23a',20,120);flashFx(p.x,p.y-14,50);ringFx(p.x,p.y-10,60,'255,215,140',0.6);}
@@ -9128,9 +9145,14 @@ function shopInfo(p){
   return['Objet',''];
 }
 function plBit(pl){return 1<<((pl&&pl.slot)|0);}
+/* objects on the ground, in chests and in treasure rooms: each player can take their own copy once.
+   p.by = who already took it, p.own = only these players may take it (the one who paid at the altar) */
+function canGrab(p,pl){const b=plBit(pl);return!((p.by|0)&b)&&(!p.own||((p.own|0)&b));}
+function grabMask(p){if(p.own)return p.own|0;let m=0;for(const q of run.pl)m|=plBit(q);return m;}
+function ownGrab(p,pl){if(!(run.pl&&run.pl.length>1))return false;p.by=(p.by|0)|plBit(pl);const m=grabMask(p);return((p.by|0)&m)!==m;}
 function shopSold(p,pl){if(run.pl&&run.pl.length>1){p.by=(p.by|0)|plBit(pl);let m=0;for(const q of run.pl)m|=plBit(q);if((p.by&m)!==m)return;}const i=run.room.pickups.indexOf(p);if(i>=0)run.room.pickups.splice(i,1);}
 function shopBlock(p,pl){
-  if(p.choice)return'';
+  if(p.choice)return canGrab(p,pl)?'':((p.by|0)&plBit(pl))?'Tu as déjà choisi ton objet':"C'est l'objet de ton ami";
   if(p.kind==='wheel'){if(p.spin>0)return'Ça tourne…';const lack=p.price-(save.gold|0);return lack>0?'Il te manque '+lack+' or':'';}
   if(p.kind==='shop'&&run.pl&&((p.by|0)&plBit(pl)))return"Tu l'as déjà acheté";
   if(p.kind==='altar')return pl.maxHp<=2?'Il te faut au moins 2 cœurs':'';
@@ -9241,7 +9263,7 @@ function buildSnap(){
   for(const x of run.eshots)if(!x.dead)s.es.push(x.r>=8?[R(x.x),R(x.y),R(x.vx/10),R(x.vy/10),R(x.r)]:[R(x.x),R(x.y),R(x.vx/10),R(x.vy/10)]);
   for(const p of r.pickups){
     if(p.kind==='heart')s.pk.push([0,R(p.x),R(p.y),p.half?1:0]);
-    else if(p.kind==='item')s.pk.push([1,R(p.x),R(p.y),ITEM_IDS.indexOf(p.id),p.choice?1:0]);
+    else if(p.kind==='item')s.pk.push([1,R(p.x),R(p.y),ITEM_IDS.indexOf(p.id),p.choice?1:0,p.by|0,p.own|0]);
     else if(p.kind==='hole')s.pk.push([2,R(p.x),R(p.y),p.endless?1:0]);
     else if(p.kind==='exit')s.pk.push([9,R(p.x),R(p.y)]);
     else if(p.kind==='coin')s.pk.push([3,R(p.x),R(p.y),p.val,R(p.z)]);
@@ -9249,7 +9271,7 @@ function buildSnap(){
     else if(p.kind==='shop')s.pk.push([5,R(p.x),R(p.y),SHOP_WHAT.indexOf(p.what),p.price|0,p.what==='item'?ITEM_IDS.indexOf(p.id):p.what==='active'?ACTIVE_IDS.indexOf(p.id):-1,p.by|0]);
     else if(p.kind==='dais')s.pk.push([6,R(p.x),R(p.y),R((p.prog||0)*100)]);
     else if(p.kind==='bomb')s.pk.push([7,R(p.x),R(p.y)]);
-    else if(p.kind==='active')s.pk.push([8,R(p.x),R(p.y),ACTIVE_IDS.indexOf(p.id),p.choice?1:0]);
+    else if(p.kind==='active')s.pk.push([8,R(p.x),R(p.y),ACTIVE_IDS.indexOf(p.id),p.choice?1:0,p.by|0,p.own|0]);
     else if(p.kind==='cursed')s.pk.push([10,R(p.x),R(p.y)]);
     else if(p.kind==='portal')s.pk.push([12,R(p.x),R(p.y),p.fin?1:0]);
     else if(p.kind==='candy')s.pk.push([14,R(p.x),R(p.y),p.c|0]);
@@ -9465,9 +9487,9 @@ function applySnap(s,ph){
   run.shots=(s.sh||[]).map(a=>{const st=shOf(a[5]);return{x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:(+a[4]||45)/10,col:st.shot,core:st.core,life:1,sid:SIDS[a[5]|0]||'braisot',fx:clamp(a[6]|0,0,SHOTFX.length)};});
   run.eshots=(s.es||[]).map(a=>({x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:+a[4]||5}));
   run.room.pickups=(s.pk||[]).filter(Array.isArray).map(a=>a[0]===5?{kind:'shop',by:a[6]|0,x:+a[1],y:+a[2],what:SHOP_WHAT[a[3]]||'heart',price:a[4]|0,id:SHOP_WHAT[a[3]]==='item'?(ITEM_IDS[a[5]]||'croc'):(ACTIVE_IDS[a[5]]||'fiole')}
-    :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3]}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2]}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':''}
+    :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3]}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2]}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}
     :a[0]===15?{kind:'wheel',x:+a[1],y:+a[2],ang:(+a[3]||0)/100,price:a[4]|0,left:a[5]|0,spin:a[6]?1:0}:a[0]===14?{kind:'candy',x:+a[1],y:+a[2],c:clamp(a[3]|0,0,2)}:a[0]===12?{kind:'portal',x:+a[1],y:+a[2],fin:!!a[3]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3]}
-    :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3]}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':''}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
+    :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3]}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
   const pots=(s.pt||[]).filter(Array.isArray).map(a=>({x:+a[0]||0,y:+a[1]||0,broken:false})),keys=new Set(pots.map(q=>q.x+','+q.y));
   if(NET.potKeys)for(const k of NET.potKeys)if(!keys.has(k)){bump('pots');const xy=k.split(',').map(Number);chunks(xy[0],xy[1]-6,'#b5683f',10,110);smoke(xy[0],xy[1]-4,3,'160,120,90',0.8);sfx('pot');addDecal(run.room,xy[0],xy[1],5,'#6b3a22');}
   NET.potKeys=keys;run.room.pots=pots;
