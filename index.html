@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105140209';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105140209" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105142722';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105142722" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -4329,7 +4329,7 @@ function roomCleared(){
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       announce('Victoire suprême !','Le Dévoreur est vaincu : la crypte est libérée !');sfx('item');setTimeout(()=>{if(state==='play')maybeStory('fin');},2600);
-      toast('Tu as fini le jeu ! +300 or','Trappe : mode infini · Porte dorée : sortir en héros');netEv('t','Tu as fini le jeu !','Trappe : mode infini · Porte dorée : sortir en héros');
+      toast('Tu as fini le jeu ! +'+Math.round(220*(1+(run.loop|0))*(P.goldMul||1)*DF().gold)+' or','Trappe : mode infini · Porte dorée : sortir en héros');netEv('t','Tu as fini le jeu !','Trappe : mode infini · Porte dorée : sortir en héros');
     }
     else if(run.floor>=NFLOORS-1){
       if(!run.winCounted){run.winCounted=true;save.wins=(save.wins||0)+1;persist();}
