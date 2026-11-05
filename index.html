@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105155914';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105155914" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105163511';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105163511" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1319,6 +1319,7 @@ html body .fz-btns .btn{min-height:40px}
     <li><span class="ni">🏆</span><span><b>Classement en ligne</b> : tout le monde, le défi du jour et tes amis. Chaque lundi, le <b>top 3 de la semaine</b> gagne un titre et de l'or !</span></li>
     <li><span class="ni">🎁</span><span><b>Butin de fin de partie</b> : un coffre s'ouvre avec des équipements. Plus tu vas loin, plus ils sont rares.</span></li>
     <li><span class="ni">💀</span><span><b>Toutes les difficultés sont plus dures</b> : monstres plus costauds et plus rapides, boss plus longs à battre. En Difficile et Extrême, il y a moins de cœurs à ramasser !</span></li>
+    <li><span class="ni">⚖️</span><span><b>Équilibrage</b> : « Griffes » donne maintenant +14 % de dégâts par niveau (toutes les bestioles en profitent pareil), Fennouille fait un peu moins mal, et améliorer un équipement coûte plus cher.</span></li>
     <li><span class="ni">💰</span><span><b>L'or est plus rare</b> et les améliorations plus chères : chaque pièce compte ! Les quêtes rapportent un peu moins, et le Hardcore donne maintenant l'or ×2.</span></li>
     <li><span class="ni">⭐</span><span>Les <b>salles secrètes</b> s'ouvrent quand tu t'approches du mur fissuré. Plus besoin de bombe !</span></li>
     <li><span class="ni">🔥</span><span>À haut niveau, tes tirs <b>n'éblouissent plus</b> l'écran.</span></li>
@@ -2034,7 +2035,7 @@ const STARTERS={
   volticelle:{name:'Volticelle',col:'#f5e663',r:10,fit:1.45,price:400,desc:"Une luciole électrique. Quand un de ses tirs touche, un petit éclair saute sur un autre monstre tout près.",hp:5,speed:128,dmg:2.6,fireDelay:0.26,range:230,size:0.9,pierce:false,shot:'#ffe34a',core:'#fffbd0',stats:{'Dégâts':2,'Cadence':4,'Vitesse':4,'Vie':2}},
   mamoutin:{name:'Mamoutin',col:'#9a6a44',r:10,fit:1.3,price:450,desc:"Un bébé mammouth très costaud. Il est lent, mais ses gros tirs font très mal et repoussent loin les monstres.",hp:10,speed:100,dmg:5.6,fireDelay:0.6,range:200,size:1.3,pierce:false,shot:'#e0b98a',core:'#fff3e0',stats:{'Dégâts':5,'Cadence':1,'Vitesse':2,'Vie':5}},
   dracolin:{name:'Dracolin',like:'braisot',pal:{'#ffcf4a':'#c8ff6a','#ff7a2f':'#5bd16a','#c9652a':'#2f7a3a','#f08a3c':'#4aa85a','#ffd9a0':'#dcffd0'},col:'#4aa85a',r:10,fit:1.55,price:650,poison:1,desc:"Un bébé dragon. Ses flammes vertes brûlent les monstres petit à petit.",hp:6,speed:116,dmg:3.2,fireDelay:0.36,range:220,size:1,pierce:false,shot:'#7fe36a',core:'#eaffd9',stats:{'Dégâts':3,'Cadence':3,'Vitesse':3,'Vie':3}},
-  fennouille:{name:'Fennouille',like:'ombrin',pal:{'#3a3350':'#e8a860','#8a6fc4':'#fff0d6','#e9d36a':'#3a2a1a','#b48cff':'#ffcf8a'},col:'#e8a860',r:10,fit:1.5,price:550,multi:2,desc:"Un petit renard des sables, très rapide. Il tire deux flèches à la fois.",hp:5,speed:140,dmg:2.4,fireDelay:0.3,range:230,size:0.9,pierce:false,shot:'#ffcf8a',core:'#fff6e6',stats:{'Dégâts':2,'Cadence':4,'Vitesse':5,'Vie':2}},
+  fennouille:{name:'Fennouille',like:'ombrin',pal:{'#3a3350':'#e8a860','#8a6fc4':'#fff0d6','#e9d36a':'#3a2a1a','#b48cff':'#ffcf8a'},col:'#e8a860',r:10,fit:1.5,price:550,multi:2,desc:"Un petit renard des sables, très rapide. Il tire deux flèches à la fois.",hp:5,speed:140,dmg:1.9,fireDelay:0.3,range:230,size:0.9,pierce:false,shot:'#ffcf8a',core:'#fff6e6',stats:{'Dégâts':2,'Cadence':4,'Vitesse':5,'Vie':2}},
   carapix:{name:'Carapix',like:'ronceau',pal:{'#3f6b2c':'#2f5a4a','#6aa04a':'#4a9a7a','#9fd46a':'#a8e0c0','#4f7a32':'#2f6a50'},col:'#4a9a7a',r:10,fit:1.45,price:500,startAbil:'bouclier',desc:"Une petite tortue très solide. Elle commence chaque partie avec un bouclier qui bloque un coup.",hp:9,speed:100,dmg:3.6,fireDelay:0.42,range:210,size:1.1,pierce:false,shot:'#a8e0c0',core:'#effff6',stats:{'Dégâts':3,'Cadence':2,'Vitesse':2,'Vie':5}},
   pikolo:{name:'Pikolo',like:'ronceau',pal:{'#3f6b2c':'#5a3a22','#6aa04a':'#8a5a32','#9fd46a':'#d8a46a','#4f7a32':'#6a4428'},col:'#8a5a32',r:10,fit:1.45,price:600,desc:"Un petit hérisson. Il lance 5 piquants d'un coup, comme un éventail : très fort de près, mais ça ne va pas loin.",hp:7,speed:118,dmg:2.6,fireDelay:0.5,range:200,size:0.85,pierce:false,shot:'#d8a46a',core:'#fff0d6',mod:p=>{p.multi=5;p.spread=0.22;p.range*=0.55;},stats:{'Dégâts':5,'Cadence':2,'Vitesse':3,'Vie':4}},
   lumina:{name:'Lumina',like:'cristallin',pal:{'#9fdcf0':'#ffe08a','#5f8fa8':'#a8842a','#e6f6ff':'#fff8e0','#c9a2ff':'#ff9a5a'},col:'#ffe08a',r:10,fit:1.4,price:750,desc:"Un petit cristal de soleil. Il tire un rayon très rapide qui traverse tous les monstres, mais pas très souvent.",hp:6,speed:112,dmg:5.2,fireDelay:0.62,range:300,size:0.9,pierce:true,shot:'#ffe08a',core:'#ffffff',mod:p=>{p.shotSpeed*=1.8;},stats:{'Dégâts':5,'Cadence':1,'Vitesse':3,'Vie':3}},
@@ -2052,7 +2053,7 @@ const DIFF=[
 function teamDps(){
   let t=0;
   for(const pl of players()){if(!pl||pl.down)continue;
-    let d=pl.dmg*(1+(pl.crit||0)*2)*((pl.multi||1)+(pl.back?0.5:0))/Math.max(0.08,pl.fireDelay||0.4);
+    const m=pl.multi||1,mEff=(pl.spread||0)>0.18?1+(m-1)*0.6:m;let d=pl.dmg*(1+(pl.crit||0)*2)*(mEff+(pl.back?0.5:0))/Math.max(0.08,pl.fireDelay||0.4);
     if(pl.pierce)d*=1.1;if(pl.frag)d*=1.2;if(pl.poison)d*=1.15;
     const A=pl.abil||{};d*=1+0.12*((A.orbes|0)+(A.eclair|0)+(A.aura|0)+(A.onde|0));t+=d;}
   return t;
@@ -2290,7 +2291,7 @@ const XP={gloupin:3,chauvelin:2,petouille:4,crapaudron:5,tetard:1,bulleur:4,char
 const xpNeed=lv=>10+lv*8;
 const UPGRADES=[
   {id:'vie',name:'Cœur solide',max:6,max0:3,base:40,desc:'Un cœur de plus au début de chaque partie.',icon:['a','grocoeur'],apply:(p,l)=>{p.maxHp+=2*l;p.hp=p.maxHp;}},
-  {id:'force',name:'Griffes',max:12,max0:5,base:25,desc:'Tes tirs font +0,5 de dégâts.',icon:['a','force'],apply:(p,l)=>{p.dmg+=0.5*l;}},
+  {id:'force',name:'Griffes',max:12,max0:5,base:25,desc:'Tes tirs font 14 % de dégâts en plus.',icon:['a','force'],apply:(p,l)=>{p.dmg*=1+0.14*l;}},
   {id:'cadence',name:'Souffle rapide',max:10,max0:5,base:25,desc:'Tu tires 6 % plus vite.',icon:['a','furie'],apply:(p,l)=>{p.fireDelay*=Math.pow(0.94,l);}},
   {id:'vitesse',name:'Pattes légères',max:6,max0:4,base:20,desc:'Tu cours 5 % plus vite.',icon:['a','agile'],apply:(p,l)=>{p.speed*=1+0.05*l;}},
   {id:'portee',name:'Regard perçant',max:5,max0:3,base:20,desc:'Tes tirs vont 10 % plus loin.',icon:['i','lynx'],apply:(p,l)=>{p.range*=1+0.1*l;}},
@@ -8252,7 +8253,7 @@ function eqById(id){return id?save.eq.inv.find(x=>x.i===id)||null:null;}
 function eqIsOn(it){return save.eq.on[it.s]===it.i;}
 function eqNew(sl,r,l){const it={i:'e'+(save.eq.n++),s:sl,r,l:l||1};save.eq.inv.push(it);if(r>=6)bump('cosmic');return it;}
 function eqSellVal(it){return(it.r+1)*(10+5*it.l);}
-function eqUpCost(it){return(it.r+1)*25*it.l;}
+function eqUpCost(it){return(it.r+1)*50*it.l;}
 function eqGive(sl,r){if(save.eq.inv.length>=EQ_BAG){const g=(r+1)*15;save.gold=(save.gold||0)+g;return{gold:g};}return{it:eqNew(sl,r,1)};}
 function myEqBonus(){const b=[0,0,0,0,0];for(let k=0;k<5;k++){const it=eqById(save.eq.on[k]);if(it)b[k]+=eqVal(it.s,it.r,it.l);}const tb=titleBonus(save.title||'debut');for(let k=0;k<5;k++)b[k]+=tb[k];return b;}
 function cleanEqBonus(a){const mx=[10,84,84,84,84];if(!Array.isArray(a))return[0,0,0,0,0];return mx.map((m,i)=>Math.max(0,Math.min(m,Math.floor(+a[i])||0)));}
