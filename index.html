@@ -12,14 +12,14 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105122509';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105122509" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105130536';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105130536" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@700;900&family=Grenze:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@700;900&family=Grenze:wght@400;600;700&family=Rye&display=swap">
 <style>
 /* Layout: one full-screen torchlit crypt. The room is a lit stone slab in the dark; menus are carved stone tablets over it. Single dark look by choice. */
 :root{
@@ -967,6 +967,55 @@ html.big-text #toast .t1{font-size:1.1em}
 .ic-bat{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M12 9c-2-3.5-6-4.5-9.5-3 1.5 1.5 1.5 3 1 4.5 1.5-.5 3 0 3.5 1.5 1.2-1 3.2-1 5 0 1.8-1 3.8-1 5 0 .5-1.5 2-2 3.5-1.5-.5-1.5-.5-3 1-4.5C18 4.5 14 5.5 12 9z%22 fill=%22%234a3a6e%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%2212%22 cy=%2211%22 r=%223%22 fill=%22%236a4f86%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%2211%22 cy=%2210.6%22 r=%22.7%22 fill=%22%23ff6a5a%22/%3E%3Ccircle cx=%2213%22 cy=%2210.6%22 r=%22.7%22 fill=%22%23ff6a5a%22/%3E%3C/svg%3E")}
 .ic-money{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M9 5.5h6l-1.2 2.5h-3.6z%22 fill=%22%23b8862a%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10.2 8C5 10 4 14 4.5 16.5c.5 3 3.5 4 7.5 4s7-1 7.5-4c.5-2.5-.5-6.5-5.7-8.5z%22 fill=%22%23c9a26a%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%2212%22 cy=%2215%22 r=%223.2%22 fill=%22%23f5c542%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3C/svg%3E")}
 .ic-heart{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M12 20.5S3 15 3 9.2A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2.2C21 15 12 20.5 12 20.5z%22 fill=%22%23e2483a%22 stroke=%22%231a100b%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%228%22 cy=%229%22 r=%221.4%22 fill=%22%23ff9a8a%22/%3E%3C/svg%3E")}
+
+/* ===== Style « Forge de cuivre » : cuir et laiton sur pierre de donjon, runes vertes ===== */
+html:root{--bone:#f2e2c4;--bone-dim:#c4a882;--torch:#e0b060;--torch-deep:#9a6a20;--rune:#5dffa0;--stone:#3a2618;--stone-hi:#4a3020;--stone-edge:#b8863a;--ember:#c43a2a;--font-display:Rye,serif}
+html body .screen{background:
+  linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.72)),
+  repeating-linear-gradient(0deg,#1a1b1e 0 3px,transparent 3px 52px),
+  repeating-linear-gradient(90deg,#1a1b1e 0 3px,transparent 3px 88px),
+  linear-gradient(135deg,#46484d,#33353a)}
+html body #scrTitle{background:linear-gradient(180deg,rgba(14,15,18,.5),rgba(14,15,18,.9) 60%)}
+html body h2,html body .logo{font-family:Rye,serif;font-weight:400;background:linear-gradient(180deg,#ffe6a8 0%,#e0a050 45%,#8a4a18 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 #000) drop-shadow(0 0 10px rgba(93,255,160,.25))}
+html body h2{font-size:36px}
+html body .logo{font-size:clamp(44px,12vw,96px)}
+html body .eyebrow,html body .small-h{color:#7fdca6;letter-spacing:.22em}
+html body .small-h::before{content:"ᚱ ";color:#5dffa0}
+html body .sub,html body .lede{color:#d8ccb4}
+html body .on-c{color:#5dffa0}
+html body .back{color:#7fdca6}
+html body .toggle{border:3px solid #b8863a;border-radius:12px;box-shadow:inset 0 0 0 2px #2a1a0c,inset 0 2px 0 3px rgba(255,220,160,.12),0 5px 0 #0e0f11;
+  background-image:radial-gradient(circle at 9px 9px,#ffe6a8 0 2px,#8a5a20 2.5px,transparent 4px),radial-gradient(circle at calc(100% - 9px) 9px,#ffe6a8 0 2px,#8a5a20 2.5px,transparent 4px),radial-gradient(circle at 9px calc(100% - 9px),#ffe6a8 0 2px,#8a5a20 2.5px,transparent 4px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),#ffe6a8 0 2px,#8a5a20 2.5px,transparent 4px),linear-gradient(180deg,#5a3a24,#3e2716)}
+html body .tlabel b{color:#ffe6c0}
+html body .tlabel small{color:#c9b090}
+html body .set-ic{background:#1c1d20;border:2px solid #b8863a;color:#8c9098;border-radius:6px}
+html body .toggle.set input:checked ~ .set-ic{color:#5dffa0;border-color:#2fbf72;box-shadow:0 0 10px rgba(93,255,160,.45),inset 0 0 8px rgba(93,255,160,.25)}
+html body .track{background:#1a0e06;border:2px solid #b8863a}
+html body .track::after{background:radial-gradient(circle at 35% 30%,#d8d0c0,#7a7060)}
+html body .toggle input:checked + .track{background:#123824;border-color:#2fbf72;box-shadow:0 0 10px rgba(93,255,160,.4)}
+html body .toggle input:checked + .track::after{background:radial-gradient(circle at 35% 30%,#ffe6a8,#c98a3a)}
+html body .tst{background:#2a1a0c;color:#c4a882;border:1px solid #6a4a22}
+html body .toggle input:checked ~ .tlabel .tst{background:#123824;color:#9dffc6;border-color:#2fbf72}
+html body .slab{background:linear-gradient(180deg,#4a3020,#3a2618);border:3px solid #b8863a;border-radius:12px;box-shadow:inset 0 0 0 2px #2a1a0c,0 5px 0 #0e0f11}
+html body .btn{font-family:Rye,serif;font-weight:400;font-size:18px;color:#ece8dc;border:3px solid #1c1d20;border-radius:10px;background:linear-gradient(180deg,#5a5d63 0%,#44464b 50%,#36383c 100%);box-shadow:inset 0 0 0 2px #b8863a,0 5px 0 #0e0f11;text-shadow:0 2px 0 #000}
+html body .btn:active{box-shadow:inset 0 0 0 2px #b8863a,0 2px 0 #0e0f11}
+html body .btn.primary{background:linear-gradient(180deg,#ffe6a8 0%,#d8a050 45%,#9a6020 100%);color:#2a1a0c;text-shadow:0 1px 0 rgba(255,240,200,.6);font-size:26px;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 5px 0 #0e0f11,0 0 14px rgba(224,160,80,.35)}
+html body .btn.danger{color:#ffb4a8;box-shadow:inset 0 0 0 2px #a8402f,0 5px 0 #0e0f11}
+html body .menu-btn{font:400 18px Rye,serif;background:linear-gradient(180deg,#5a5d63,#36383c);color:#ece8dc;border:3px solid #1c1d20;border-radius:10px;box-shadow:inset 0 0 0 2px #b8863a,0 5px 0 #0e0f11}
+html body .mb-bars i{background:#e0a050}
+html body .title-gold{background:#2a1a0c;border:3px solid #b8863a}
+html body .count{color:#c4a882}
+html body .range-row input{accent-color:#c98a3a}
+html body .rr-t{color:#f2e2c4}
+html body .btn{font-family:var(--font-ui);font-weight:700;font-size:19px}
+html body .btn.primary{font-family:var(--font-ui);font-weight:700;font-size:22px}
+html body #btnPlay{font-family:Rye,serif;font-weight:400;font-size:28px}
+html body .main-acts .btn,html body .mode-acts .btn{font-family:Rye,serif;font-weight:400;font-size:18px}
+html body .menu-btn{font:400 18px Rye,serif}
+html body .btn.sm,html body .btn.sm.primary{font-size:16px;padding:6px 10px}
+html body .btn.sm,html body .btn.sm.primary{white-space:nowrap;font-size:15px;padding:6px 8px}
+html body .mode-acts .btn{font-size:17px;padding-left:8px;padding-right:8px}
+html body .mode-acts .btn .count{font-family:var(--font-ui);font-size:13px}
 </style>
 </head>
 <body>
@@ -1151,7 +1200,7 @@ html.big-text #toast .t1{font-size:1.1em}
 <section id="scrSettings" class="screen" hidden>
   <div class="panel">
     <div class="hdr"><button class="back" id="setBack" type="button">← Retour</button><h2>Paramètres</h2></div>
-    <p class="sub">Touche une ligne pour l'allumer ou l'éteindre. Le bouton devient <b class="on-c">orange</b> quand c'est allumé.</p>
+    <p class="sub">Touche une ligne pour l'allumer ou l'éteindre. Le bouton devient <b class="on-c">vert</b> quand c'est allumé.</p>
     <p class="small-h set-h">Pendant la partie</p>
     <div class="optgrid setgrid">
     <label class="toggle set" for="optAuto">
