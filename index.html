@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105134711';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105134711" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105140209';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105140209" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1048,6 +1048,51 @@ html body .tab{font-size:15px;line-height:1.1}
 html body .rank:nth-child(1) .pos{color:#ffd84a;text-shadow:0 0 8px rgba(255,216,74,.6)}
 html body .rank:nth-child(2) .pos{color:#d8dde3}
 html body .rank:nth-child(3) .pos{color:#e0965a}
+
+/* ===== Lisibilité ===== */
+html:root{--bone-dim:#e4d4b8;--font-display:'Grenze','Palatino Linotype',Georgia,serif}
+html body .upg .ds,html body .ach .ds,html body .rank .ds,html body .coop-item .ds,html body .diffbox .ds,html body .scard .ef,html body .store-hs,html body .fuse-s,html body .stat span,html body .sum span,html body .coop-note,html body .bdinfo .kills,html body .record,html body .eq-rar{font-size:16px;line-height:1.3;color:#e4d4b8}
+html body .tlabel small,html body .starter .ds,html body .mode .ds,html body .eq-next,html body .coop-help,html body .mt-s,html body .sub{font-size:16.5px;line-height:1.35;color:#e8dac0}
+html body .small-h,html body .eyebrow{font-size:14px}
+html body .dex-cell .dh,html body #ovLoot .ol-it small,html body .tst,html body .rar-legend{font-size:13px}
+html body .count{font-size:15px;color:#e4d4b8}
+html body .side-item .count{color:#e4d4b8}
+html body .ach .nm,html body .upg .nm,html body .scard .nm,html body .quest .nm{font-family:'Grenze',Georgia,serif;font-weight:700;letter-spacing:0;color:#ffe6a8}
+html body .ach:not(.done) .nm{color:#f6ead2}
+html body .rank .pos,html body .rank .pts{font-family:'Grenze',Georgia,serif;font-weight:700}
+html body #toast .t1{font-family:'Grenze',Georgia,serif;font-weight:700}
+html body h2,html body .logo,html body .sp-logo,html body .side-title,html body .mt-h,html body #banner .b2,html body #bossCard .bc2,html body .co-name,html body #btnPlay{font-family:Rye,serif;font-weight:400}
+html body .big{font-family:Rye,serif;font-weight:400}
+html body .side-panel{width:min(400px,94vw)}
+html body .side-h{margin:8px 4px 0;font-size:13px;color:#e0b878;letter-spacing:.14em}
+html body .side-h:first-of-type{margin-top:0}
+html body .side-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+html body .side-list{gap:6px}
+html body .side-item{position:relative;flex-direction:column;justify-content:center;gap:5px;min-height:74px;padding:8px 4px 7px;text-align:center;font:700 15px 'Grenze',Georgia,serif;line-height:1.1;border-radius:12px;border:2px solid #b8863a;background:linear-gradient(180deg,#5a3a24,#3e2716);box-shadow:inset 0 0 0 1px #2a1a0c,0 3px 0 #0e0f11;color:#f6ead2}
+html body .side-item svg{width:28px;height:28px;color:#e0b878}
+html body .side-item .lbl{flex:none;min-width:0;overflow-wrap:anywhere}
+html body .side-item .count,html body .side-item .goldtag{font-size:12.5px;line-height:1}
+html body .side-item .goldtag .coin{transform:scale(.8)}
+html body .side-item .qbadge{position:absolute;top:4px;right:4px;margin:0}
+html body .side-item.glow{border-color:#5dffa0;box-shadow:0 0 12px rgba(93,255,160,.4),0 3px 0 #0e0f11}
+html body .choice .ds{font-size:17px;line-height:1.35;color:#f2e2c4}
+html body .choice .ds b.hl{color:#7dff9a;font-weight:700}
+html body .choice .nm{font-family:'Grenze',Georgia,serif;font-weight:700;font-size:26px;color:#ffe6a8}
+html body .choice .tag{font-size:13px}
+html body #newsOv{position:fixed;inset:0;z-index:45;background:rgba(8,6,4,.78);display:flex;align-items:center;justify-content:center;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-y:auto}
+html body #newsOv[hidden]{display:none}
+html body .news-card{width:min(460px,100%);display:flex;flex-direction:column;gap:12px;padding:20px 18px;border-radius:14px;border:3px solid #b8863a;background:linear-gradient(180deg,#5a3a24,#3e2716);box-shadow:inset 0 0 0 2px #2a1a0c,0 12px 34px rgba(0,0,0,.6)}
+html body .news-top{display:flex;align-items:center;gap:12px}
+html body .news-top canvas{width:64px;height:64px;flex:none}
+html body .news-card h2{font-size:32px;margin:0}
+html body .news-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+html body .news-list li{display:flex;gap:10px;align-items:flex-start;font-size:17px;line-height:1.35;color:#f6ead2}
+html body .news-list li i.ic,html body .news-list .ni{flex:none;width:28px;height:28px;display:grid;place-items:center;font-style:normal;font-size:20px}
+html body .news-list b{color:#ffe6a8}
+html body .news-card .btn{align-self:stretch}
+html body #tip{background:linear-gradient(180deg,rgba(90,58,36,.96),rgba(62,39,22,.96));border:2px solid #b8863a;box-shadow:inset 0 0 0 1px #2a1a0c,0 6px 16px rgba(0,0,0,.45)}
+html body #tip .tl{color:#7dff9a}
+html body #tip .tt{color:#f6ead2;font-size:17px}
 </style>
 </head>
 <body>
@@ -1157,29 +1202,36 @@ html body .rank:nth-child(3) .pos{color:#e0965a}
     <div class="side-head"><span class="side-title">Menu</span><span class="goldtag"><i class="coin"></i><span id="sideGold"></span></span><button class="side-x" id="sideClose" type="button" aria-label="Fermer le menu">✕</button></div>
     <div class="side-list" id="sideList">
       <p class="side-h">Récompenses</p>
-      <button id="btnGiftDay" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9C10 5 5.5 5 6.2 7.8 6.7 9.6 12 9 12 9zm0 0c2-4 6.5-4 5.8-1.2C17.3 9.6 12 9 12 9z"/></svg><span class="lbl">Cadeau du jour</span><span class="qbadge" id="giftDayBadge" hidden>1</span></button>
-      <button id="btnSeason" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 8.8l6-.7z"/></svg><span class="lbl">Passe de saison</span><span class="qbadge" id="seasonBadge" hidden></span></button>
-      <button id="btnQuest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8.5l1.6 1.6L13.5 7M8.5 14h7M8.5 17h5"/></svg><span class="lbl">Quêtes</span><span class="qbadge" id="questCount" hidden></span></button>
-      <button id="btnGiftOpen" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3.5a2 2 0 0 0 0 4V18H3v-3.5a2 2 0 0 0 0-4z"/><path d="M14.5 7v11" stroke-dasharray="2 2.2"/></svg><span class="lbl">Code cadeau</span></button>
-      <p class="side-h">Ma créature</p>
-      <button id="btnHero" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 21c.8-4.4 3.8-7 7.5-7s6.7 2.6 7.5 7"/></svg><span class="lbl">Mon perso</span></button>
-      <button id="btnStore" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg><span class="lbl">Boutique</span></button>
-      <button id="btnShop" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 17V8M8 11l4-4 4 4"/></svg><span class="lbl">Améliorations</span><span class="goldtag"><i class="coin"></i><span id="titleGold"></span></span></button>
-      <p class="side-h">Ma collection</p>
-      <button id="btnBest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5V5.5M9 7h6"/></svg><span class="lbl">Bestiaire</span><span class="count" id="bestCount"></span></button>
-      <button id="btnBook" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/></svg><span class="lbl">Livre des objets</span></button>
-      <button id="btnDex" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg><span class="lbl">Bestiodex</span></button>
-      <button id="btnTrophy" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M8 20h8"/></svg><span class="lbl">Salle des trophées</span></button>
-      <button id="btnAch" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3.5 4M16 6h3a3 3 0 0 1-3.5 4M12 13v4M8 21h8M10 17h4v4h-4z"/></svg><span class="lbl">Succès</span><span class="count" id="achCount"></span></button>
-      <button id="btnStory" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6M8 11h6"/></svg><span class="lbl">Histoire</span></button>
-      <p class="side-h">Amis</p>
-      <button id="btnFriends" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20C6 16 3 12.5 3 8.8 3 6.2 5 4 7.6 4c1.8 0 3.4 1 4.4 2.6C13 5 14.6 4 16.4 4 19 4 21 6.2 21 8.8 21 12.5 18 16 12 20z"/></svg><span class="lbl">Amis</span><span class="qbadge" id="frBadge" hidden></span></button>
-      <button id="btnRank" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20v-6h4v6M10 20V8h4v12M15 20v-9h4v9"/></svg><span class="lbl">Classement</span></button>
-      <p class="side-h">Réglages</p>
-      <button id="btnSettings" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3"/><circle cx="12" cy="12" r="6.5"/></svg><span class="lbl">Paramètres</span></button>
-      <button id="btnSave" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg><span class="lbl">Sauvegarde</span></button>
-      <button id="btnHelp" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.6"/><path d="M12 17.2v.1"/></svg><span class="lbl">Comment jouer</span></button>
-      <button id="btnInstall" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span class="lbl">Installer le jeu</span></button>
+      <div class="side-grid">
+        <button id="btnGiftDay" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9C10 5 5.5 5 6.2 7.8 6.7 9.6 12 9 12 9zm0 0c2-4 6.5-4 5.8-1.2C17.3 9.6 12 9 12 9z"/></svg><span class="lbl">Cadeau du jour</span><span class="qbadge" id="giftDayBadge" hidden>1</span></button>
+        <button id="btnSeason" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 8.8l6-.7z"/></svg><span class="lbl">Passe de saison</span><span class="qbadge" id="seasonBadge" hidden></span></button>
+        <button id="btnQuest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8.5l1.6 1.6L13.5 7M8.5 14h7M8.5 17h5"/></svg><span class="lbl">Quêtes</span><span class="qbadge" id="questCount" hidden></span></button>
+      </div>
+      <p class="side-h">Ma bestiole</p>
+      <div class="side-grid">
+        <button id="btnHero" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 21c.8-4.4 3.8-7 7.5-7s6.7 2.6 7.5 7"/></svg><span class="lbl">Mon perso</span></button>
+        <button id="btnStore" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg><span class="lbl">Boutique</span></button>
+        <button id="btnShop" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 17V8M8 11l4-4 4 4"/></svg><span class="lbl">Améliorations</span><span class="goldtag"><i class="coin"></i><span id="titleGold"></span></span></button>
+      </div>
+      <p class="side-h">Collection</p>
+      <div class="side-grid">
+        <button id="btnBest" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5V5.5M9 7h6"/></svg><span class="lbl">Bestiaire</span><span class="count" id="bestCount"></span></button>
+        <button id="btnBook" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/></svg><span class="lbl">Livre des objets</span></button>
+        <button id="btnDex" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg><span class="lbl">Bestiodex</span></button>
+        <button id="btnTrophy" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M8 20h8"/></svg><span class="lbl">Trophées</span></button>
+        <button id="btnAch" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3.5 4M16 6h3a3 3 0 0 1-3.5 4M12 13v4M8 21h8M10 17h4v4h-4z"/></svg><span class="lbl">Succès</span><span class="count" id="achCount"></span></button>
+        <button id="btnStory" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6M8 11h6"/></svg><span class="lbl">Histoire</span></button>
+      </div>
+      <p class="side-h">Amis et réglages</p>
+      <div class="side-grid">
+        <button id="btnFriends" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20C6 16 3 12.5 3 8.8 3 6.2 5 4 7.6 4c1.8 0 3.4 1 4.4 2.6C13 5 14.6 4 16.4 4 19 4 21 6.2 21 8.8 21 12.5 18 16 12 20z"/></svg><span class="lbl">Amis</span><span class="qbadge" id="frBadge" hidden></span></button>
+        <button id="btnRank" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20v-6h4v6M10 20V8h4v12M15 20v-9h4v9"/></svg><span class="lbl">Classement</span></button>
+        <button id="btnGiftOpen" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3.5a2 2 0 0 0 0 4V18H3v-3.5a2 2 0 0 0 0-4z"/><path d="M14.5 7v11" stroke-dasharray="2 2.2"/></svg><span class="lbl">Code cadeau</span></button>
+        <button id="btnSettings" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3"/><circle cx="12" cy="12" r="6.5"/></svg><span class="lbl">Paramètres</span></button>
+        <button id="btnSave" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg><span class="lbl">Sauvegarde</span></button>
+        <button id="btnHelp" class="side-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.6"/><path d="M12 17.2v.1"/></svg><span class="lbl">Comment jouer</span></button>
+        <button id="btnInstall" class="side-item" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span class="lbl">Installer le jeu</span></button>
+      </div>
     </div>
     <p class="record side-rec" id="record"></p>
   </nav>
@@ -1195,6 +1247,18 @@ html body .rank:nth-child(3) .pos{color:#e0965a}
   <button type="button" class="mt-link" id="mtOwner">Je suis le créateur</button>
   <div class="mt-code" id="mtCodeBox" hidden><input id="mtCode" type="text" autocomplete="off" autocapitalize="characters" placeholder="Code secret" aria-label="Code secret"><button type="button" class="btn" id="mtOk">OK</button></div>
   <p class="mt-msg" id="mtMsg"></p></div></div>
+<div id="newsOv" hidden role="dialog" aria-modal="true" aria-labelledby="newsH"><div class="news-card">
+  <div class="news-top"><canvas id="newsOwl" width="128" height="128" aria-hidden="true"></canvas><div><p class="small-h">Mise à jour</p><h2 id="newsH">Quoi de neuf ?</h2></div></div>
+  <ul class="news-list">
+    <li><span class="ni">🎨</span><span><b>Nouveau style</b> pour tous les menus : cuir, laiton et runes vertes.</span></li>
+    <li><span class="ni">🏆</span><span><b>Classement en ligne</b> : tout le monde, le défi du jour et tes amis. Chaque lundi, le <b>top 3 de la semaine</b> gagne un titre et de l'or !</span></li>
+    <li><span class="ni">🎁</span><span><b>Butin de fin de partie</b> : un coffre s'ouvre avec des équipements. Plus tu vas loin, plus ils sont rares.</span></li>
+    <li><span class="ni">💰</span><span><b>L'or est plus rare</b> et les améliorations plus chères : chaque pièce compte !</span></li>
+    <li><span class="ni">⭐</span><span>Les <b>salles secrètes</b> s'ouvrent quand tu t'approches du mur fissuré. Plus besoin de bombe !</span></li>
+    <li><span class="ni">🔥</span><span>À haut niveau, tes tirs <b>n'éblouissent plus</b> l'écran.</span></li>
+  </ul>
+  <button type="button" class="btn primary" id="newsOk">C'est parti !</button>
+</div></div>
 <div id="splash"><div class="sp-in"><p class="sp-logo">Bestiolins</p><canvas id="spCv" width="320" height="320"></canvas><div class="sp-bar"><i id="spBar"></i></div><p class="sp-txt" id="spTxt">Chargement du jeu…</p><div class="sp-tip"><canvas id="spOwl" width="128" height="128"></canvas><span><b>Hulotte dit :</b><span id="spTipTxt"></span></span></div></div></div>
 <section id="scrTitle" class="screen">
   <div class="panel title-panel">
@@ -2336,7 +2400,7 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq),rk:(s.rk&&typeof s.rk==='object'&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.w||''))?{w:s.rk.w,s:Math.max(0,Math.min(1e8,+s.rk.s|0)),lw:(s.rk.lw&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.lw.w||''))?{w:s.rk.lw.w,s:Math.max(0,Math.min(1e8,+s.rk.lw.s|0))}:null}:null,rkAw:typeof s.rkAw==='string'?s.rkAw:'',upPaid:(s.upPaid!=null&&Number.isFinite(+s.upPaid))?Math.max(0,Math.round(+s.upPaid)):null};}catch(e){}
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq),newsSeen:typeof s.newsSeen==='string'?s.newsSeen:'',rk:(s.rk&&typeof s.rk==='object'&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.w||''))?{w:s.rk.w,s:Math.max(0,Math.min(1e8,+s.rk.s|0)),lw:(s.rk.lw&&/^\d{4}-\d{2}-\d{2}$/.test(s.rk.lw.w||''))?{w:s.rk.lw.w,s:Math.max(0,Math.min(1e8,+s.rk.lw.s|0))}:null}:null,rkAw:typeof s.rkAw==='string'?s.rkAw:'',upPaid:(s.upPaid!=null&&Number.isFinite(+s.upPaid))?Math.max(0,Math.round(+s.upPaid)):null};}catch(e){}
   return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,hardBest:0,reineDay:'',bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},evoSeen:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
@@ -5554,7 +5618,7 @@ function hudGold(){const now=performance.now(),dt=Math.min(0.1,(now-(HUDG.t||now
   if(HUDG.g==null||Math.abs(g-HUDG.g)>3000)HUDG.g=g;
   if(HUDG.g!==g){const d=g-HUDG.g,st=Math.max(1,Math.ceil(Math.abs(d)*Math.min(1,dt*7)));HUDG.g+=Math.sign(d)*Math.min(Math.abs(d),st);if(d>0)HUDG.pop=1;}
   HUDG.pop=Math.max(0,HUDG.pop-dt*3);return HUDG.g;}
-function hudBack(x,y,w,h){ctx.fillStyle='rgba(10,6,4,0.66)';rrect(ctx,x,y,w,h,5);ctx.fill();}
+function hudBack(x,y,w,h){ctx.fillStyle='rgba(10,8,6,0.72)';rrect(ctx,x,y,w,h,6);ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='rgba(184,134,58,0.55)';ctx.stroke();}
 function heartsRow(x,cy0,hs0,hp,maxHp){
   const n=Math.ceil(maxHp/2),gap=2,sh=(run&&run.hurtFx||0)*2.4,last=Math.ceil(hp/2)-1,tt=performance.now()/1000;
   for(let i=0;i<n;i++){
@@ -5573,7 +5637,7 @@ function drawHUDOverlay(){
   ctx.textAlign='left';ctx.textBaseline='middle';
   /* top-left: hearts, level, XP */
   const hearts=Math.ceil(P.maxHp/2);let hs=Math.min(17,band-7);if(hearts>7)hs=Math.min(hs,13);
-  ctx.font='700 14px Grenze, Georgia, serif';
+  ctx.font='700 16px Grenze, Georgia, serif';
   const lt='Niv. '+run.lvl,ltw=ctx.measureText(lt).width,tag=isLocal()?'J1':'',tagw=tag?ctx.measureText(tag).width+6:0;
   const hw=Math.ceil(P.maxHp/2)*(hs+2)-2;
   const bw=Math.max(34,Math.min(96,doorL-(lx+tagw+hw+12+ltw+6)));
@@ -5581,20 +5645,20 @@ function drawHUDOverlay(){
   let x=lx;
   if(tag){ctx.fillStyle=PL_COL[0];ctx.fillText(tag,x,cy);x+=tagw;}
   heartsRow(x,cy,hs,P.hp,P.maxHp);x+=hw+12;
-  ctx.fillStyle='#7fd3ff';ctx.fillText(lt,x,cy+1);x+=ltw+6;
+  ctx.fillStyle='#9fe0ff';ctx.fillText(lt,x,cy+1);x+=ltw+6;
   const f=clamp(run.xp/xpNeed(run.lvl),0,1);
   rrect(ctx,x,cy-4,bw,8,4);ctx.fillStyle='#120c09';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle='#5a4537';ctx.stroke();
   if(f>0){rrect(ctx,x+1.5,cy-2.5,Math.max(5,(bw-3)*f),5,2.5);ctx.fillStyle='#7fd3ff';ctx.fill();}
   /* bottom-left: gold and floor */
   const gt=String(hudGold());
-  ctx.font='700 14px Grenze, Georgia, serif';const bt='×'+(P.bombs|0),gw0=16+ctx.measureText(gt).width,gw=gw0+12+12+ctx.measureText(bt).width;
-  let ft=floorLabel()+' · '+FL(run.floor).name;ctx.font='700 13px Grenze, Georgia, serif';
+  ctx.font='700 16px Grenze, Georgia, serif';const bt='×'+(P.bombs|0),gw0=16+ctx.measureText(gt).width,gw=gw0+12+12+ctx.measureText(bt).width;
+  let ft=floorLabel()+' · '+FL(run.floor).name;ctx.font='700 15px Grenze, Georgia, serif';
   if(lx+gw+14+ctx.measureText(ft).width>doorL)ft=floorLabel();
   const fw=ctx.measureText(ft).width;
   hudBack(lx-6,bot+2,gw+14+fw+12,band-4);
-  drawCoin(ctx,lx+6,by,6);ctx.font='700 14px Grenze, Georgia, serif';ctx.fillStyle=HUDG.pop>0?'#fff2b0':'#f5c542';ctx.fillText(gt,lx+16,by+1);
-  drawBomb(ctx,lx+gw0+16,by+2,5.5,false);ctx.fillStyle='#ece0c8';ctx.fillText(bt,lx+gw0+24,by+1);
-  ctx.font='700 13px Grenze, Georgia, serif';ctx.fillStyle='#d8c7ab';ctx.fillText(ft,lx+gw+14,by+1);
+  drawCoin(ctx,lx+6,by,6.5);ctx.font='700 16px Grenze, Georgia, serif';ctx.fillStyle=HUDG.pop>0?'#fff2b0':'#f5c542';ctx.fillText(gt,lx+16,by+1);
+  drawBomb(ctx,lx+gw0+16,by+2,6,false);ctx.fillStyle='#fff3dc';ctx.fillText(bt,lx+gw0+24,by+1);
+  ctx.font='700 15px Grenze, Georgia, serif';ctx.fillStyle='#f2e2c4';ctx.fillText(ft,lx+gw+14,by+1);
   /* bottom-right: abilities and items */
   const icons=[];for(const id in P.abil)icons.push(['a',id]);for(const id of P.items)icons.push(['i',id]);
   const rx=L.rx+L.rw-Math.max(10,band*0.45),per=Math.max(0,Math.floor((rx-doorR)/16)),n=Math.min(icons.length,per);
@@ -5618,18 +5682,19 @@ function drawHUD(){
   if(isLocal()){ctx.font='700 13px Grenze, Georgia, serif';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle=PL_COL[0];
     ctx.fillText(P.down?'Joueur 1 (tombé)':'Joueur 1',x0+Math.min(6,hearts)*(hs+gap)+4,y0+hs/2);ctx.textBaseline='alphabetic';}
   let y=y0+Math.ceil(hearts/6)*(hs+2)+6;
-  ctx.font='700 15px Grenze, Georgia, serif';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#7fd3ff';
-  const lt='Niv. '+run.lvl;ctx.fillText(lt,x0,y+5);
+  ctx.font='700 18px Grenze, Georgia, serif';ctx.textAlign='left';ctx.textBaseline='middle';
+  const lt='Niv. '+run.lvl;
+  {ctx.font='700 18px Grenze, Georgia, serif';const gw=ctx.measureText(String(hudGold())).width,lw=ctx.measureText(lt).width,tot=L.portrait?lw+8+110+14+22+gw+30:Math.max(lw+8+110,60+gw);hudBack(x0-6,y-6,tot+12,L.portrait?24:48);}
+  ctx.fillStyle='#9fe0ff';ctx.fillText(lt,x0,y+5);
   const bx=x0+ctx.measureText(lt).width+8,bw=110,f=clamp(run.xp/xpNeed(run.lvl),0,1);
   rrect(ctx,bx,y+1,bw,9,4.5);ctx.fillStyle='#120c09';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle='#5a4537';ctx.stroke();
   if(f>0){rrect(ctx,bx+1.5,y+2.5,Math.max(6,(bw-3)*f),6,3);ctx.fillStyle='#7fd3ff';ctx.fill();}
   let gx=bx+bw+14,gy=y+5;if(!L.portrait){y+=22;gx=x0+6;gy=y+5;}
-  drawCoin(ctx,gx,gy,6);ctx.font='700 15px Grenze, Georgia, serif';const gtx=String(hudGold());ctx.fillStyle=HUDG.pop>0?'#fff2b0':'#f5c542';ctx.fillText(gtx,gx+10,gy+1);
-  {const bx=gx+22+ctx.measureText(gtx).width;drawBomb(ctx,bx,gy+2,5.5,false);ctx.fillStyle='#ece0c8';ctx.fillText('×'+(P.bombs|0),bx+8,gy+1);}
+  drawCoin(ctx,gx,gy,7);ctx.font='700 18px Grenze, Georgia, serif';const gtx=String(hudGold());ctx.fillStyle=HUDG.pop>0?'#fff2b0':'#f5c542';ctx.fillText(gtx,gx+10,gy+1);
+  {const bx=gx+24+ctx.measureText(gtx).width;drawBomb(ctx,bx,gy+2,6.5,false);ctx.fillStyle='#fff3dc';ctx.fillText('×'+(P.bombs|0),bx+9,gy+1);}
   ctx.textBaseline='alphabetic';
-  y+=28;
-  ctx.font='700 14px Grenze, Georgia, serif';ctx.fillStyle='#b9a78d';
-  ctx.fillText(floorLabel()+' · '+FL(run.floor).name,x0,y);
+  y+=30;
+  {ctx.font='700 16px Grenze, Georgia, serif';const ft=floorLabel()+' · '+FL(run.floor).name;hudBack(x0-6,y-16,ctx.measureText(ft).width+12,22);ctx.fillStyle='#f2e2c4';ctx.fillText(ft,x0,y);}
   y+=13;
   const icons=[];for(const id in P.abil)icons.push(['a',id]);for(const id of P.items)icons.push(['i',id]);
   const per=Math.max(6,Math.floor(((L.portrait?W-16:L.rx-8)-x0)/17));
@@ -6429,6 +6494,10 @@ function openLevelUp(){
   const sub=run.local?('Joueur '+(wi+1)+' : choisis ta capacité, puis touche-la encore.'):duo?'Choisis ta capacité (touche-la, puis touche-la encore). '+(NET&&NET.gs&&NET.gs.length>1?'Tes amis choisissent la leur sur leur téléphone.':'Ton ami choisit la sienne sur son téléphone.'):'Touche la capacité que tu veux, puis touche-la encore pour la prendre.';
   showChoices(opts,(run.local?'Joueur '+(wi+1)+' · ':'')+'Niveau '+lvN+' !',sub,who);
 }
+/* numbers that say what a choice changes (+20 %, 2 cœurs, ×2…) are shown in green */
+function hlNums(el,txt){el.textContent='';const re=/([+\-−×x]?\s?\d+(?:[.,]\d+)?\s?(?:%|×|cœurs?|secondes?|s\b|fois)?)/g;let last=0,m;txt=String(txt||'');
+  while((m=re.exec(txt))){if(m.index>last)el.append(txt.slice(last,m.index));const b=document.createElement('b');b.className='hl';b.textContent=m[1];el.append(b);last=m.index+m[1].length;}
+  if(last<txt.length)el.append(txt.slice(last));}
 function showChoices(opts,title,sub,who){
   who=who||P;
   state='levelup';show('scrLevel');pauseBtn.hidden=true;resetSticks();sfx('level');lvOpenAt=performance.now();
@@ -6442,7 +6511,7 @@ function showChoices(opts,title,sub,who){
     const info=document.createElement('div');info.className='info';
     const tag=document.createElement('span');tag.className='tag';tag.textContent=cur?('Niveau '+(cur+1)+' sur '+a.max):'Nouvelle capacité';
     const nm=document.createElement('span');nm.className='nm';nm.textContent=a.name;
-    const ds=document.createElement('span');ds.className='ds';ds.textContent=a.lv[cur];
+    const ds=document.createElement('span');ds.className='ds';hlNums(ds,a.lv[cur]);
     const cf=document.createElement('span');cf.className='cf';cf.textContent='Touche encore pour la prendre';
     info.append(tag,nm,ds,cf);b.append(cv,info);
     b.addEventListener('click',()=>chooseAbility(id,sub));box.appendChild(b);
@@ -6666,7 +6735,7 @@ function buyUp(id){
 function b64uEnc(str){const by=new TextEncoder().encode(str);let bin='';for(const b of by)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function b64uDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const bin=atob(s),by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return new TextDecoder().decode(by);}
 function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
-const SAVE_EXTRA=['rk','rkAw','evoSeen','hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
+const SAVE_EXTRA=['newsSeen','rk','rkAw','evoSeen','hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(i<30&&save.seen[id])mask|=1<<i;});
   const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
@@ -7689,6 +7758,15 @@ function maintCheck(){const m=$('maint');if(!m)return;const on=MAINT&&!maintOk()
   if(on){try{drawOwl($('mtOwl'),1);}catch(e){}if(!maintIv&&CB_SA)maintIv=setInterval(()=>{try{checkUpdate();}catch(e){}},60*1000);}
   else if(maintIv){clearInterval(maintIv);maintIv=0;}}
 setTimeout(maintCheck,0);
+/* "What's new": shown once after this update to players who already played before */
+const NEWS_ID='2026-11-cuivre';
+function newsCheck(){try{if(window.CB_NOSPLASH||save.newsSeen===NEWS_ID)return;
+  if(!save.tutoDone&&!(save.best|0)){save.newsSeen=NEWS_ID;persist();return;}
+  const m=$('maint');if(m&&!m.hidden){setTimeout(newsCheck,3000);return;}
+  if(state!=='title'||!$('splash').hidden){setTimeout(newsCheck,800);return;}
+  try{drawOwl($('newsOwl'),1);}catch(e){}$('newsOv').hidden=false;}catch(e){}}
+setTimeout(newsCheck,1500);
+$('newsOk').addEventListener('click',()=>{audioUnlock();sfx('coin');$('newsOv').hidden=true;save.newsSeen=NEWS_ID;persist();});
 document.addEventListener('keydown',e=>{const m=$('maint');if(m&&!m.hidden&&e.target!==$('mtCode')){e.stopPropagation();}},true);
 $('mtRetry').addEventListener('click',()=>{$('mtMsg').textContent='Je vérifie…';try{if(CB_SA)checkUpdate();}catch(e){}setTimeout(()=>{if(NEWVER){try{forceUpdate();}catch(e){location.reload();}}else{$('mtMsg').textContent='Pas encore prêt… Reviens un peu plus tard !';}},2500);});
 $('mtOwner').addEventListener('click',()=>{$('mtCodeBox').hidden=false;$('mtCode').focus();});
