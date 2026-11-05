@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261031111634';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261031111634" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105111648';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105111648" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -219,6 +219,14 @@ button:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
 .actions.small .btn{font-size:16px;min-height:44px;padding:6px 14px}
 .ovscore{margin:-6px 0 0;font-family:var(--font-display);font-weight:900;font-size:26px;color:#f5c542}
 .ovdaily{margin:0;font-size:16px;color:#c6f08a}
+#ovLoot{margin:4px 0;padding:10px 12px;border:2px solid var(--stone-edge);border-radius:10px;background:rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;gap:8px}
+#ovLoot[hidden]{display:none}
+#ovLoot .ol-h{margin:0;font-family:var(--font-display);font-weight:900;font-size:22px;color:var(--torch)}
+#ovLoot .ol-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+#ovLoot .ol-it{display:flex;flex-direction:column;align-items:center;width:100px;text-align:center;font-size:14px;line-height:1.15;gap:3px}
+#ovLoot .ol-it canvas{width:60px;height:60px;border-radius:10px}
+#ovLoot .ol-it small{color:var(--bone-dim);font-size:12px}
+#ovLoot .ol-note{margin:0;font-size:14px;color:var(--bone-dim)}
 .achlist,.ranklist{display:flex;flex-direction:column;gap:8px}
 .ach{display:flex;gap:12px;align-items:center;background:var(--stone);border:2px solid var(--stone-edge);border-radius:6px;padding:10px 12px}
 .ach.done{border-color:#b8862a;background:#30241a}
@@ -1679,7 +1687,7 @@ html.big-text #toast .t1{font-size:1.1em}
     <p class="lede" id="ovText"></p>
     <p class="ovscore" id="ovScore"></p>
     <p class="ovdaily" id="ovDaily" hidden></p>
-    <p class="ovdaily ovloot" id="ovLoot" hidden></p>
+    <div id="ovLoot" hidden><p class="ol-h">🎁 Ton butin de fin de partie</p><div class="ol-row" id="ovLootRow"></div><p class="ol-note" id="ovLootNote"></p><button type="button" class="btn" id="ovLootGo">Voir mes équipements</button></div>
     <p class="ovdaily ovseason" id="ovSeason" hidden></p>
     <div class="sumgrid">
       <div class="sum"><b id="ovFloor"></b><span>Étage atteint</span></div>
@@ -1802,8 +1810,8 @@ const starterOpen=id=>!STARTERS[id].price||!!(save.unlocked&&save.unlocked[id]);
 const DIFF=[
   {name:'Facile',hp:0.65,spd:0.9,shot:0.85,extra:-1,gold:0.8,score:0.6,hurt:1,boss:0.9,bossT:0,eliteT:0,desc:"Les monstres ont moins de vie et tirent moins vite, et tu as un cœur de plus. Parfait pour apprendre."},
   {name:'Normal',hp:1,spd:1,shot:1,extra:0,gold:1,score:1,hurt:1,boss:1,bossT:16,eliteT:5,desc:'Le jeu comme prévu.'},
-  {name:'Difficile',hp:1.75,spd:1.12,shot:1.22,extra:1,gold:1.3,score:1.5,hurt:1.5,boss:1.25,bossT:32,eliteT:10,desc:"Monstres plus costauds, plus rapides et plus nombreux. Les boss attaquent plus vite, et chaque coup enlève un cœur entier. Tu gagnes 30 % d'or en plus !"},
-  {name:'Extrême',hp:2.4,spd:1.2,shot:1.32,extra:2,gold:1.6,score:2,hurt:2,boss:1.4,bossT:48,eliteT:15,desc:"Pour les experts seulement : monstres énormes, tirs très rapides, boss déchaînés et coups qui font très mal. 60 % d'or en plus !"}
+  {name:'Difficile',hp:1.75,spd:1.12,shot:1.22,extra:1,gold:1.2,score:1.5,hurt:1.5,boss:1.25,bossT:32,eliteT:10,desc:"Monstres plus costauds, plus rapides et plus nombreux. Les boss attaquent plus vite, et chaque coup enlève un cœur entier. Tu gagnes 20 % d'or en plus !"},
+  {name:'Extrême',hp:2.4,spd:1.2,shot:1.32,extra:2,gold:1.4,score:2,hurt:2,boss:1.4,bossT:48,eliteT:15,desc:"Pour les experts seulement : monstres énormes, tirs très rapides, boss déchaînés et coups qui font très mal. 40 % d'or en plus !"}
 ];
 function teamDps(){
   let t=0;
@@ -2051,11 +2059,12 @@ const UPGRADES=[
   {id:'vitesse',name:'Pattes légères',max:6,max0:4,base:20,desc:'Tu cours 5 % plus vite.',icon:['a','agile'],apply:(p,l)=>{p.speed*=1+0.05*l;}},
   {id:'portee',name:'Regard perçant',max:5,max0:3,base:20,desc:'Tes tirs vont 10 % plus loin.',icon:['i','lynx'],apply:(p,l)=>{p.range*=1+0.1*l;}},
   {id:'chance',name:'Porte-bonheur',max:5,max0:3,base:30,desc:'Tu trouves plus de cœurs.',icon:['i','trefle'],apply:(p,l)=>{p.luck+=l;}},
-  {id:'bourse',name:'Bourse profonde',max:6,max0:4,base:35,desc:"Tu gagnes 20 % d'or en plus.",icon:['c','coin'],apply:(p,l)=>{p.goldMul+=0.2*l;}},
+  {id:'bourse',name:'Bourse profonde',max:6,max0:4,base:35,desc:"Tu gagnes 15 % d'or en plus.",icon:['c','coin'],apply:(p,l)=>{p.goldMul+=0.15*l;}},
   {id:'sagesse',name:'Sagesse',max:8,max0:4,base:30,desc:"Tu gagnes 15 % d'XP en plus.",icon:['c','xp'],apply:(p,l)=>{p.xpMul+=0.15*l;}},
   {id:'aimant',name:'Aimant à or',max:4,max0:2,base:25,desc:'Les pièces viennent à toi de plus loin.',icon:['c','magnet'],apply:(p,l)=>{p.magnet+=35*l;}}
 ];
-const upCost=(u,lv)=>lv<(u.max0||u.max)?Math.round(u.base*(1+lv*0.9)):Math.round(u.base*(1+u.max0*0.9)*Math.pow(1.6,lv-u.max0+1));
+const upCost0=(u,lv)=>lv<(u.max0||u.max)?Math.round(u.base*(1+lv*0.9)):Math.round(u.base*(1+u.max0*0.9)*Math.pow(1.6,lv-u.max0+1));
+const UP_K=1.6,upCost=(u,lv)=>Math.round(upCost0(u,lv)*UP_K);
 
 const FLOORS=[
   {name:'Les Caves',pool:{gloupin:4,chauvelin:3,petouille:2},boss:'gloupitan',
@@ -2223,7 +2232,7 @@ function loadSave(raw){
   try{const s=raw!==undefined?raw:JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(raw===undefined)loadSave.fresh=!s;
     if(s&&typeof s==='object')return{seen:s.seen||{},kills:s.kills||{},best:s.best||0,wins:s.wins||0,auto:!!s.auto,sound:s.sound!==false,lowq:!!s.lowq,gold:Math.max(0,s.gold|0),up:(s.up&&typeof s.up==='object')?s.up:{},
       gifts:Array.isArray(s.gifts)?s.gifts.filter(n=>Number.isInteger(n)&&n>=0):[],bag:Array.isArray(s.bag)?s.bag.filter(x=>x==='?'||Object.prototype.hasOwnProperty.call(ITEMS,x)).slice(0,12):[],
-      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq)};}catch(e){}
+      mod:!!s.mod,modOpts:(s.modOpts&&typeof s.modOpts==='object')?s.modOpts:{},unlocked:(s.unlocked&&typeof s.unlocked==='object')?s.unlocked:{},ach:(s.ach&&typeof s.ach==='object')?s.ach:{},stats:(s.stats&&typeof s.stats==='object')?s.stats:{},combos:(s.combos&&typeof s.combos==='object')?s.combos:{},diff:[0,1,2,3].includes(s.diff)?s.diff:1,pets:(s.pets&&typeof s.pets==='object')?s.pets:{},petSel:typeof s.petSel==='string'?s.petSel:'',skins:(s.skins&&typeof s.skins==='object')?s.skins:{},skin:(s.skin&&typeof s.skin==='object')?s.skin:{},hats:(s.hats&&typeof s.hats==='object')?s.hats:{},hat:typeof s.hat==='string'?s.hat:'',sfxs:(s.sfxs&&typeof s.sfxs==='object')?s.sfxs:{},sfx:typeof s.sfx==='string'?s.sfx:'',quests:Array.isArray(s.quests)?s.quests.filter(q=>q&&typeof q==='object'&&typeof q.id==='string'):[],dailyDone:typeof s.dailyDone==='string'?s.dailyDone:'',dailyBest:(s.dailyBest&&typeof s.dailyBest==='object')?s.dailyBest:null,music:s.music!==false,tips:s.tips!==false,dmgNums:s.dmgNums!==false,tuto:(s.tuto&&typeof s.tuto==='object')?s.tuto:{},rushBest:Math.max(0,Math.min(6,s.rushBest|0)),giftDay:typeof s.giftDay==='string'?s.giftDay:'',giftStreak:Math.max(0,Math.min(999,s.giftStreak|0)),anim:s.anim!==false,vib:s.vib!==false,hardBest:Math.max(0,+s.hardBest|0),reineDay:typeof s.reineDay==='string'?s.reineDay:'',wiped:+s.wiped||0,bigText:!!s.bigText,cb:!!s.cb,found:(s.found&&typeof s.found==='object')?s.found:{},tw:(s.tw&&typeof s.tw==='object'&&typeof s.tw.w==='string')?s.tw:null,trophies:(s.trophies&&typeof s.trophies==='object')?s.trophies:{},story:(s.story&&typeof s.story==='object')?s.story:{},candy:Math.max(0,+s.candy|0),wk:(s.wk&&typeof s.wk==='object'&&Array.isArray(s.wk.m))?s.wk:null,survBest:Math.max(0,Math.min(9999,+s.survBest|0)),teamBest:(s.teamBest&&typeof s.teamBest==='object'&&Array.isArray(s.teamBest.m))?{f:Math.max(0,+s.teamBest.f|0),m:s.teamBest.m.slice(0,4).map(x=>String(x).slice(0,16))}:null,vm:Number.isFinite(+s.vm)?Math.max(0,Math.min(100,+s.vm)):100,vs:Number.isFinite(+s.vs)?Math.max(0,Math.min(100,+s.vs)):100,tutoDone:s.tutoDone!=null?!!s.tutoDone:!!((s.best|0)>0||(s.wins|0)>0),ctl:cleanCtl(s.ctl),titles:(s.titles&&typeof s.titles==='object')?s.titles:{},evoSeen:(s.evoSeen&&typeof s.evoSeen==='object')?s.evoSeen:{},title:typeof s.title==='string'?s.title:'debut',season:(s.season&&typeof s.season==='object'&&typeof s.season.id==='string')?{id:s.season.id,pts:Math.max(0,s.season.pts|0),got:Array.isArray(s.season.got)?s.season.got.filter(n=>Number.isInteger(n)):[]}:null,myBest:(s.myBest&&typeof s.myBest==='object'&&typeof s.myBest.s==='number')?s.myBest:null,eq:cleanEqState(s.eq),upPaid:(s.upPaid!=null&&Number.isFinite(+s.upPaid))?Math.max(0,Math.round(+s.upPaid)):null};}catch(e){}
   return{seen:{},kills:{},best:0,wins:0,auto:false,sound:true,lowq:false,gold:0,up:{},gifts:[],bag:[],mod:false,modOpts:{},unlocked:{},ach:{},stats:{},combos:{},diff:1,pets:{},petSel:'',skins:{},skin:{},quests:[],dailyDone:'',dailyBest:null,music:true,tips:true,dmgNums:true,tuto:{},rushBest:0,giftDay:'',giftStreak:0,anim:true,vib:true,hardBest:0,reineDay:'',bigText:false,cb:false,found:{},story:{},tw:null,trophies:{},candy:0,wk:null,survBest:0,teamBest:null,hats:{},hat:'',sfxs:{},sfx:'',vm:100,vs:100,tutoDone:false,ctl:cleanCtl(null),titles:{},evoSeen:{},title:'debut',season:null,myBest:null,eq:cleanEqState(null)};
 }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}cloudDirty=true;}
@@ -4148,7 +4157,7 @@ function roomCleared(){
       if(!run.winCounted){run.winCounted=true;save.wins=(save.wins||0)+1;}
       save.stats.finalWins=(save.stats.finalWins|0)+1;persist();
       for(const dx of[-50,50]){const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2+dx,y:RH/2-50});}
-      spawnCoins(RW/2,RH/2,60+(run.loop|0)*20);addGold(300*(1+(run.loop|0)));
+      spawnCoins(RW/2,RH/2,60+(run.loop|0)*20);addGold(220*(1+(run.loop|0)));
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       announce('Victoire suprême !','Le Dévoreur est vaincu : la crypte est libérée !');sfx('item');setTimeout(()=>{if(state==='play')maybeStory('fin');},2600);
@@ -4157,7 +4166,7 @@ function roomCleared(){
     else if(run.floor>=NFLOORS-1){
       if(!run.winCounted){run.winCounted=true;save.wins=(save.wins||0)+1;persist();}
       if(!save.unlocked.ombrin){save.unlocked.ombrin=true;persist();toast('Nouvelle créature !','Ombrin est débloqué : choisis-le à ta prochaine partie');}
-      addGold(100*(1+(run.loop|0)));banner('Victoire !',SPECIES[FL(run.floor).boss].name+' est vaincu',3);sfx('item');
+      addGold(80*(1+(run.loop|0)));banner('Victoire !',SPECIES[FL(run.floor).boss].name+' est vaincu',3);sfx('item');
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       room.pickups.push({kind:'heart',half:false,x:RW/2,y:RH/2+70});
@@ -4231,7 +4240,7 @@ function useActive(pl){
       for(const e of live){const n=live.filter(o=>Math.hypot(o.x-e.x,o.y-e.y)<70).length-Math.hypot(e.x-P.x,e.y-P.y)/400;if(n>bn){bn=n;tg=e;}}
       const x=tg?tg.x:P.x+P.lx*80,y=tg?tg.y:P.y+P.ly*80;boomFx(x,y,70);netFx(2,x,y,70);addShake(9);
       for(const e of live){const dx=e.x-x,dy=e.y-y,d=Math.hypot(dx,dy)||1;if(d<70+e.r)damageEnemy(e,P.dmg*5+15,dx/d,dy/d);}sfx('boom');break;}
-    case 'aimantor':{let g=8;run.room.pickups=run.room.pickups.filter(p=>{if(p.kind==='coin'){g+=p.val|0;spark(p.x,p.y-3,'245,197,66',3,60,0.3);return false;}return true;});addGold(g);run.floats.push({x:P.x,y:P.y-26,text:'+'+g+' or',t:1,col:'#f5c542'});ringFx(P.x,P.y,90,'245,197,66',0.6);sfx('coin');break;}
+    case 'aimantor':{let g=8;run.room.pickups=run.room.pickups.filter(p=>{if(p.kind==='coin'){g+=p.val|0;spark(p.x,p.y-3,'245,197,66',3,60,0.3);return false;}return true;});addGold(g*COIN_K);run.floats.push({x:P.x,y:P.y-26,text:'+'+g+' or',t:1,col:'#f5c542'});ringFx(P.x,P.y,90,'245,197,66',0.6);sfx('coin');break;}
     case 'totem':for(const q of players()){if(q.down){q.down=false;q.revT=0;q.hp=Math.min(q.maxHp,2);q.inv=1.5;}else q.hp=Math.min(q.maxHp,q.hp+2);ringFx(q.x,q.y,40,'127,227,160',0.6);spark(q.x,q.y,'127,227,160',14,120,0.5);}ringFx(P.x,P.y,140,'127,227,160',0.7);netFx(3,P.x,P.y,140);sfx('heal');break;
     case 'pluie':for(let i=0;i<5;i++){const a=i*TAU/5+rand(-0.25,0.25),d=rand(42,72);run.bombs.push({x:clamp(P.x+Math.cos(a)*d,12,RW-12),y:clamp(P.y+Math.sin(a)*d,12,RH-12),t:0.75+i*0.14});}sfx('fuse');break;
     }
@@ -4445,6 +4454,7 @@ function addDecal(room,x,y,r,col){
   room.decals=room.decals||[];const d={x,y,r,col,seed:randi(1,1e9)};room.decals.push(d);if(room.decals.length>40)room.decals.shift();
   if(room===run.room&&bgCanvas){const c=bgCanvas.getContext('2d'),s=L.s;c.save();c.setTransform(s*dpr,0,0,s*dpr,WALL*s*dpr,WALL*s*dpr);c.beginPath();c.rect(0,0,RW,RH);c.clip();drawDecal(c,d);c.restore();}
 }
+const COIN_K=0.75;
 function spawnCoins(x,y,total,big){
   const fives=total>=8&&!big?Math.floor(total/8):0,ones=total-fives*5;
   const push=v=>{const a=rand(0,TAU),sp=big?rand(60,200):rand(30,110);run.room.pickups.push({kind:'coin',val:v,x,y,z:6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*0.7,vz:big?rand(160,280):rand(80,150),age:0,spin:rand(0,TAU)});};
@@ -4464,7 +4474,7 @@ function updateCoin(p,dt){
   const dx=P.x-p.x,dy=P.y-p.y,d=Math.hypot(dx,dy)||1,vac=run.room.cleared&&p.age>1;
   if(p.age>0.35&&(d<P.magnet||vac||modFor(P,'magnet'))){const st=Math.min(d,(vac?220:280)*dt);p.x+=dx/d*st;p.y+=dy/d*st;}
   if(p.age>0.2&&Math.hypot(P.x-p.x,P.y-p.y)<P.r+6){
-    {const gv=p.val*(P.greed?2:1);addGold(gv);pst(P).g+=gv;}run.floats.push({x:p.x,y:p.y-10,text:'+'+p.val,t:0.6,col:'#f5c542'});sfx('coin');spark(p.x,p.y-3,'245,197,66',3,60,0.3);return true;
+    {const gv=p.val*(P.greed?2:1);addGold(gv*COIN_K);pst(P).g+=gv;}run.floats.push({x:p.x,y:p.y-10,text:'+'+p.val,t:0.6,col:'#f5c542'});sfx('coin');spark(p.x,p.y-3,'245,197,66',3,60,0.3);return true;
   }
   return false;
 }
@@ -5257,7 +5267,7 @@ function updateGame(dt){
         burst(p.x,p.y-14,'#f2a23a',20,120);flashFx(p.x,p.y-14,50);ringFx(p.x,p.y-10,60,'255,215,140',0.6);break;}
       else if(p.kind==='portal'&&d<18&&!run.trans&&!run.won){run.trans={t:0,half:0.6,nextFloor:true,toSecret:!p.fin,toFinal:!!p.fin,done:false};if(p.fin){const a='Le Cœur de la Crypte',b='Étage final : le Dévoreur t\'attend…';banner(a,b,2.6);netEv('b',a,b);}sfx('descend');flashFx(p.x,p.y,80);break;}
       else if(p.kind==='exit'&&d<16&&!run.trans&&!run.won){run.won=true;run.endT=1.2;banner('Victoire !','Tu sors de la crypte',2.5);sfx('item');break;}
-      else if(p.kind==='hole'&&d<15&&!run.trans&&!run.won){const bonus=6*floorNo();addGold(bonus);toast("Bonus d'étage",'+'+bonus+' or');netEv('t',"Bonus d'étage",'+'+bonus+' or');run.trans={t:0,half:0.55,nextFloor:true,done:false};sfx('descend');break;}
+      else if(p.kind==='hole'&&d<15&&!run.trans&&!run.won){const bonus=5*floorNo();addGold(bonus);toast("Bonus d'étage",'+'+bonus+' or');netEv('t',"Bonus d'étage",'+'+bonus+' or');run.trans={t:0,half:0.55,nextFloor:true,done:false};sfx('descend');break;}
     }
   }
   updateParticles(dt);updateSurprise(dt);
@@ -6158,11 +6168,13 @@ function closeConfirm(){$('confirmSheet').hidden=true;confirmCb=null;}
 $('confirmNo').addEventListener('click',closeConfirm);$('confirmDim').addEventListener('click',closeConfirm);
 $('confirmOk').addEventListener('click',()=>{if(!confirmCb)return;if(confirmArm===1){confirmArm=2;$('confirmOk').textContent='Touche encore : je suis sûr !';$('confirmOk').classList.add('glow');return;}
   const cb=confirmCb;closeConfirm();$('confirmOk').classList.remove('glow');cb();});
-function upRefund(){let g=0;for(const u of UPGRADES){const lv=Math.min(u.max,save.up[u.id]|0);for(let l=0;l<lv;l++)g+=upCost(u,l);}return g;}
+function upRefund(){let g0=0,g1=0;for(const u of UPGRADES){const lv=Math.min(u.max,save.up[u.id]|0);for(let l=0;l<lv;l++){g0+=upCost0(u,l);g1+=upCost(u,l);}}if(!g1)return 0;
+  /* older saves bought at the old prices: refund those prices, never more than today's */
+  return Math.min(g1,Number.isFinite(save.upPaid)&&save.upPaid!=null?Math.max(save.upPaid,0):g0);}
 $('btnUpReset').addEventListener('click',()=>{audioUnlock();const g=upRefund();
   if(!g){toast('Rien à réinitialiser',"Tu n'as encore acheté aucune amélioration.");sfx('nope');return;}
   askConfirm('Réinitialiser les améliorations ?','Toutes tes améliorations repartent au niveau 0, et tu récupères tout l\'or dépensé : '+g+' or. Tu pourras ensuite les racheter comme tu veux.','Oui, réinitialiser',()=>{
-    save.up={};save.gold=(save.gold||0)+g;persist();sfx('chest');buildShop();toast('Améliorations réinitialisées','+'+g+' or rendus. Choisis tes nouvelles améliorations !');});});
+    save.up={};save.upPaid=0;save.gold=(save.gold||0)+g;persist();sfx('chest');buildShop();toast('Améliorations réinitialisées','+'+g+' or rendus. Choisis tes nouvelles améliorations !');});});
 $('btnWipe').addEventListener('click',()=>{audioUnlock();
   askConfirm('Effacer toute la sauvegarde ?',"Attention : tout ton or, tes créatures, tes équipements, tes niveaux, tes succès et tes trophées seront effacés pour toujours. Le jeu recommencera depuis le début. On ne peut pas revenir en arrière !",'Oui, tout effacer',wipeSave,true);});
 async function wipeSave(){
@@ -6217,7 +6229,7 @@ function updateArena(dt){
     return;}
   if(!run.surv||run.dead)return;
   if(run.enemies.some(e=>!e.dead)||run.bossDying){run.svWait=0;return;}
-  if(!run.svWait){const w=run.wave|0,g=4*w;run.svDone=w;bump('survWaves');addGold(g);run.svWait=3.2;run.rushBeat=Math.min(3,Math.floor(w/5));
+  if(!run.svWait){const w=run.wave|0,g=3*w;run.svDone=w;bump('survWaves');addGold(g);run.svWait=3.2;run.rushBeat=Math.min(3,Math.floor(w/5));
     if(w>(save.survBest|0)){save.survBest=w;persist();}
     if(w%5===0){const q=nearestFree(RW/2-30,RH/2),id=run.pool.pop();run.room.pickups.push({kind:'heart',x:q.x,y:q.y});if(id){const q2=nearestFree(RW/2+30,RH/2);run.room.pickups.push({kind:'item',id,x:q2.x,y:q2.y});}}
     const a='Vague '+w+' terminée !',b='+'+g+' or'+(w%5===0?' · un cœur et un objet sont apparus':'');toast(a,b);netEv('t',a,b);
@@ -6387,6 +6399,18 @@ function renderTeamStats(){
     tb.appendChild(tr);}
   if(multi&&best&&best.d>0){const tr=document.createElement('tr');const td=document.createElement('td');td.colSpan=6;td.className='mvp';td.textContent='⭐ '+(best.me?'Tu as':best.n+' a')+' fait le plus de dégâts !';tr.appendChild(td);tb.appendChild(tr);}
 }
+function renderLoot(got,won){
+  const box=$('ovLoot'),row=$('ovLootRow');row.textContent='';box.hidden=!got.length;if(!got.length)return;
+  let best=null;
+  for(const g of got){const d=document.createElement('div');d.className='ol-it';
+    if(g.it){const cv=document.createElement('canvas');cv.width=cv.height=Math.round(60*dpr);drawEqIcon(cv,g.it.s,g.it.r,true);const b=document.createElement('b');b.textContent=eqName(g.it);b.style.color=RAR[g.it.r].c;const sm=document.createElement('small');sm.textContent=RAR[g.it.r].n+' · '+EQ_SLOTS[g.it.s].name;d.append(cv,b,sm);if(!best||g.it.r>best.r)best=g.it;}
+    else{const b=document.createElement('b');b.textContent='+'+g.gold+' or';const sm=document.createElement('small');sm.textContent='(ton sac est plein)';d.append(b,sm);}
+    row.appendChild(d);}
+  $('ovLootNote').textContent=best?(won?'Victoire : ton dernier objet est meilleur ! ':'')+'Plus tu vas loin et plus la difficulté est haute, plus le butin est rare.':'Ton sac est plein : fais du tri dans « Mon perso ».';
+  $('ovLootGo').hidden=!best;
+  if(best&&!run.lootShown&&!window.CB_NOSPLASH){run.lootShown=1;const k=best.r>=4?3:best.r>=3?2:best.r>=2?1:0,n=got.filter(g=>g.it).length;
+    setTimeout(()=>{if(state==='over'&&!CO)openChestAnim(k,best,null,n>1?n:0);},900);}
+}
 function showOver(won,quit){
   state='over';show('scrOver');pauseBtn.hidden=true;resetSticks();clearOverlays();
   if(NET){if(NET.role==='guest'&&quit)netLeave();else{const n=NET;setTimeout(()=>{if(NET===n)netLeave();},6000);}}
@@ -6413,10 +6437,11 @@ function showOver(won,quit){
   checkAchs();
   const entry={s:score,f:reached,w:won?1:0,k:run.kills|0,lv:run.lvl|0,st:SIDS.includes(P&&P.sid)?P.sid:run.starter};
   if(!quit&&score>0&&!rush){if(!save.myBest||save.myBest.s<score)save.myBest=entry;submitScore(entry,run.tourney?'':run.daily);}
-  {let lootTxt='';const nb=Math.min(run.hard?4:3,Math.max(0,rush?(run.rushBeat|0):reached-1+(won?1:0)+(run.hard?1:0)));
-    if(nb>0&&!run.lootDone){run.lootDone=1;const got=[];for(let i=0;i<nb;i++)got.push(eqGive(Math.floor(Math.random()*5),rollRar(lootWeights(reached-nb+i))));
-      run.lootTxt='Butin : '+got.map(g=>g.it?eqName(g.it)+' ('+RAR[g.it.r].n+')':g.gold+' or (sac plein)').join(', ')+'. Va dans le Menu, puis « Mon perso » pour les équiper !';}
-    lootTxt=run.lootTxt||'';$('ovLoot').textContent=lootTxt;$('ovLoot').hidden=!lootTxt;}
+  {const nb=quit?0:Math.min(run.hard?4:3,Math.max(0,rush?(run.rushBeat|0):reached-1+(won?1:0)+(run.hard?1:0)));
+    if(nb>0&&!run.lootDone){run.lootDone=1;const dB=[-1,0,1,2][run.diff|0]|0,minR=won?[1,1,2,3][run.diff|0]|0:0,got=[];
+      for(let i=0;i<nb;i++){let r=rollRar(lootWeights(reached-nb+i+dB));if(i===nb-1)r=Math.max(r,minR);got.push(eqGive(Math.floor(Math.random()*5),r));}
+      run.loot=got;}
+    renderLoot(run.loot||[],won);}
   {if(!run.seDone){run.seDone=1;run.sePts=(run.hard?2:1)*Math.max(0,Math.round((rush?(run.rushBeat|0)*60:reached*25+Math.max(0,reached-1+(won?1:0))*40)+Math.min(300,run.kills|0)+(won?100:0)));run.seUp=seasonAdd(run.sePts);}
     const t=seasonTier();$('ovSeason').textContent='Passe de saison : +'+run.sePts+' points'+(run.seUp>0?' · tu passes au palier '+t+' ! Va le récupérer dans le Menu.':'');$('ovSeason').hidden=!run.sePts;}
   persist();
@@ -6526,7 +6551,8 @@ function buildExtras(){
 function buyUp(id){
   const u=UPGRADES.find(x=>x.id===id),lv=save.up[id]||0;if(!u||lv>=u.max)return;
   const cost=upCost(u,lv);if((save.gold||0)<cost)return;
-  save.gold-=cost;save.up[id]=lv+1;persist();audioUnlock();sfx('item');buildShop(id);
+  if(save.upPaid==null){let g0=0;for(const x of UPGRADES){const l2=Math.min(x.max,save.up[x.id]|0);for(let l=0;l<l2;l++)g0+=upCost0(x,l);}save.upPaid=g0;}
+  save.gold-=cost;save.up[id]=lv+1;save.upPaid+=cost;persist();audioUnlock();sfx('item');buildShop(id);
 }
 /* ---- save transfer code: carries gold, upgrades and bestiary to another device or version ---- */
 function b64uEnc(str){const by=new TextEncoder().encode(str);let bin='';for(const b of by)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
@@ -6593,7 +6619,7 @@ function loadSaveCode(){
     setMsg('loadMsg','Ce code contient : '+saveFacts(c)+'. Il va remplacer ta sauvegarde actuelle ('+(save.gold||0)+' or). Touche encore le bouton pour confirmer.');
     return;
   }
-  save.gold=c.gold;save.up=c.up;save.seen=c.seen;save.kills=c.kills;save.best=c.best;save.wins=c.wins;save.gifts=c.gifts;save.bag=c.bag;save.skins=c.skins||{};save.skin=c.skin||{};save.unlocked=Object.assign({},save.unlocked||{},c.unlocked||{});save.pets=c.pets||{};save.petSel=c.petSel||'';persist();
+  save.gold=c.gold;save.up=c.up;save.upPaid=null;save.seen=c.seen;save.kills=c.kills;save.best=c.best;save.wins=c.wins;save.gifts=c.gifts;save.bag=c.bag;save.skins=c.skins||{};save.skin=c.skin||{};save.unlocked=Object.assign({},save.unlocked||{},c.unlocked||{});save.pets=c.pets||{};save.petSel=c.petSel||'';persist();
   if(c.eq){c.eq.shop=save.eq.shop;save.eq=c.eq;persist();}
   if(c.ex){try{const cl=loadSave(Object.assign(JSON.parse(JSON.stringify(save)),c.ex));for(const k of SAVE_EXTRA)if(k in c.ex)save[k]=cl[k];persist();}catch(e){}}
   if(c.soc&&CB_SOC)soAdopt(c.soc.sk,c.soc.nick);
@@ -7275,6 +7301,7 @@ $('btnGoldAll').addEventListener('click',()=>{audioUnlock();sendGoldAll();});
 $('btnHero').addEventListener('click',openHero);
 $('btnStore').addEventListener('click',openStore);
 $('heroBack').addEventListener('click',goTitle);
+$('ovLootGo').addEventListener('click',()=>{audioUnlock();sfx('coin');if(NET)netLeave();openHero();});
 $('storeBack').addEventListener('click',goTitle);
 $('heroPrev').addEventListener('click',()=>heroStep(-1));
 $('heroNext').addEventListener('click',()=>heroStep(1));
