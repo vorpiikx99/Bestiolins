@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105171041';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105171041" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105171552';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105171552" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1158,6 +1158,19 @@ html body .fz-btns .btn{min-height:40px}
 }
 
 html body .news-list li.news-top-li{background:rgba(93,255,160,.1);border:1px solid rgba(93,255,160,.45);border-radius:10px;padding:8px 10px}
+
+/* ===== Quoi de neuf : tient dans l'écran ===== */
+html body #newsOv{align-items:center;padding-top:max(12px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));overflow:hidden}
+html body .news-card{max-height:100%;box-sizing:border-box;overflow:hidden;gap:10px;padding:16px 14px 14px}
+html body .news-top{flex:none}
+html body .news-top canvas{width:56px;height:56px}
+html body .news-card h2{font-size:30px}
+html body .news-thanks{flex:none;margin:0;text-align:center;font:700 19px/1.25 'Grenze',Georgia,serif;color:#7dff9a;background:rgba(93,255,160,.08);border:1px dashed rgba(93,255,160,.55);border-radius:10px;padding:7px 10px}
+html body .news-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;gap:7px;padding:2px 2px 2px 0}
+html body .news-list li{flex:none;align-items:center;gap:10px;font-size:16.5px;line-height:1.3;background:rgba(26,16,8,.45);border:1px solid rgba(184,134,58,.35);border-radius:10px;padding:8px 10px}
+html body .news-list li.news-top-li{background:rgba(93,255,160,.1);border-color:rgba(93,255,160,.5)}
+html body .news-list .ni{font-size:22px}
+html body .news-card .btn{flex:none}
 </style>
 </head>
 <body>
@@ -1314,6 +1327,22 @@ html body .news-list li.news-top-li{background:rgba(93,255,160,.1);border:1px so
   <p class="mt-msg" id="mtMsg"></p></div></div>
 <div id="newsOv" hidden role="dialog" aria-modal="true" aria-labelledby="newsH"><div class="news-card">
   <div class="news-top"><canvas id="newsOwl" width="128" height="128" aria-hidden="true"></canvas><div><p class="small-h">Mise à jour</p><h2 id="newsH">Quoi de neuf ?</h2></div></div>
+  <p class="news-thanks">Merci à Théo pour la remise à zéro 😉</p>
+  <ul class="news-list">
+    <li class="news-top-li"><span class="ni">🔄</span><span><b>Nouveau départ !</b> Tout le monde recommence à zéro : mêmes chances pour tous ! Ton pseudo et tes amis sont gardés.</span></li>
+    <li><span class="ni">🎨</span><span><b>Nouveau style</b> : cuir, laiton et runes vertes dans tous les menus.</span></li>
+    <li><span class="ni">⭐</span><span><b>Améliore ta bestiole</b> dans « Mon perso » : elle devient plus forte et <b>évolue</b> aux niveaux 4 et 8 !</span></li>
+    <li><span class="ni">⚒️</span><span><b>Fusion</b> : choisis toi-même tes 3 équipements, et ce que tu veux obtenir.</span></li>
+    <li><span class="ni">🏆</span><span><b>Classement en ligne</b> : chaque lundi, le <b>top 3 de la semaine</b> gagne un titre et de l'or !</span></li>
+    <li><span class="ni">🎁</span><span><b>Butin de fin de partie</b> : plus tu vas loin, plus tes équipements sont rares.</span></li>
+    <li><span class="ni">💀</span><span><b>Plus difficile</b> : monstres plus forts, boss plus longs, et moins de cœurs en Difficile et Extrême.</span></li>
+    <li><span class="ni">⚖️</span><span><b>Équilibrage</b> : « Griffes » donne +14 % de dégâts par niveau, Fennouille fait un peu moins mal, améliorer un équipement coûte plus cher.</span></li>
+    <li><span class="ni">💰</span><span><b>L'or est plus rare</b> : chaque pièce compte ! Le Hardcore donne l'or ×2.</span></li>
+    <li><span class="ni">🗝️</span><span><b>Salles secrètes</b> : approche-toi du mur fissuré, plus besoin de bombe !</span></li>
+    <li><span class="ni">🔥</span><span>À haut niveau, tes tirs <b>n'éblouissent plus</b> l'écran.</span></li>
+  </ul>
+  <button type="button" class="btn primary" id="newsOk">C'est parti !</button>
+</div></div>
   <ul class="news-list">
     <li class="news-top-li"><span class="ni">🔄</span><span><b>Nouveau départ !</b> Avec toutes ces nouvelles règles, <b>tout le monde recommence à zéro</b> : mêmes chances pour tous ! Ton pseudo et tes amis sont gardés.</span></li>
     <li><span class="ni">🎨</span><span><b>Nouveau style</b> pour tous les menus : cuir, laiton et runes vertes.</span></li>
@@ -7861,7 +7890,7 @@ function maintCheck(){const m=$('maint');if(!m)return;const on=MAINT&&!maintOk()
   else if(maintIv){clearInterval(maintIv);maintIv=0;}}
 setTimeout(maintCheck,0);
 /* "What's new": shown once after this update to players who already played before */
-const NEWS_ID='2026-11-depart';
+const NEWS_ID='2026-11-depart2';
 function newsCheck(){try{if(window.CB_NOSPLASH||save.newsSeen===NEWS_ID)return;
   if(!save.tutoDone&&!(save.best|0)){save.newsSeen=NEWS_ID;persist();return;}
   const m=$('maint');if(m&&!m.hidden){setTimeout(newsCheck,3000);return;}
