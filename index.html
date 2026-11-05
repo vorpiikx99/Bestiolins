@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105171950';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105171950" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105172453';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105172453" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1174,6 +1174,8 @@ html body .news-card .btn{flex:none}
 
 html body .news-thanks{display:flex;flex-direction:column;gap:4px;font-size:18px}
 html body .news-thanks span{display:block}
+
+html body #owlRow{display:none!important}
 </style>
 </head>
 <body>
@@ -3154,8 +3156,10 @@ function hulotteLine(){const L=[],pk=a=>a[Math.floor(Math.random()*a.length)];le
   if(save.giftDay!==dateKey())L.push("Ton cadeau du jour t'attend dans le Menu. Va vite le chercher !");
   L.push(pk(HU_JOKE),pk(HU_JOKE));return pk(L);}
 let owlT=4,owlShow=0,owlLast='';
-function owlSay(){const b=$('owlBub');if(!b)return;let l=hulotteLine();for(let i=0;i<4&&l===owlLast;i++)l=hulotteLine();owlLast=l;b.textContent=l;b.hidden=false;b.style.animation='none';void b.offsetWidth;b.style.animation='';owlShow=7;}
-function owlTick(dt){const cv=$('owlCv');if(!cv)return;owlT-=dt;if(owlShow>0){owlShow-=dt;if(owlShow<=0)$('owlBub').hidden=true;}if(owlT<=0){owlT=14+Math.random()*8;owlSay();}
+/* the owl on the home screen was removed at the creator's request */
+const OWL_OFF=true;
+function owlSay(){const b=$('owlBub');if(!b||OWL_OFF)return;let l=hulotteLine();for(let i=0;i<4&&l===owlLast;i++)l=hulotteLine();owlLast=l;b.textContent=l;b.hidden=false;b.style.animation='none';void b.offsetWidth;b.style.animation='';owlShow=7;}
+function owlTick(dt){const cv=$('owlCv');if(!cv||OWL_OFF)return;owlT-=dt;if(owlShow>0){owlShow-=dt;if(owlShow<=0)$('owlBub').hidden=true;}if(owlT<=0){owlT=14+Math.random()*8;owlSay();}
   const c=cv.getContext('2d');drawOwl(cv,titleT);}
 
 function evoName(sid,ev){return ev&&EVO_NAMES[sid]?EVO_NAMES[sid][ev-1]:STARTERS[sid].name;}
