@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105163511';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105163511" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105170748';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105170748" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1156,6 +1156,8 @@ html body .fz-out .chip-f{min-height:34px;font-size:14px;padding:2px 11px}
 html body .fz-warn{font-size:13.5px}
 html body .fz-btns .btn{min-height:40px}
 }
+
+html body .news-list li.news-top-li{background:rgba(93,255,160,.1);border:1px solid rgba(93,255,160,.45);border-radius:10px;padding:8px 10px}
 </style>
 </head>
 <body>
@@ -1313,6 +1315,7 @@ html body .fz-btns .btn{min-height:40px}
 <div id="newsOv" hidden role="dialog" aria-modal="true" aria-labelledby="newsH"><div class="news-card">
   <div class="news-top"><canvas id="newsOwl" width="128" height="128" aria-hidden="true"></canvas><div><p class="small-h">Mise à jour</p><h2 id="newsH">Quoi de neuf ?</h2></div></div>
   <ul class="news-list">
+    <li class="news-top-li"><span class="ni">🔄</span><span><b>Nouveau départ !</b> Avec toutes ces nouvelles règles, <b>tout le monde recommence à zéro</b> : mêmes chances pour tous ! Ton pseudo et tes amis sont gardés.</span></li>
     <li><span class="ni">🎨</span><span><b>Nouveau style</b> pour tous les menus : cuir, laiton et runes vertes.</span></li>
     <li><span class="ni">⭐</span><span><b>Améliore ta bestiole</b> dans « Mon perso » : chaque niveau la rend plus forte, et c'est comme ça qu'elle <b>évolue</b> maintenant (niveaux 4 et 8) !</span></li>
     <li><span class="ni">⚒️</span><span><b>Fusion</b> : tu choisis toi-même les 3 équipements à fusionner, et ce que tu veux obtenir.</span></li>
@@ -2478,6 +2481,18 @@ function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catc
 /* mod menu powers apply only to players on this device, never to an online guest */
 function modFor(pl,k){return !!(save.mod&&save.modOpts[k]&&pl&&!pl.isRemote&&!(NET&&NET.role==='guest'));}
 let save=loadSave();
+/* the creator decided on 5 November 2026 that everyone starts again from zero, with the new rules:
+   every save from before is reset once. Settings, nickname and friends are kept (the creator keeps the Founder title) */
+const WIPE_AT=Date.UTC(2026,10,5,15,0,0),WIPE_EP=1;
+(function wipeOnce(){
+  if((+save.wiped||0)>=WIPE_AT)return;
+  const keep={};for(const k of['auto','sound','music','vm','vs','ctl','anim','vib','bigText','cb','tips','dmgNums','lowq','tutoDone','newsSeen','diff'])if(save[k]!==undefined)keep[k]=save[k];
+  let fnd=!!(save.titles&&save.titles.fondateur);try{if(localStorage.getItem('cb-admin')==='1')fnd=true;}catch(e){}
+  const wasF=save.title==='fondateur';
+  save=Object.assign(loadSave(null),keep,{wiped:WIPE_AT});
+  if(fnd){save.titles={fondateur:1};if(wasF)save.title='fondateur';}
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}
+})();
 /* ---- cloud save: the progress also lives in the player's own private space, tied to their Claude account,
    so it survives a cleared browser, another way of opening the game, or another device ---- */
 let cloudReady=false,cloudDirty=false,cloudBusy=false,cloudT=3,cloudOk=false;
@@ -2489,7 +2504,7 @@ async function cloudLoad(){
     const snap=await ref.get();
     if(snap&&snap.exists){
       let cs=null;try{const d=snap.data();cs=d&&typeof d.data==='string'?JSON.parse(d.data):null;}catch(e){cs=null;}
-      if(cs&&typeof cs==='object'&&!run&&!((save.wiped||0)>(+cs.wiped||0))&&(loadSave.fresh||saveProg(cs)>saveProg(save))&&saveProg(cs)>0){
+      if(cs&&typeof cs==='object'&&!run&&(+cs.wiped||0)>=WIPE_AT&&!((save.wiped||0)>(+cs.wiped||0))&&(loadSave.fresh||saveProg(cs)>saveProg(save))&&saveProg(cs)>0){
         save=loadSave(cs);loadSave.fresh=false;persist();quality=save.lowq?'low':'high';
         if(state==='title')goTitle();
         const n=$('cloudNote');n.textContent='Ta progression a été récupérée grâce à ton compte Claude !';n.hidden=false;setTimeout(()=>{n.hidden=true;},7000);
@@ -6818,14 +6833,14 @@ function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCode
 const SAVE_EXTRA=['blv','blvMig','newsSeen','rk','rkAw','evoSeen','hardBest','ach','stats','combos','hats','hat','sfxs','sfx','candy','trophies','found','story','survBest','rushBest','teamBest','titles','title','season','tutoDone','diff','dailyBest','tw','myBest'];
 function makeSaveCode(){
   let mask=0;ORDER.forEach((id,i)=>{if(i<30&&save.seen[id])mask|=1<<i;});
-  const d=[1,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
+  const d=[2,save.gold|0,UPGRADES.map(u=>Math.min(u.max,save.up[u.id]|0).toString(36)).join(''),mask>>>0,ORDER.map(id=>save.kills[id]|0),save.best|0,save.wins|0,save.gifts||[],save.bag||[],Object.keys(SKINS).flatMap(sid=>Object.keys(save.skins[sid]||{}).map(k=>sid+':'+k)),Object.keys(save.skin||{}).filter(k=>save.skin[k]).map(k=>k+':'+save.skin[k]),Object.keys(save.unlocked||{}).filter(k=>save.unlocked[k]&&STARTERS[k]),Object.keys(save.pets||{}).filter(k=>PET_IDS.includes(k)&&save.pets[k]>0).map(k=>k+':'+save.pets[k]),save.petSel||'',SOC.sk?[SOC.sk,SOC.nick]:0,save.eq.inv.map(it=>[it.s,it.r,it.l,save.eq.on[it.s]===it.i?1:0]),ORDER.filter((id,i)=>i>=30&&save.seen[id]),(()=>{const ex={};for(const k of SAVE_EXTRA)if(save[k]!=null)ex[k]=save[k];return ex;})()];
   const p=b64uEnc(JSON.stringify(d));return 'CB1.'+p+'.'+fnv(p);
 }
 function readSaveCode(txt){
   const s=String(txt||'').replace(/\s+/g,'');
   const m=/^CB1\.([A-Za-z0-9_-]+)\.([0-9a-z]+)$/.exec(s);if(!m||fnv(m[1])!==m[2])return null;
   let d;try{d=JSON.parse(b64uDec(m[1]));}catch(e){return null;}
-  if(!Array.isArray(d)||d[0]!==1)return null;
+  if(Array.isArray(d)&&d[0]===1)return 'old';if(!Array.isArray(d)||d[0]!==2)return null;
   const num=(v,max)=>Math.max(0,Math.min(max,Math.floor(+v)||0));
   const up={},ud=String(d[2]||'');UPGRADES.forEach((u,i)=>{const l=num(parseInt(ud[i]||'0',36),u.max);if(l)up[u.id]=l;});
   const seen={},kills={},mask=num(d[3],2147483647),ks=Array.isArray(d[4])?d[4]:[];
@@ -6869,6 +6884,7 @@ function copySave(){
 }
 function loadSaveCode(){
   const c=readSaveCode($('saveIn').value);
+  if(c==='old'){resetLoadBtn();setMsg('loadMsg',"Ce code date d'avant le nouveau départ du 5 novembre : il ne marche plus. Tout le monde recommence à zéro !",'bad');return;}
   if(!c){resetLoadBtn();setMsg('loadMsg',$('saveIn').value.trim()?"Ce code ne marche pas. Vérifie que tu l'as copié en entier.":"Colle d'abord un code dans la case.",'bad');return;}
   const key=JSON.stringify(c);
   if(loadArmed!==key){
@@ -7382,7 +7398,7 @@ function validEntry(e){return e&&typeof e==='object'&&Number.isFinite(+e.s)&&+e.
 function cleanEntry(e,day){const o={s:Math.round(+e.s),f:Math.round(+e.f)||1,w:e.w?1:0,k:Math.round(+e.k)||0,lv:Math.round(+e.lv)||1,st:String(e.st),t:Date.now()};if(day)o.d=day;return o;}
 async function writeBest(col,id,entry){
   const ref=DB.doc(col+'/'+id),snap=await ref.get(),old=snap.exists?snap.data():null;
-  if(!old||(col==='daily'&&old.d!==entry.d)||(+old.s||0)<entry.s)await ref.set(entry);
+  if(!old||(+old.t||0)<WIPE_AT||(col==='daily'&&old.d!==entry.d)||(+old.s||0)<entry.s)await ref.set(entry);
 }
 async function submitScore(e,day){
   let ok=false;
@@ -7425,8 +7441,8 @@ async function renderRank(){
   msg('Chargement…');
   let docs=[];
   try{
-    const q=rankTab==='day'?DB.collection('daily').where('d','==',dateKey()).orderBy('s','desc').limit(20):DB.collection('scores').orderBy('s','desc').limit(20);
-    docs=(await q.get()).docs.filter(d=>d.exists);
+    const q=rankTab==='day'?DB.collection('daily').where('d','==',dateKey()).orderBy('s','desc').limit(80):DB.collection('scores').orderBy('s','desc').limit(80);
+    docs=(await q.get()).docs.filter(d=>d.exists&&(+(d.data()||{}).t||0)>=WIPE_AT).slice(0,20);
   }catch(e){if(seq===rankSeq)msg("Impossible de charger le classement pour l'instant. Réessaie plus tard.");return;}
   if(seq!==rankSeq)return;
   if(!docs.length){msg(rankTab==='day'?"Personne n'a encore joué le défi du jour. Sois le premier !":"Pas encore de score. Termine une partie pour apparaître ici !");return;}
@@ -7845,7 +7861,7 @@ function maintCheck(){const m=$('maint');if(!m)return;const on=MAINT&&!maintOk()
   else if(maintIv){clearInterval(maintIv);maintIv=0;}}
 setTimeout(maintCheck,0);
 /* "What's new": shown once after this update to players who already played before */
-const NEWS_ID='2026-11-cuivre';
+const NEWS_ID='2026-11-depart';
 function newsCheck(){try{if(window.CB_NOSPLASH||save.newsSeen===NEWS_ID)return;
   if(!save.tutoDone&&!(save.best|0)){save.newsSeen=NEWS_ID;persist();return;}
   const m=$('maint');if(m&&!m.hidden){setTimeout(newsCheck,3000);return;}
@@ -7920,13 +7936,14 @@ function favStarter(){let b=null,bn=0;for(const id of SIDS){const n=save.stats['
 function gamesPlayed(){let n=0;for(const id of SIDS)n+=save.stats['pl_'+id]|0;return n;}
 function myCard(){
   const fav=favStarter(),mb=save.myBest;
-  return{v:1,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
+  return{v:1,ep:WIPE_EP,n:SOC.nick,st:fav,sk:mySkinI(fav),f:save.best|0,lv:Math.max(save.stats.maxLv|0,mb?mb.lv|0:0),w:save.wins|0,k:totalKills(),b:seenCount(),
     a:Object.keys(save.ach).filter(k=>ACHS.some(a=>a.id===k)).length,r:save.rushBest|0,g:save.giftStreak|0,u:SIDS.filter(starterOpen),
     pt:save.petSel&&save.pets[save.petSel]?[PET_IDS.indexOf(save.petSel),save.pets[save.petSel]|0]:0,
     t:save.title||'debut',dd:save.dailyBest&&save.dailyBest.d===dateKey()?{d:save.dailyBest.d,s:save.dailyBest.s|0}:0,mb:mb?{s:mb.s|0,f:mb.f|0,lv:mb.lv|0,k:mb.k|0,st:SIDS.includes(mb.st)?mb.st:fav,w:mb.w?1:0}:0,gp:gamesPlayed(),up:UPGRADES.reduce((n,u)=>n+Math.min(u.max,save.up[u.id]|0),0),sv:save.survBest|0,tm:save.teamBest||0,tw:save.tw?{w:save.tw.w,s:save.tw.s|0}:0,rk:(rkRoll(),{w:save.rk.w,s:save.rk.s|0,lw:save.rk.lw||0})};
 }
 function cleanCard(o){
   if(!o||typeof o!=='object')return null;
+  if(o.ep!==WIPE_EP)o={n:o.n,st:o.st,sk:o.sk};
   const N=(v,m)=>Math.max(0,Math.min(m,Math.floor(+v)||0));
   const st=SIDS.includes(o.st)?o.st:'braisot';
   const mb=o.mb&&typeof o.mb==='object'?{s:N(o.mb.s,1e8),f:N(o.mb.f,999),lv:N(o.mb.lv,999),k:N(o.mb.k,1e7),st:SIDS.includes(o.mb.st)?o.mb.st:st,w:o.mb.w?1:0}:null;
