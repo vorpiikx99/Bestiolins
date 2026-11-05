@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105144820';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105144820" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105151606';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105151606" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -3778,7 +3778,7 @@ const EVO_N=['Bébé','Grand','Héros'],EVO_AT=[0,5,15],EVO_SC=[1,1.1,1.2];
 /* each creature has its own level (1 to 10), bought with gold in « Mon perso »: it evolves at level 4 and level 8 */
 const BL_MAX=10,BL_EVO=[1,4,8];
 function blvOf(sid){return clamp(((save.blv||{})[sid]|0)||1,1,BL_MAX);}
-function blvCost(L){return Math.round(120*Math.pow(1.45,L-1));}
+function blvCost(L){return Math.round(250*Math.pow(1.6,L-1));}
 function blvBonusTxt(L){return L>1?'+'+(4*(L-1))+' % dégâts · tir +'+(2*(L-1))+' %':'Pas encore de bonus';}
 function evoOf(sid){const L=blvOf(sid);return L>=BL_EVO[2]?2:L>=BL_EVO[1]?1:0;}
 /* players who had evolved a creature by playing keep that evolution */
