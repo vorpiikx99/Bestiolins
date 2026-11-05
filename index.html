@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105152223';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105152223" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105154440';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105154440" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -1105,6 +1105,57 @@ html body .blv-pips i.on{background:linear-gradient(180deg,#ffe6a8,#c98a3a);bord
 html body .blv-pips i.ev::after{content:"★";position:absolute;left:50%;top:-15px;transform:translateX(-50%);font-size:12px;line-height:1;color:#5dffa0}
 html body .blv .btn{width:100%;min-width:0}
 html body .blv-n{margin:0;font-size:15.5px;line-height:1.3;color:#e8dac0;text-align:center}
+
+/* ===== Fusion au choix ===== */
+html body .fz-small{margin:0;font-size:15px;line-height:1.3;color:#d9c7a6}
+html body .fz-list{display:flex;flex-direction:column;gap:8px}
+html body .fz-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:6px}
+html body .fz-ht{font:700 20px 'Grenze',Georgia,serif}
+html body .fz-hs{flex:1;min-width:0;font:700 15px 'Grenze',Georgia,serif;color:#e4d4b8}
+html body .fz-h .btn{min-height:38px;font-size:14px}
+html body .fz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+html body .fz-it{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;padding:6px 3px 5px;border-radius:10px;border:2px solid var(--rc,#b8863a);background:rgba(26,16,8,.6);color:#f6ead2;cursor:pointer;touch-action:manipulation;transition:transform .12s,opacity .15s}
+html body .fz-it canvas{width:52px;height:52px;border-radius:6px}
+html body .fz-it .k{font:700 13.5px 'Grenze',Georgia,serif;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body .fz-it .lv{font-size:12.5px;line-height:1.1;color:#e4d4b8}
+html body .fz-it .lv.up{color:#ffb35a;font-weight:700}
+html body .fz-it .fz-ck{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;display:none;place-items:center;background:#5dffa0;color:#0e2412;font:900 15px/1 system-ui,sans-serif;font-style:normal;box-shadow:0 0 0 2px #0e2412}
+html body .fz-it.sel{border-color:#5dffa0;background:rgba(36,72,44,.75);box-shadow:0 0 12px rgba(93,255,160,.45);transform:translateY(-2px)}
+html body .fz-it.sel .fz-ck{display:grid}
+html body .fz-it.dim{opacity:.38}
+html body .fz-bar{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:3;display:flex;flex-direction:column;gap:7px;padding:9px 12px;border-radius:12px;border:2px solid #b8863a;background:linear-gradient(180deg,rgba(90,58,36,.98),rgba(62,39,22,.98));box-shadow:inset 0 0 0 1px #2a1a0c,0 -6px 18px rgba(0,0,0,.5)}
+html body .fz-bar.full{border-color:#5dffa0;box-shadow:inset 0 0 0 1px #2a1a0c,0 0 14px rgba(93,255,160,.35),0 -6px 18px rgba(0,0,0,.5)}
+html body .fz-bar .fuse-vis{justify-content:center}
+html body .fz-hint{margin:0;text-align:center;font:700 16px 'Grenze',Georgia,serif;color:#f6ead2}
+html body .fz-t{margin:0;text-align:center;font:700 17px 'Grenze',Georgia,serif;line-height:1.25;color:#f6ead2}
+html body .fz-t b{font-size:19px}
+html body .fz-ef{font-size:15px;color:#7dff9a}
+html body .fz-out{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px}
+html body .fz-ol{width:100%;text-align:center;font:700 15px 'Grenze',Georgia,serif;color:#ffe6a8}
+html body .fz-out .chip-f{min-height:38px}
+html body .fz-out .chip-f.on{border-color:#5dffa0;color:#5dffa0;background:#24382a}
+html body .fz-warn{margin:0;text-align:center;font-size:15px;line-height:1.3;color:#ffb35a}
+html body .fz-btns{display:flex;gap:8px}
+html body .fz-btns .btn{min-width:0}
+html body .fz-btns .btn.ghost{flex:none;padding-inline:14px}
+html body .fz-btns #btnFuse{flex:1}
+html body .fz-top{display:flex;flex-direction:column;align-items:center;gap:6px}
+html body .fz-ol{width:auto}
+@media (orientation: landscape) and (max-height: 560px){
+html body .fz-bar{gap:5px;padding:7px 10px}
+html body .fz-top{flex-direction:row;justify-content:center;gap:10px}
+html body .fz-bar .fuse-vis{gap:3px}
+html body .fz-bar .fuse-vis canvas{width:32px;height:32px}
+html body .fz-bar .fuse-vis canvas.big{width:40px;height:40px}
+html body .fz-bar .fuse-vis .op{font-size:15px}
+html body .fz-t{font-size:15px;text-align:left}
+html body .fz-t b{font-size:16px}
+html body .fz-ef{font-size:13.5px}
+html body .fz-ol{font-size:14px}
+html body .fz-out .chip-f{min-height:34px;font-size:14px;padding:2px 11px}
+html body .fz-warn{font-size:13.5px}
+html body .fz-btns .btn{min-height:40px}
+}
 </style>
 </head>
 <body>
@@ -1264,6 +1315,7 @@ html body .blv-n{margin:0;font-size:15.5px;line-height:1.3;color:#e8dac0;text-al
   <ul class="news-list">
     <li><span class="ni">🎨</span><span><b>Nouveau style</b> pour tous les menus : cuir, laiton et runes vertes.</span></li>
     <li><span class="ni">⭐</span><span><b>Améliore ta bestiole</b> dans « Mon perso » : chaque niveau la rend plus forte, et c'est comme ça qu'elle <b>évolue</b> maintenant (niveaux 4 et 8) !</span></li>
+    <li><span class="ni">⚒️</span><span><b>Fusion</b> : tu choisis toi-même les 3 équipements à fusionner, et ce que tu veux obtenir.</span></li>
     <li><span class="ni">🏆</span><span><b>Classement en ligne</b> : tout le monde, le défi du jour et tes amis. Chaque lundi, le <b>top 3 de la semaine</b> gagne un titre et de l'or !</span></li>
     <li><span class="ni">🎁</span><span><b>Butin de fin de partie</b> : un coffre s'ouvre avec des équipements. Plus tu vas loin, plus ils sont rares.</span></li>
     <li><span class="ni">💰</span><span><b>L'or est plus rare</b> et les améliorations plus chères : chaque pièce compte ! Les quêtes rapportent un peu moins, et le Hardcore donne maintenant l'or ×2.</span></li>
@@ -1632,8 +1684,9 @@ html body .blv-n{margin:0;font-size:15.5px;line-height:1.3;color:#e8dac0;text-al
       <div class="bag-list" id="eqGrid"></div>
     </div>
     <div id="fuseView" class="bagview" hidden>
-      <div class="slab fuse-explain"><p><b>3 équipements de la même couleur = 1 équipement d'une couleur plus forte !</b></p><p>Le jeu choisit tout seul tes moins bons. Ceux que tu portes ne sont jamais utilisés.</p></div>
-      <div class="fuse-list" id="fuseList"></div>
+      <div class="slab fuse-explain"><p><b>3 équipements de la même couleur = 1 équipement d'une couleur plus forte !</b></p><p><b>1.</b> Touche 3 équipements de la même couleur. <b>2.</b> Choisis ce que tu veux obtenir. <b>3.</b> Touche « Fusionner ».</p><p class="fz-small">Ceux que tu portes ne sont pas dans la liste.</p></div>
+      <div class="fz-list" id="fuseList"></div>
+      <div class="fz-bar" id="fuseBar" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -8296,7 +8349,7 @@ function renderBlv(){
   n.textContent=!ok?"Il te manque "+(c-(save.gold|0))+" or. Gagne de l'or en jouant !":ne>0?'Au niveau '+(L+1)+', '+evoName(sid,ev)+' évolue en '+evoName(sid,ne)+' !':'Niveau '+(L+1)+' : '+blvBonusTxt(L+1)+'.';
 }
 function heroStep(d){const L=heroList();let i=L.indexOf(heroSid);i=(i+d+L.length)%L.length;heroSid=L[i];sfx('coin');renderHeroTop();}
-function setEqTab(t){eqTab=t;fuseSel=[];eqArm='';$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
+function setEqTab(t){eqTab=t;fuseSel=[];fuseOutUser=false;eqArm='';$('tabBag').classList.toggle('on',t==='bag');$('tabFuse').classList.toggle('on',t==='fuse');renderHero();}
 function renderHero(){renderHeroTop();renderEqGrid();}
 function renderHeroTop(){
   $('heroGold').textContent=save.gold||0;drawHero($('heroCv'),heroSid);{const ev=evoOf(heroSid);$('heroName').textContent=evoName(heroSid,ev)+' '+'★'.repeat(ev+1);$('heroEvo').textContent=EVO_N[ev]+(ev<2?' · évolue au niveau '+BL_EVO[ev+1]+' en '+evoName(heroSid,ev+1)+' (plus grand et plus fort)':' · évolution maximum : il est au plus fort !');renderBlv();}$('heroTitle').textContent='Titre : '+(titleName(save.title)||'Petit débutant');founderFx($('heroTitle'),save.title);
@@ -8361,34 +8414,95 @@ function bagRow(it){
   row.append(cv,info,side);return row;
 }
 function fusePicks(r){return save.eq.inv.filter(it=>it.r===r&&!eqIsOn(it)).sort((a,b)=>a.l-b.l||eqScore(a)-eqScore(b)).slice(0,3);}
-function renderFuse(){
-  const L=$('fuseList');L.textContent='';
-  for(let r=0;r<RMAX;r++){
-    const have=save.eq.inv.filter(it=>it.r===r&&!eqIsOn(it)).length,picks=fusePicks(r),ok=picks.length===3;
-    const card=document.createElement('div');card.className='fuse-card'+(ok?' ready':'');
-    const vis=document.createElement('div');vis.className='fuse-vis';
-    for(let i=0;i<3;i++){const cv=document.createElement('canvas');cv.width=cv.height=Math.round(44*dpr);const it=picks[i];if(it)drawEqIcon(cv,it.s,it.r,true);else{qTile(cv,r,'');cv.style.opacity=0.35;}vis.append(cv);
-      const op=document.createElement('span');op.className='op';op.textContent=i<2?'+':'→';vis.append(op);}
-    const tg=document.createElement('canvas');tg.className='big';tg.width=tg.height=Math.round(58*dpr);qTile(tg,r+1,'?');vis.append(tg);
-    const t=document.createElement('p');t.className='fuse-t';
-    const a=document.createElement('span');a.textContent='3 '+RAR[r].n+'s';a.style.color=RAR[r].c;
-    const b=document.createElement('span');b.textContent='1 '+RAR[r+1].n;b.style.color=r+1===6?'#9fe9ff':RAR[r+1].c;
-    t.append(a,document.createTextNode(' → '),b);
-    const st=document.createElement('p');st.className='fuse-s';
-    st.textContent=ok?('Tu en as '+have+' : tu peux fusionner '+Math.floor(have/3)+(Math.floor(have/3)>1?' fois.':' fois.')+(picks.some(x=>x.l>1)?' Attention : un équipement amélioré sera utilisé.':''))
-      :(have?'Tu en as '+have+' sur 3. Il t\'en manque '+(3-have)+'.':'Tu n\'en as pas encore.');
-    card.append(vis,t,st);
-    if(ok){const arm=eqArm==='fuse'+r;const btn=mkBtn(arm?'Touche encore pour fusionner !':'Fusionner',arm?'primary glow':'primary',()=>{
-        if(eqArm!=='fuse'+r){eqArm='fuse'+r;renderFuse();setTimeout(()=>{if(eqArm==='fuse'+r){eqArm='';if(state==='hero'&&eqTab==='fuse')renderFuse();}},4000);return;}
-        eqArm='';doFuseR(r);});btn.classList.remove('sm');card.append(btn);}
-    L.append(card);
-  }
+/* the player taps 3 items of the same colour (fuseSel), then picks what comes out among their types (fuseOut) */
+let fuseOut=-1,fuseOutUser=false;
+function fuseItems(){return fuseSel.map(eqById).filter(Boolean);}
+function fuseMaj(){const a=fuseItems();if(!a.length)return -1;const cnt=[0,0,0,0,0];for(const p of a)cnt[p.s]++;let b=a[0].s;for(let k=0;k<5;k++)if(cnt[k]>cnt[b])b=k;return b;}
+function fuseClean(){
+  const a=fuseSel.map(eqById).filter(it=>it&&!eqIsOn(it)&&it.r<RMAX),r=a.length?a[0].r:-1;
+  fuseSel=a.filter(it=>it.r===r).slice(0,3).map(it=>it.i);
+  if(!fuseOutUser||!fuseItems().some(it=>it.s===fuseOut)){fuseOut=fuseMaj();fuseOutUser=false;}
 }
-function doFuseR(r){
-  const picks=fusePicks(r);if(picks.length!==3||r>=RMAX)return;
-  const cnt=[0,0,0,0,0];for(const p of picks)cnt[p.s]++;const mx=Math.max(...cnt),opts=cnt.map((c,i)=>c===mx?i:-1).filter(i=>i>=0);
-  const sl=opts[Math.floor(Math.random()*opts.length)];
-  save.eq.inv=save.eq.inv.filter(x=>!picks.includes(x));
+function fuseTap(id){
+  const it=eqById(id);if(!it)return;eqArm='';
+  if(fuseSel.includes(id))fuseSel=fuseSel.filter(x=>x!==id);
+  else{const a=fuseItems();
+    if(a.length&&a[0].r!==it.r){fuseSel=[id];fuseOutUser=false;frMsg('On recommence avec des '+RAR[it.r].n+'s : il faut 3 équipements de la même couleur.');}
+    else if(a.length>=3){frMsg("Tu as déjà choisi 3 équipements. Touche-en un pour l'enlever.",'bad');return;}
+    else fuseSel.push(id);}
+  sfx('coin');fuseRefresh();
+}
+function renderFuse(){
+  fuseClean();const L=$('fuseList');L.textContent='';let any=false;
+  for(let r=0;r<RMAX;r++){
+    const items=save.eq.inv.filter(it=>it.r===r&&!eqIsOn(it)).sort((a,b)=>a.s-b.s||a.l-b.l||eqScore(a)-eqScore(b));
+    if(!items.length)continue;any=true;
+    const h=document.createElement('div');h.className='fz-h';
+    const t=document.createElement('span');t.className='fz-ht';t.style.color=RAR[r].c;t.textContent=RAR[r].n+'s ('+items.length+')';
+    const sub=document.createElement('span');sub.className='fz-hs';
+    if(items.length>=3){sub.textContent='3 → 1 '+RAR[r+1].n;sub.style.color=r+1===6?'#9fe9ff':RAR[r+1].c;}
+    else sub.textContent='il en faut 3 (encore '+(3-items.length)+')';
+    h.append(t,sub);
+    if(items.length>=3)h.append(mkBtn('Choisir pour moi','ghost',()=>{fuseSel=fusePicks(r).map(x=>x.i);fuseOutUser=false;eqArm='';sfx('coin');fuseRefresh();}));
+    const g=document.createElement('div');g.className='fz-grid';
+    for(const it of items){
+      const bt=document.createElement('button');bt.type='button';bt.className='fz-it';bt.dataset.id=it.i;bt.dataset.r=r;bt.style.setProperty('--rc',RAR[r].c);
+      const cv=document.createElement('canvas');cv.width=cv.height=Math.round(52*dpr);drawEqIcon(cv,it.s,it.r,true);
+      const k=document.createElement('span');k.className='k';k.textContent=it.s===4?'Chance':EQ_SLOTS[it.s].name;
+      const lv=document.createElement('span');lv.className='lv'+(it.l>1?' up':'');lv.textContent='Niv. '+it.l+(it.l>1?' ▲':'');
+      const ck=document.createElement('i');ck.className='fz-ck';ck.textContent='✓';ck.setAttribute('aria-hidden','true');
+      bt.append(cv,k,lv,ck);bt.setAttribute('aria-label',eqName(it)+', '+RAR[r].n+', niveau '+it.l);
+      bt.addEventListener('click',()=>{audioUnlock();fuseTap(it.i);});g.append(bt);
+    }
+    L.append(h,g);
+  }
+  if(!any){const p=document.createElement('p');p.className='coop-empty';p.textContent="Tu n'as aucun équipement à fusionner (ceux que tu portes ne comptent pas). Bats des boss ou ouvre des coffres à la Boutique, dans le Menu.";L.append(p);}
+  const cos=save.eq.inv.filter(it=>it.r===RMAX&&!eqIsOn(it)).length;
+  if(cos){const p=document.createElement('p');p.className='fz-small';p.textContent=(cos>1?'Tes '+cos+' équipements Cosmiques sont':'Ton équipement Cosmique est')+' déjà au plus fort : '+(cos>1?'ils ne se fusionnent':'il ne se fusionne')+' pas.';L.append(p);}
+  fuseRefresh();
+}
+function fuseRefresh(){
+  fuseClean();const a=fuseItems(),r=a.length?a[0].r:-1;
+  document.querySelectorAll('#fuseList .fz-it').forEach(b=>{const on=fuseSel.includes(b.dataset.id);b.classList.toggle('sel',on);b.classList.toggle('dim',!on&&r>=0&&(+b.dataset.r!==r||a.length>=3));b.setAttribute('aria-pressed',on?'true':'false');});
+  renderFuseBar();
+}
+function renderFuseBar(){
+  const B=$('fuseBar');B.textContent='';fuseClean();
+  const a=fuseItems(),n=a.length,r=n?a[0].r:-1;B.classList.toggle('full',n===3);
+  if(!n){const p=document.createElement('p');p.className='fz-hint';p.textContent='Touche 3 équipements de la même couleur dans la liste.';B.append(p);return;}
+  const vis=document.createElement('div');vis.className='fuse-vis';
+  for(let i=0;i<3;i++){const cv=document.createElement('canvas');cv.width=cv.height=Math.round(44*dpr);const it=a[i];
+    if(it){drawEqIcon(cv,it.s,it.r,true);cv.title=eqName(it);}else{qTile(cv,r,'?');cv.style.opacity=0.4;}vis.append(cv);
+    const op=document.createElement('span');op.className='op';op.textContent=i<2?'+':'→';vis.append(op);}
+  const tg=document.createElement('canvas');tg.className='big';tg.width=tg.height=Math.round(58*dpr);
+  if(n===3)drawEqIcon(tg,fuseOut,r+1,true);else{qTile(tg,r+1,'?');tg.style.opacity=0.55;}vis.append(tg);
+  const top=document.createElement('div');top.className='fz-top';top.append(vis);B.append(top);
+  const t=document.createElement('p');t.className='fz-t';
+  if(n<3)t.textContent=n+' / 3 choisis · touche encore '+(3-n)+' '+RAR[r].n+(3-n>1?'s':'');
+  else{const nm=document.createElement('b');nm.textContent=EQ_SLOTS[fuseOut].names[r+1];nm.style.color=r+1===6?'#9fe9ff':RAR[r+1].c;
+    const ef=document.createElement('span');ef.className='fz-ef';ef.textContent=RAR[r+1].n+' · '+eqEffTxt(fuseOut,r+1,1);
+    t.append(document.createTextNode('Tu vas obtenir : '),nm,document.createElement('br'),ef);}
+  top.append(t);
+  if(n===3){const types=[...new Set(a.map(x=>x.s))].sort((x,y)=>x-y);
+    if(types.length>1){const w=document.createElement('div');w.className='fz-out';const l=document.createElement('span');l.className='fz-ol';l.textContent='Choisis ce que tu veux :';w.append(l);
+      for(const k of types){const c=document.createElement('button');c.type='button';c.className='chip-f'+(k===fuseOut?' on':'');c.textContent=EQ_SLOTS[k].name;c.setAttribute('aria-pressed',k===fuseOut?'true':'false');
+        c.addEventListener('click',()=>{audioUnlock();fuseOut=k;fuseOutUser=true;eqArm='';sfx('coin');renderFuseBar();});w.append(c);}
+      B.append(w);}}
+  const up=a.filter(x=>x.l>1);
+  if(up.length){const w=document.createElement('p');w.className='fz-warn';w.textContent='⚠ '+(up.length>1?up.length+' équipements améliorés seront utilisés':'Un équipement amélioré (niv. '+up[0].l+') sera utilisé')+'. Le nouveau sera niv. 1.';B.append(w);}
+  const row=document.createElement('div');row.className='fz-btns';
+  const clr=mkBtn('Vider','ghost',()=>{fuseSel=[];fuseOutUser=false;eqArm='';sfx('coin');fuseRefresh();});
+  const arm=eqArm==='fuse';
+  const go=mkBtn(n<3?'Fusionner ('+n+'/3)':arm?'Touche encore pour fusionner !':'Fusionner',arm?'primary glow':'primary',()=>{
+    if(fuseItems().length!==3)return;
+    if(eqArm!=='fuse'){eqArm='fuse';renderFuseBar();setTimeout(()=>{if(eqArm==='fuse'){eqArm='';if(state==='hero'&&eqTab==='fuse')renderFuseBar();}},4000);return;}
+    eqArm='';doFuse();});
+  go.disabled=n<3;go.classList.remove('sm');go.id='btnFuse';row.append(clr,go);B.append(row);
+}
+function doFuse(){
+  fuseClean();const a=fuseItems();if(a.length!==3)return;const r=a[0].r;if(r>=RMAX||a.some(x=>x.r!==r||eqIsOn(x)))return;
+  const sl=a.some(x=>x.s===fuseOut)?fuseOut:fuseMaj();
+  save.eq.inv=save.eq.inv.filter(x=>!a.includes(x));fuseSel=[];fuseOutUser=false;
   const it=eqNew(sl,r+1,1);persist();sfx('item');renderHero();openEqSheet(it.i,true);
 }
 /* ---- item sheet ---- */
