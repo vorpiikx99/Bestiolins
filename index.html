@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105130536';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105130536" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261105133355';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261105133355" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -875,7 +875,7 @@ html.big-text #toast .t1{font-size:1.1em}
 .day-grid .scard .nm{font-size:16px}
 .day-grid .scard .ef{font-size:13px}
 .day-grid .scard.glowy{box-shadow:0 0 14px color-mix(in srgb,var(--rc) 30%,transparent)}
-#evoOv{position:fixed;inset:0;z-index:41;background:#120c08;cursor:pointer}
+#evoOv{position:fixed;inset:0;z-index:41;background:#0e0f11;cursor:pointer}
 #evoOv canvas{width:100%;height:100%;display:block}
 #chestOpen{position:fixed;inset:0;z-index:40;background:rgba(8,5,3,.92);cursor:pointer}
 #coCv{position:absolute;inset:0;width:100%;height:100%}
@@ -1016,6 +1016,35 @@ html body .btn.sm,html body .btn.sm.primary{font-size:16px;padding:6px 10px}
 html body .btn.sm,html body .btn.sm.primary{white-space:nowrap;font-size:15px;padding:6px 8px}
 html body .mode-acts .btn{font-size:17px;padding-left:8px;padding-right:8px}
 html body .mode-acts .btn .count{font-family:var(--font-ui);font-size:13px}
+html body #splash{background:radial-gradient(circle at 50% 40%,#4a4c51,#141518 72%)}
+html body .sp-logo{font-family:Rye,serif;font-weight:400;background:linear-gradient(180deg,#ffe6a8 0%,#e0a050 45%,#8a4a18 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 14px rgba(93,255,160,.25))}
+html body .sp-bar{background:#1a0e06;border:2px solid #b8863a}
+html body .sp-bar i{background:linear-gradient(90deg,#1f8a52,#5dffa0)}
+html body .sp-tip{background:linear-gradient(180deg,#5a3a24,#3e2716);border:2px solid #b8863a}
+html body .sp-tip b{color:#e0b878}
+html body #maint{background:radial-gradient(circle at 50% 38%,#4a4c51,#141518 72%)}
+html body .mt-h{font-family:Rye,serif;font-weight:400;color:#ffe6a8}
+html body #toast{background:linear-gradient(180deg,rgba(90,58,36,.97),rgba(62,39,22,.97));border:2px solid #b8863a;box-shadow:inset 0 0 0 2px #2a1a0c,0 6px 16px rgba(0,0,0,.5)}
+html body #toast .t1{font-family:Rye,serif;font-weight:400;color:#ffe6a8}
+html body #toast .t2{color:#f2e2c4}
+html body #banner .b2{font-family:Rye,serif;font-weight:400;background:linear-gradient(180deg,#ffe6a8 0%,#e0a050 45%,#8a4a18 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 3px 0 #000)}
+html body #bossCard .bc2{font-family:Rye,serif;font-weight:400;color:#ffe6a8}
+html body .co-name{font-family:Rye,serif;font-weight:400;color:#ffe6a8}
+html body #storyBox{background:linear-gradient(180deg,#5a3a24,#3e2716);border-color:#b8863a}
+html body #storyBox .sb-name{color:#e0b878}
+html body .book-detail{border-color:#b8863a;background:rgba(42,26,12,.97)}
+html body .se-bar i{background:linear-gradient(90deg,#1f8a52,#5dffa0)}
+html body .g7.today,html body .fuse-card.ready,html body .dex-cell.cur,html body #starters.car .starter.cur{box-shadow:0 0 14px rgba(224,176,96,.4)}
+html body .tab{background:linear-gradient(180deg,#3a3d42,#2a2c30);border:2px solid #1c1d20;box-shadow:inset 0 0 0 1px #b8863a;color:#c4a882}
+html body .tab.on{background:linear-gradient(180deg,#5a3a24,#3e2716);color:#ffe6a8;border-color:#b8863a;box-shadow:inset 0 0 0 1px #2a1a0c}
+html body .rank{background:linear-gradient(180deg,#5a3a24,#3e2716);border:2px solid #b8863a;border-radius:10px}
+html body .rank.me{border-color:#5dffa0;box-shadow:0 0 10px rgba(93,255,160,.35)}
+html body .rank .pos{font-family:Rye,serif;font-weight:400;color:#e0b878}
+html body .rank .pts{font-family:Rye,serif;font-weight:400;color:#ffe6a8}
+html body .tab{font-size:15px;line-height:1.1}
+html body .rank:nth-child(1) .pos{color:#ffd84a;text-shadow:0 0 8px rgba(255,216,74,.6)}
+html body .rank:nth-child(2) .pos{color:#d8dde3}
+html body .rank:nth-child(3) .pos{color:#e0965a}
 </style>
 </head>
 <body>
@@ -1675,9 +1704,11 @@ html body .mode-acts .btn .count{font-family:var(--font-ui);font-size:13px}
     <div class="tabs" role="tablist">
       <button class="tab on" id="tabAll" type="button" role="tab" aria-selected="true">Meilleurs scores</button>
       <button class="tab" id="tabDay" type="button" role="tab" aria-selected="false">Défi du jour</button>
+      <button class="tab" id="tabFr" type="button" role="tab" aria-selected="false" hidden>Mes amis</button>
     </div>
     <div class="ranklist" id="rankList"></div>
     <p class="coop-note" id="rankNote"></p>
+    <button class="btn" id="rankNick" type="button" hidden>Choisir mon pseudo pour apparaître</button>
   </div>
 </section>
 
@@ -2964,14 +2995,14 @@ function playEvo(sid,from,to,done){const ov=$('evoOv'),cv=$('evoCv');ov.hidden=f
 function evStep(now){if(!EV)return;const dt=Math.min(0.05,(now-EV.last)/1000);EV.last=now;EV.u+=dt;const u=EV.u,T=now/1000;
   const cv=$('evoCv'),c=cv.getContext('2d'),w=cv.width,h=cv.height,sid=EV.sid,st=STARTERS[sid],a=EV.cur,b=a+1,S=Math.min(w,h);
   const o={lx:0,ly:0.3,pal:skinPal(sid,mySkinI(sid)),noBlink:true,seed:1};
-  c.setTransform(1,0,0,1,0,0);const g=c.createRadialGradient(w/2,h*0.45,0,w/2,h*0.45,Math.max(w,h)*0.7);g.addColorStop(0,'#3a2a20');g.addColorStop(1,'#120c08');c.fillStyle=g;c.fillRect(0,0,w,h);
+  c.setTransform(1,0,0,1,0,0);const g=c.createRadialGradient(w/2,h*0.45,0,w/2,h*0.45,Math.max(w,h)*0.7);g.addColorStop(0,'#46484d');g.addColorStop(1,'#0e0f11');c.fillStyle=g;c.fillRect(0,0,w,h);
   const cy=h*0.44,Rr=s=>S*0.15*EVO_SC[s];
   const draw=(s,sil,k)=>{if(!sil){c.save();c.translate(w/2,cy);c.scale(k||1,k||1);c.beginPath();c.ellipse(0,Rr(s),Rr(s)*1.1,Rr(s)*0.3,0,0,TAU);c.fillStyle='rgba(0,0,0,0.35)';c.fill();drawEvo(c,sid,s,Rr(s),T,o);c.restore();return;}
     if(!evoSil)evoSil=document.createElement('canvas');if(evoSil.width!==w||evoSil.height!==h){evoSil.width=w;evoSil.height=h;}const q=evoSil.getContext('2d');q.setTransform(1,0,0,1,0,0);q.globalCompositeOperation='source-over';q.clearRect(0,0,w,h);q.translate(w/2,cy);q.scale(k||1,k||1);drawEvo(q,sid,s,Rr(s),T,o);
     q.setTransform(1,0,0,1,0,0);q.globalCompositeOperation='source-in';q.fillStyle='#fffbe8';q.fillRect(0,0,w,h);c.save();c.shadowColor='rgba(255,230,150,0.9)';c.shadowBlur=S*0.06;c.drawImage(evoSil,0,0);c.restore();};
   const fz=S*0.052,text=(t1,t2,al)=>{c.save();c.globalAlpha=al;c.textAlign='center';c.textBaseline='middle';const bw=Math.min(w*0.9,S*1.1),bh=fz*(t2?3.4:2.2),by=Math.min(h*0.72,cy+Rr(2)*2.4);
-    c.fillStyle='rgba(0,0,0,0.6)';c.fillRect(w/2-bw/2,by,bw,bh);c.strokeStyle='#f0a24a';c.lineWidth=Math.max(2,S*0.006);c.strokeRect(w/2-bw/2,by,bw,bh);
-    c.fillStyle='#fff1d6';c.font='700 '+Math.round(fz)+'px Grenze, Georgia, serif';c.fillText(t1,w/2,by+fz*(t2?1.05:1.1));if(t2){c.fillStyle='#ffcf6a';c.font='700 '+Math.round(fz*0.9)+'px Grenze, Georgia, serif';c.fillText(t2,w/2,by+fz*2.35);}c.restore();return by+bh;};
+    c.fillStyle='rgba(0,0,0,0.6)';c.fillRect(w/2-bw/2,by,bw,bh);c.strokeStyle='#b8863a';c.lineWidth=Math.max(2,S*0.006);c.strokeRect(w/2-bw/2,by,bw,bh);
+    c.fillStyle='#fff1d6';c.font='700 '+Math.round(fz)+'px Grenze, Georgia, serif';c.fillText(t1,w/2,by+fz*(t2?1.05:1.1));if(t2){c.fillStyle='#9dffc6';c.font='700 '+Math.round(fz*0.9)+'px Grenze, Georgia, serif';c.fillText(t2,w/2,by+fz*2.35);}c.restore();return by+bh;};
   const na=evoName(sid,a),nb=evoName(sid,b);
   if(u<1.2){draw(a,false);text('Quoi ? '+na+' évolue !','',Math.min(1,u*3));}
   else if(u<3.9){const k=(u-1.2)/2.7,freq=2+k*k*22,ph=Math.sin((u-1.2)*freq*Math.PI)>0;if(ph!==EV.ph){EV.ph=ph;if(k>0.15)sfx('coin');}
@@ -7198,12 +7229,15 @@ async function relayTick(){
   }
 }
 function openRank(){state='rank';clearOverlays();show('scrRank');pauseBtn.hidden=true;$('scrRank').scrollTop=0;renderRank();}
-function setRankTab(t){rankTab=t;$('tabAll').classList.toggle('on',t==='all');$('tabDay').classList.toggle('on',t==='day');$('tabAll').setAttribute('aria-selected',t==='all');$('tabDay').setAttribute('aria-selected',t==='day');renderRank();}
+function setRankTab(t){rankTab=t;for(const [id,k] of [['tabAll','all'],['tabDay','day'],['tabFr','fr']]){$(id).classList.toggle('on',t===k);$(id).setAttribute('aria-selected',t===k);}renderRank();}
 let rankSeq=0;
 async function renderRank(){
   const list=$('rankList'),note=$('rankNote'),seq=++rankSeq;
   const msg=t=>{list.textContent='';const p=document.createElement('p');p.className='coop-empty';p.textContent=t;list.appendChild(p);};
   note.textContent=rankTab==='day'?'Défi du '+dateKey().split('-').reverse().join('/')+' : le même donjon pour tout le monde.':'Ton meilleur score est envoyé à la fin de chaque partie.';
+  $('tabFr').hidden=!CB_SOC;$('rankNick').hidden=true;
+  if(!DB&&CB_SOC){renderRankSoc(seq,msg);return;}
+  if(rankTab==='fr'){rankTab='all';setRankTab('all');return;}
   if(!DB){msg(window.claude&&window.claude.use?'Connexion au classement…':"Le classement marche dans l'appli Claude, quand tu es connecté à ton compte.");
     if(!window.claude||!window.claude.use)return;setTimeout(()=>{if(state==='rank'&&seq===rankSeq&&!DB)msg(CB_SA?"Le classement n'existe que dans la version Claude du jeu.":"Le classement n'est pas disponible ici : il faut être connecté à un compte Claude.");},6000);return;}
   msg('Chargement…');
@@ -7229,6 +7263,43 @@ async function renderRank(){
     const pts=document.createElement('span');pts.className='pts';pts.textContent=String(v.s|0);
     row.append(pos,cv,info,pts);list.appendChild(row);
   });
+}
+function rankRow(e,i,me){
+  const row=document.createElement('div');row.className='rank'+(me?' me':'');
+  const pos=document.createElement('span');pos.className='pos';pos.textContent=String(i+1);
+  const cv=document.createElement('canvas');cv.width=cv.height=Math.round(40*dpr);drawPortrait(cv,STARTERS[e.st]?e.st:'braisot',1.2,false);
+  const info=document.createElement('div');info.className='info';
+  const nm=document.createElement('span');nm.className='nm';nm.textContent=(me?'Toi':(e.n||'Joueur'))+(e.w?' 👑':'');
+  const ds=document.createElement('span');ds.className='ds';ds.textContent=e.f!=null?('Étage '+(e.f|0)+' · '+(e.k|0)+' monstres · niv. '+(e.lv|0)):(STARTERS[e.st]?STARTERS[e.st].name:'');
+  info.append(nm,ds);
+  const pts=document.createElement('span');pts.className='pts';pts.textContent=String(e.s|0);
+  row.append(pos,cv,info,pts);return row;
+}
+async function renderRankSoc(seq,msg){
+  const list=$('rankList'),note=$('rankNote'),tab=rankTab;
+  if(!soReady){msg('Connexion au classement…');setTimeout(()=>{if(state==='rank'&&seq===rankSeq){if(soReady)renderRank();else msg("Pas de connexion : le classement en ligne n'est pas disponible pour l'instant. Vérifie ton Internet et réessaie.");}},5000);return;}
+  msg('Chargement…');
+  let rows=[];
+  try{rows=tab==='fr'?await SO.profiles([...soFriends(),SO.pk]):await SO.board(tab==='day'?2:120);}
+  catch(e){if(seq===rankSeq)msg("Impossible de charger le classement pour l'instant. Vérifie ton Internet et réessaie.");return;}
+  if(seq!==rankSeq)return;
+  const me=SO.pk,today=dateKey(),E=[];
+  for(const r of rows){const c=cleanCard(r.p);if(!c)continue;
+    if(tab==='day'){if(!c.dd||c.dd.d!==today||!(c.dd.s>0))continue;E.push({pk:r.pk,n:c.n,st:c.mb?c.mb.st:c.st,s:c.dd.s,at:r.at});}
+    else{if(!c.mb||!(c.mb.s>0))continue;E.push({pk:r.pk,n:c.n,st:c.mb.st,s:c.mb.s,f:c.mb.f,k:c.mb.k,lv:c.mb.lv,w:c.mb.w,at:r.at});}}
+  /* my own score is always shown, even before it is online */
+  if(!E.some(e=>e.pk===me)){
+    if(tab==='day'){const d=save.dailyBest;if(d&&d.d===today&&d.s>0)E.push({pk:me,st:(save.myBest&&save.myBest.st)||favStarter(),s:d.s|0,at:Date.now()/1000});}
+    else{const b=save.myBest;if(b&&b.s>0)E.push({pk:me,st:SIDS.includes(b.st)?b.st:favStarter(),s:b.s|0,f:b.f|0,k:b.k|0,lv:b.lv|0,w:b.w?1:0,at:Date.now()/1000});}}
+  E.sort((a,b)=>b.s-a.s||a.at-b.at);
+  list.textContent='';
+  if(!E.length){msg(tab==='day'?"Personne n'a encore joué le défi du jour. Sois le premier !":tab==='fr'?"Tes amis n'ont pas encore de score. Ajoute des amis dans « Amis » !":"Pas encore de score. Termine une partie pour apparaître ici !");}
+  const TOP=50,mi=E.findIndex(e=>e.pk===me);
+  E.slice(0,TOP).forEach((e,i)=>list.appendChild(rankRow(e,i,e.pk===me)));
+  if(mi>=TOP){const sep=document.createElement('p');sep.className='coop-empty';sep.textContent='…';list.appendChild(sep);list.appendChild(rankRow(E[mi],mi,true));}
+  const n=E.length;
+  note.textContent=(tab==='day'?'Défi du '+today.split('-').reverse().join('/')+' : le même donjon pour tout le monde. ':tab==='fr'?'Toi et tes amis. ':'Tous les joueurs de Bestiolins. ')+(n>1?n+' joueurs classés.':'')+(mi>=0?' Tu es '+(mi+1)+(mi===0?'er':'e')+' !':'');
+  if(!SOC.nick){note.textContent+=" Les autres ne te voient pas encore : choisis un pseudo pour apparaître dans leur classement.";$('rankNick').hidden=false;}
 }
 let bestSel=null,bestFrom='title';
 function openBestiary(from){bestFrom=from;state='bestiary';show('scrBestiary');pauseBtn.hidden=true;buildBestiary();}
@@ -7357,7 +7428,7 @@ $('navSkin').addEventListener('click',()=>{try{$('skinsH').scrollIntoView({behav
 $('btnQuest').addEventListener('click',()=>{audioUnlock();openQuests();});
 $('btnFriends').addEventListener('click',()=>{audioUnlock();openFriends('title');});
 $('modeFriend').addEventListener('click',()=>{audioUnlock();openFriends('coop');});
-$('frBack').addEventListener('click',()=>{nickEdit=false;if(frFrom==='coop')openCoop();else goTitle();});
+$('frBack').addEventListener('click',()=>{nickEdit=false;if(frFrom==='coop')openCoop();else if(frFrom==='rank')openRank();else goTitle();});
 $('cardBack').addEventListener('click',backFromCard);
 $('btnNick').addEventListener('click',saveNick);
 $('nickIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
@@ -7399,6 +7470,8 @@ $('btnRank').addEventListener('click',()=>{audioUnlock();openRank();});
 $('rankBack').addEventListener('click',goTitle);
 $('tabAll').addEventListener('click',()=>setRankTab('all'));
 $('tabDay').addEventListener('click',()=>setRankTab('day'));
+$('tabFr').addEventListener('click',()=>setRankTab('fr'));
+$('rankNick').addEventListener('click',()=>{audioUnlock();openFriends('rank');});
 $('btnDaily').addEventListener('click',()=>{audioUnlock();goPickDaily();});
 $('btnGiftDay').addEventListener('click',openDailyGift);
 $('g7Back').addEventListener('click',goTitle);
