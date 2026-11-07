@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Bestiolins">
 <meta name="description" content="Bestiolins : choisis ta bestiole, descends dans la crypte, bats les monstres et remplis ton Bestiaire.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif;background:#120c09}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.CB_STANDALONE=true;window.CB_VER='20261105204342';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
-<script src="net.js?v=20261105204342" async></script>
+<script>window.CB_STANDALONE=true;window.CB_VER='20261107043010';window.CB_P2P=new Promise(function(r){window.__cbP2P=r;});window.CB_SOCIAL=new Promise(function(r){window.__cbSOC=r;});</script>
+<script src="net.js?v=20261107043010" async></script>
 <title>Bestiolins</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#120c09">
@@ -3931,20 +3931,20 @@ function genRushMap(fi){
   const mk=(x,y,type,doors)=>{const seed=randi(1,1e9);const r={gx:x,gy:y,type,doors,tpl:0,mh:false,mv:false,grid:widenGrid(mirrorGrid(TEMPLATES[0],false,false),COLS,seed,type),
     visited:false,known:true,cleared:type!=='boss',seed,pickups:[],itemPlaced:true,greeted:true,hidden:{},broken:[]};r.pots=makePots(r.grid,type);rooms.set(K(x,y),r);return r;};
   const st=mk(4,4,'start',{n:true,s:false,w:false,e:false});mk(4,3,'boss',{n:false,s:true,w:false,e:false});
-  if(!run.rushI){const id=run.pool.pop();if(id)st.pickups.push({kind:'item',id,x:RW/2-56,y:RH/2-36});
-    const aid=run.actPool.length?run.actPool.pop():null;if(aid)st.pickups.push({kind:'active',id:aid,x:RW/2+56,y:RH/2-36});}
+  if(!run.rushI){const id=poolPop();if(id)st.pickups.push({kind:'item',id,x:RW/2-56,y:RH/2-36});
+    const aid=actPop();if(aid)st.pickups.push({kind:'active',id:aid,x:RW/2+56,y:RH/2-36});}
   return{rooms,start:st,get:(x,y)=>rooms.get(K(x,y))};
 }
 function rushCleared(room){
   const N=RUSH.length;run.rushBeat=(run.rushI|0)+1;
   if(run.rushBeat>(save.rushBest|0)){save.rushBest=run.rushBeat;persist();}
   if(run.rushBeat>=N){
-    unlockAch('rush');addGold(150);banner('Victoire !','Tous les boss sont vaincus',3);sfx('item');
+    unlockAch('rush');teamGold(150);banner('Victoire !','Tous les boss sont vaincus',3);sfx('item');
     room.pickups.push({kind:'exit',x:RW/2,y:RH/2+30});
     toast('Rush réussi !','Marche sur la porte dorée pour sortir en vainqueur');return;
   }
-  const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2-50,y:RH/2-50});
-  if(run.rushBeat%2===0&&run.actPool.length)room.pickups.push({kind:'active',id:run.actPool.pop(),x:RW/2+50,y:RH/2-50});
+  const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2-50,y:RH/2-50});
+  if(run.rushBeat%2===0)room.pickups.push({kind:'active',id:actPop(),x:RW/2+50,y:RH/2-50});
   room.pickups.push({kind:'hole',x:RW/2,y:RH/2+34});
   room.pickups.push({kind:'heart',half:false,x:RW/2+76,y:RH/2+34});
   run.lvl+=2;run.pendingLv+=2;mateLv(2);
@@ -4053,22 +4053,23 @@ function makeTraps(grid){
   return cand.slice(0,Math.min(cand.length,Math.round(COLS*ROWS*0.12))).map(a=>({c:a[0],r:a[1],g:(a[0]+a[1])%2}));
 }
 const WHEEL=[['rien',30,'#5a4a3c','Perdu !'],['x2',25,'#f5c542','Double !'],['coeur',12,'#e2483a','Un cœur !'],['bombe',10,'#6a6a7a','2 bombes !'],['x3',10,'#ffb35a','Triple !'],['objet',8,'#a35bd8','Un objet !'],['x5',5,'#5bd87a','JACKPOT ×5 !']];
+function wheelLeft(p,pl){return Math.max(0,(p.left|0)-(((p.uses||[])[(pl&&pl.slot)|0])|0));}
 function spinWheel(p,pl){
-  if(!p||p.spin>0||(p.left|0)<=0||!pl||pl.down)return;
+  if(!p||p.spin>0||wheelLeft(p,pl)<=0||!pl||pl.down)return;
   const g=goldOf(pl);if(g<p.price){if(!pl.isRemote)sfx('nope');return;}
   if(pl.isRemote){netEv('pay',p.price,'',pl);if(pl.G&&pl.G.g)pl.G.g.gold=g-p.price;}else{save.gold=g-p.price;persist();run.floats.push({x:p.x,y:p.y-40,text:'-'+p.price+' or',t:1,col:'#f5c542'});}
   let r=Math.random()*100,res=WHEEL[0];for(const w of WHEEL){r-=w[1];if(r<0){res=w;break;}}
-  p.left=(p.left|0)-1;p.spin=2.2;p.res=res[0];p.by=pl;sfx('coin');
+  p.uses=p.uses||[0,0,0,0];p.uses[pl.slot|0]=(p.uses[pl.slot|0]|0)+1;p.spin=2.2;p.res=res[0];p.spinner=pl;sfx('coin');
 }
 function updateWheels(dt){
   for(const p of run.room.pickups){if(p.kind!=='wheel')continue;
     if(p.spin>0){p.spin=Math.max(0,p.spin-dt);p.ang=(p.ang||0)+dt*(2+p.spin*7);if(Math.random()<dt*10)sfx('coin');
-      if(p.spin<=0){const w=WHEEL.find(x=>x[0]===p.res)||WHEEL[0],x=p.x,y=p.y+30;
-        if(w[0]==='x2')spawnCoins(x,y,p.price*2,true);else if(w[0]==='x3')spawnCoins(x,y,p.price*3,true);
-        else if(w[0]==='x5'){spawnCoins(x,y,p.price*5,true);flashFx(p.x,p.y-20,90);ringFx(p.x,p.y,110,'91,216,122',0.9);addShake(6);}
-        else if(w[0]==='coeur'){const q=nearestFree(x,y);run.room.pickups.push({kind:'heart',x:q.x,y:q.y});}
-        else if(w[0]==='bombe'){for(const dx of[-14,14]){const q=nearestFree(x+dx,y);run.room.pickups.push({kind:'bomb',x:q.x,y:q.y});}}
-        else if(w[0]==='objet'){const id=run.pool.pop();if(id){const q=nearestFree(x,y+10);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});}}
+      if(p.spin<=0){const w=WHEEL.find(x=>x[0]===p.res)||WHEEL[0],x=p.x,y=p.y+30,ow=run.pl&&p.spinner?plBit(p.spinner):0;
+        if(w[0]==='x2')spawnCoins(x,y,p.price*2,true,ow);else if(w[0]==='x3')spawnCoins(x,y,p.price*3,true,ow);
+        else if(w[0]==='x5'){spawnCoins(x,y,p.price*5,true,ow);flashFx(p.x,p.y-20,90);ringFx(p.x,p.y,110,'91,216,122',0.9);addShake(6);}
+        else if(w[0]==='coeur'){const q=nearestFree(x,y);run.room.pickups.push({kind:'heart',x:q.x,y:q.y,own:ow});}
+        else if(w[0]==='bombe'){for(const dx of[-14,14]){const q=nearestFree(x+dx,y);run.room.pickups.push({kind:'bomb',x:q.x,y:q.y,own:ow});}}
+        else if(w[0]==='objet'){const id=poolPop();if(id){const q=nearestFree(x,y+10);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y,own:ow});}}
         sfx(w[0]==='rien'?'nope':w[0]==='x5'?'chest':'item');run.floats.push({x:p.x,y:p.y-46,text:w[3],t:1.4,col:w[2]==='#5a4a3c'?'#ece0c8':w[2]});netEv('b','Roue de la chance',w[3]);
         if(w[0]==='x5'){banner('JACKPOT !','5 fois la mise',2);}}}}
 }
@@ -4081,7 +4082,7 @@ function drawWheel(p,t){
   ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.lineWidth=2;ctx.strokeStyle='#f5c542';ctx.stroke();ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fillStyle='#f5c542';ctx.fill();
   ctx.beginPath();ctx.moveTo(x,y-R+4);ctx.lineTo(x-4,y-R-5);ctx.lineTo(x+4,y-R-5);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle=INK;ctx.stroke();
   for(let i=0;i<6;i++){const a=t*2+i*TAU/6;ctx.beginPath();ctx.arc(x+Math.cos(a)*(R+5),y+Math.sin(a)*(R+5),1.3,0,TAU);ctx.fillStyle=(i+Math.floor(t*4))%2?'#ffe066':'#ff8a5a';ctx.fill();}
-  ctx.font='700 10px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;const lb=(p.left|0)>0?'Roue · '+(p.left|0)+' essai'+((p.left|0)>1?'s':''):'Plus d\'essais';ctx.strokeText(lb,x,y-R-9);ctx.fillStyle='#ffe0a0';ctx.fillText(lb,x,y-R-9);
+  ctx.font='700 10px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;const wl=wheelLeft(p,P),lb=wl>0?'Roue · '+wl+' essai'+(wl>1?'s':''):'Plus d\'essais';ctx.strokeText(lb,x,y-R-9);ctx.fillStyle='#ffe0a0';ctx.fillText(lb,x,y-R-9);
 }
 function makeCrumb(grid){
   const cand=[];
@@ -4157,9 +4158,9 @@ function triggerCurse(p){
   announce('Le coffre était maudit !','Embuscade !','Bats tous les monstres pour garder le trésor.');
 }
 function useAltar(p,pl){
-  if(p.used||pl.maxHp<=2)return;
-  p.used=true;run.room.evDone=true;pl.maxHp-=2;pl.hp=Math.max(1,Math.min(pl.hp,pl.maxHp));pl.inv=Math.max(pl.inv||0,1);
-  const g='a'+run.room.gx+'-'+run.room.gy,ids=[run.pool.pop(),run.pool.pop()].filter(Boolean);
+  if(p.used||!canGrab(p,pl)||pl.maxHp<=2)return;
+  if(!ownGrab(p,pl))p.used=true;run.room.evDone=true;pl.maxHp-=2;pl.hp=Math.max(1,Math.min(pl.hp,pl.maxHp));pl.inv=Math.max(pl.inv||0,1);
+  const g='a'+run.room.gx+'-'+run.room.gy,ids=[poolPop(),poolPop()].filter(Boolean);
   ids.forEach((id,i)=>{const q=nearestFree(p.x+(ids.length>1?(i?48:-48):0),p.y+44);run.room.pickups.push({kind:'item',id,x:q.x,y:q.y,choice:ids.length>1?g:'',own:plBit(pl)});});
   flashFx(p.x,p.y-14,80);ringFx(p.x,p.y,90,'220,40,50',0.7);spark(p.x,p.y-12,'255,80,90',30,190,0.7);burst(pl.x,pl.y,'#dc4a34',12,110);addShake(6);sfx('hurt');sfx('item');
   const a='Cœur donné',b=ids.length>1?'Choisis un des 2 objets rares : l\'autre disparaîtra':'Prends ton objet rare';
@@ -4184,6 +4185,12 @@ function drawAltar(p,t){
 }
 function useFountain(p,pl){
   if((pl.shopCd||0)>run.time)return;
+  if(run.pl&&run.pl.length>1&&!run.local){if(!canGrab(p,pl))return;
+    if(pl.hp>=pl.maxHp){pl.shopCd=run.time+1.4;if(!pl.isRemote)run.floats.push({x:p.x,y:p.y-34,text:'Tu es déjà en pleine forme !',t:1.1,col:'#ece0c8'});return;}
+    pl.hp=pl.maxHp;burst(pl.x,pl.y,'#7fd3ff',12,100);if(!ownGrab(p,pl)){p.used=true;run.room.evDone=true;}
+    ringFx(p.x,p.y,70,'127,211,255',0.7);spark(p.x,p.y-8,'160,225,255',26,170,0.7);
+    if(pl.isRemote)netEv('b','Fontaine de vie','Cœurs remplis !',pl);else{bump('fountains');sfx('heal');announce('Fontaine de vie','Cœurs remplis !');}
+    return;}
   const need=players().some(o=>!o.down&&o.hp<o.maxHp);
   if(!need){pl.shopCd=run.time+1.4;if(!pl.isRemote)run.floats.push({x:p.x,y:p.y-34,text:'Tu es déjà en pleine forme !',t:1.1,col:'#ece0c8'});return;}
   p.used=true;run.room.evDone=true;bump('fountains');
@@ -4194,9 +4201,9 @@ function useFountain(p,pl){
 function mysteryPrize(pl,x,y){
   const q=nearestFree(x,y+36),r=Math.random();let a='',b='';
   run.room.evDone=true;
-  if(r<0.4&&run.pool.length){const id=run.pool.pop();run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});a='Un objet !';b='Ramasse-le vite';}
-  else if(r<0.56&&run.actPool.length){run.room.pickups.push({kind:'active',id:run.actPool.pop(),x:q.x,y:q.y});a='Un pouvoir !';b='Ramasse-le vite';}
-  else if(r<0.76){spawnCoins(x,y+18,(30+run.floor*6)*2);a='Jackpot !';b="Le double de ton or";}
+  if(r<0.4){const id=poolPop();run.room.pickups.push({kind:'item',id,x:q.x,y:q.y,own:run.pl?plBit(pl):0});a='Un objet !';b='Ramasse-le vite';}
+  else if(r<0.56){run.room.pickups.push({kind:'active',id:actPop(),x:q.x,y:q.y,own:run.pl?plBit(pl):0});a='Un pouvoir !';b='Ramasse-le vite';}
+  else if(r<0.76){spawnCoins(x,y+18,(30+run.floor*6)*2,false,run.pl?plBit(pl):0);a='Jackpot !';b="Le double de ton or";}
   else if(r<0.9){pl.hp=pl.maxHp;pl.bombs=Math.min(9,(pl.bombs|0)+2);a='Cœurs remplis';b='+ 2 bombes';sfx('heal');}
   else{pl.maxHp+=2;pl.hp=Math.min(pl.maxHp,pl.hp+2);a='Un cœur en plus !';b='Ta vie maximum augmente';sfx('heal');}
   flashFx(x,y-14,60);ringFx(x,y-10,60,'201,182,255',0.6);spark(x,y-14,'201,182,255',22,150,0.6);
@@ -4341,8 +4348,8 @@ function enterRoom(room,entry){
     if(!room.evShown&&(!FIGHT_EV.includes(room.event)||!room.cleared)){room.evShown=true;const tx=EV_TXT[room.event];announce(tx[0],tx[1],tx[2]);}}
   if(room.type==='boss'&&!room.cleared){run.bossNoHit=true;run.bossIntro=0.9;showBossCard(FL(run.floor).boss,run.rush?('Boss '+((run.rushI|0)+1)+' sur '+RUSH.length):run.floor===SECRET_FLOOR?'Boss secret':run.floor===FINAL_FLOOR?'Boss final':"Boss de l'étage");sfx('boss');}
   if(room.type==='treasure'&&!room.itemPlaced){room.itemPlaced=true;
-    const opts=[],a=run.pool.pop();if(a)opts.push({kind:'item',id:a});
-    if(Math.random()<0.35&&run.actPool.length)opts.push({kind:'active',id:run.actPool.pop()});else{const b=run.pool.pop();if(b)opts.push({kind:'item',id:b});}
+    const opts=[],a=poolPop();if(a)opts.push({kind:'item',id:a});
+    if(Math.random()<0.35)opts.push({kind:'active',id:actPop()});else{const b=poolPop();if(b)opts.push({kind:'item',id:b});}
     if(opts.length===1)room.pickups.push(Object.assign(opts[0],{x:RW/2,y:RH/2}));
     else if(opts.length>1){const g='t'+room.gx+'-'+room.gy;opts.forEach((o,i)=>room.pickups.push(Object.assign(o,{x:RW/2+(i?52:-52),y:RH/2,choice:g})));
       const ta='Salle au trésor',tb="Va sur un objet pour voir ce qu'il fait. Tu ne peux en prendre qu'un seul !";toast(ta,tb);netEv('t',ta,tb);}}
@@ -4352,7 +4359,7 @@ function enterRoom(room,entry){
     announce('Un passage secret !','Le Jardin de Cristal');toast('Passage secret',"Marche dans le tourbillon pour descendre à l'étage caché. Un boss secret t'y attend !");netEv('t','Passage secret',"Marche dans le tourbillon pour descendre à l'étage caché.");}
   if(room.type==='secret'&&!room.itemPlaced){room.itemPlaced=true;
     room.pickups.push({kind:'chest',x:RW/2-50,y:RH/2+8,open:false});
-    if(Math.random()<0.5){const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2+40,y:RH/2});}
+    if(Math.random()<0.5){const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2+40,y:RH/2});}
     else for(let i=0;i<2;i++)room.pickups.push({kind:'bomb',x:RW/2+30+i*26,y:RH/2+6});}
   if(room.type==='challenge'&&!room.started&&!room.pickups.some(p=>p.kind==='dais'))room.pickups.push({kind:'dais',x:RW/2,y:RH/2,prog:0});
   bgCanvas=renderRoomBg(room,run.floor,L.s);
@@ -4423,7 +4430,7 @@ function roomCleared(){
   const room=run.room;room.cleared=true;run.doorsOpen=true;sfx('door');doorDust();
   chargeActives(1);
   for(const pl of players())if(pl.sid==='petalou'&&!pl.down&&pl.hp<pl.maxHp){pl.hp+=1;burst(pl.x,pl.y,'#ff9ec7',8,70);if(!pl.isRemote)run.floats.push({x:pl.x,y:pl.y-22,text:'+½ cœur',t:0.9,col:'#ff9ec7'});}
-  if(room.cursed&&!room.curseDone){room.curseDone=true;const c=evPos(room),id=run.pool.pop();
+  if(room.cursed&&!room.curseDone){room.curseDone=true;const c=evPos(room),id=poolPop();
     if(id)room.pickups.push({kind:'item',id,x:c.x,y:c.y-4});spawnCoins(c.x-50,c.y+24,12+run.floor*5);
     const h=nearestFree(c.x+60,c.y+20);room.pickups.push({kind:'heart',half:false,x:h.x,y:h.y});
     announce('Bravo !','Malédiction brisée');bump('curses');unlockAch('maudit');sfx('item');}
@@ -4434,14 +4441,14 @@ function roomCleared(){
     if(Math.random()<0.16){const p=nearestFree(RW/2+rand(-60,60),RH/2+rand(-40,40));room.pickups.push({kind:'chest',x:p.x,y:p.y+8,open:false,mimic:run.floor>=1&&!run.daily&&Math.random()<0.3});}
     if(Math.random()<0.14){const p=nearestFree(RW/2+rand(-80,80),RH/2+rand(-50,50));room.pickups.push({kind:'bomb',x:p.x,y:p.y});}
   }else if(room.type==='challenge'){
-    const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2,y:RH/2-24});
+    const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2,y:RH/2-24});
     room.pickups.push({kind:'chest',x:RW/2+70,y:RH/2+24,open:false});
     spawnCoins(RW/2-60,RH/2+20,12+run.floor*5);
     banner('Défi réussi !','Prends ta récompense',2.2);bump('chal');unlockAch('defi');netEv('t','Défi réussi !','Prends ta récompense');sfx('item');
   }else if(room.type==='boss'){
     if(run.rush)rushCleared(room);
     else if(run.floor===SECRET_FLOOR){
-      for(const dx of[-44,44]){const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2+dx,y:RH/2-50});}
+      for(const dx of[-44,44]){const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2+dx,y:RH/2-50});}
       spawnCoins(RW/2,RH/2,40+(run.loop|0)*20);
       room.pickups.push({kind:'hole',x:RW/2,y:RH/2+40});room.pickups.push({kind:'heart',half:false,x:RW/2+80,y:RH/2+40});
       announce('Victoire secrète !','Prismagor est vaincu');sfx('item');
@@ -4451,8 +4458,8 @@ function roomCleared(){
       run.finalDone=1;
       if(!run.winCounted){run.winCounted=true;save.wins=(save.wins||0)+1;}
       save.stats.finalWins=(save.stats.finalWins|0)+1;persist();
-      for(const dx of[-50,50]){const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2+dx,y:RH/2-50});}
-      spawnCoins(RW/2,RH/2,60+(run.loop|0)*20);addGold(220*(1+(run.loop|0)));
+      for(const dx of[-50,50]){const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2+dx,y:RH/2-50});}
+      spawnCoins(RW/2,RH/2,60+(run.loop|0)*20);teamGold(220*(1+(run.loop|0)));
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       announce('Victoire suprême !','Le Dévoreur est vaincu : la crypte est libérée !');sfx('item');setTimeout(()=>{if(state==='play')maybeStory('fin');},2600);
@@ -4461,7 +4468,7 @@ function roomCleared(){
     else if(run.floor>=NFLOORS-1){
       if(!run.winCounted){run.winCounted=true;save.wins=(save.wins||0)+1;persist();}
       if(!save.unlocked.ombrin){save.unlocked.ombrin=true;persist();toast('Nouvelle créature !','Ombrin est débloqué : choisis-le à ta prochaine partie');}
-      addGold(80*(1+(run.loop|0)));banner('Victoire !',SPECIES[FL(run.floor).boss].name+' est vaincu',3);sfx('item');
+      teamGold(80*(1+(run.loop|0)));banner('Victoire !',SPECIES[FL(run.floor).boss].name+' est vaincu',3);sfx('item');
       room.pickups.push({kind:'hole',endless:true,x:RW/2-80,y:RH/2+30});
       room.pickups.push({kind:'exit',x:RW/2+80,y:RH/2+30});
       room.pickups.push({kind:'heart',half:false,x:RW/2,y:RH/2+70});
@@ -4470,7 +4477,7 @@ function roomCleared(){
       else{toast('Bravo !','Trappe : mode infini · Porte dorée : sortir en vainqueur');netEv('t','Bravo !','Trappe : mode infini · Porte dorée : sortir en vainqueur');}
     }
     else{
-      const id=run.pool.pop();if(id)room.pickups.push({kind:'item',id,x:RW/2,y:RH/2-50});
+      const id=poolPop();if(id)room.pickups.push({kind:'item',id,x:RW/2,y:RH/2-50});
       room.pickups.push({kind:'hole',x:RW/2,y:RH/2+34});
       room.pickups.push({kind:'heart',half:false,x:RW/2+76,y:RH/2+34});
       toast('La trappe est ouverte','Marche dessus pour descendre');netEv('t','La trappe est ouverte','Marche dessus pour descendre');
@@ -4482,8 +4489,8 @@ function roomCleared(){
 function stockShop(room){
   const fi=run.floor,y=RH/2-6,xs=[RW/2-120,RW/2-40,RW/2+40,RW/2+120];
   const stock=[{what:'heart',price:12},{what:'bomb',price:15}];
-  const id=run.pool.pop();if(id)stock.push({what:'item',id,price:55+fi*15});else stock.push({what:'bomb',price:15});
-  const aid=run.actPool.length?run.actPool.pop():null;if(aid)stock.push({what:'active',id:aid,price:40+fi*10});else stock.push({what:'heart',price:12});
+  const id=poolPop();if(id)stock.push({what:'item',id,price:55+fi*15});else stock.push({what:'bomb',price:15});
+  const aid=actPop();if(aid)stock.push({what:'active',id:aid,price:40+fi*10});else stock.push({what:'heart',price:12});
   stock.forEach((it,i)=>room.pickups.push(Object.assign({kind:'shop',x:xs[i],y},it)));
 }
 const SHOP_WHAT=['heart','bomb','item','active','mystery'];
@@ -4535,7 +4542,7 @@ function useActive(pl){
       for(const e of live){const n=live.filter(o=>Math.hypot(o.x-e.x,o.y-e.y)<70).length-Math.hypot(e.x-P.x,e.y-P.y)/400;if(n>bn){bn=n;tg=e;}}
       const x=tg?tg.x:P.x+P.lx*80,y=tg?tg.y:P.y+P.ly*80;boomFx(x,y,70);netFx(2,x,y,70);addShake(9);
       for(const e of live){const dx=e.x-x,dy=e.y-y,d=Math.hypot(dx,dy)||1;if(d<70+e.r)damageEnemy(e,P.dmg*5+15,dx/d,dy/d);}sfx('boom');break;}
-    case 'aimantor':{let g=8;run.room.pickups=run.room.pickups.filter(p=>{if(p.kind==='coin'){g+=p.val|0;spark(p.x,p.y-3,'245,197,66',3,60,0.3);return false;}return true;});addGold(g*COIN_K);run.floats.push({x:P.x,y:P.y-26,text:'+'+g+' or',t:1,col:'#f5c542'});ringFx(P.x,P.y,90,'245,197,66',0.6);sfx('coin');break;}
+    case 'aimantor':{let g=8;run.room.pickups=run.room.pickups.filter(p=>{if(p.kind==='coin'&&canGrab(p,P)){g+=p.val|0;spark(p.x,p.y-3,'245,197,66',3,60,0.3);return ownGrab(p,P);}return true;});giveGold(P,g*COIN_K);if(!P.isRemote)run.floats.push({x:P.x,y:P.y-26,text:'+'+g+' or',t:1,col:'#f5c542'});ringFx(P.x,P.y,90,'245,197,66',0.6);sfx('coin');break;}
     case 'totem':for(const q of players()){if(q.down){q.down=false;q.revT=0;q.hp=Math.min(q.maxHp,2);q.inv=1.5;}else q.hp=Math.min(q.maxHp,q.hp+2);ringFx(q.x,q.y,40,'127,227,160',0.6);spark(q.x,q.y,'127,227,160',14,120,0.5);}ringFx(P.x,P.y,140,'127,227,160',0.7);netFx(3,P.x,P.y,140);sfx('heal');break;
     case 'pluie':for(let i=0;i<5;i++){const a=i*TAU/5+rand(-0.25,0.25),d=rand(42,72);run.bombs.push({x:clamp(P.x+Math.cos(a)*d,12,RW-12),y:clamp(P.y+Math.sin(a)*d,12,RH-12),t:0.75+i*0.14});}sfx('fuse');break;
     }
@@ -4751,11 +4758,14 @@ function addDecal(room,x,y,r,col){
   if(room===run.room&&bgCanvas){const c=bgCanvas.getContext('2d'),s=L.s;c.save();c.setTransform(s*dpr,0,0,s*dpr,WALL*s*dpr,WALL*s*dpr);c.beginPath();c.rect(0,0,RW,RH);c.clip();drawDecal(c,d);c.restore();}
 }
 const COIN_K=0.75;
-function spawnCoins(x,y,total,big){
+function spawnCoins(x,y,total,big,own){
   const fives=total>=8&&!big?Math.floor(total/8):0,ones=total-fives*5;
-  const push=v=>{const a=rand(0,TAU),sp=big?rand(60,200):rand(30,110);run.room.pickups.push({kind:'coin',val:v,x,y,z:6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*0.7,vz:big?rand(160,280):rand(80,150),age:0,spin:rand(0,TAU)});};
+  const push=v=>{const a=rand(0,TAU),sp=big?rand(60,200):rand(30,110);run.room.pickups.push({kind:'coin',val:v,x,y,z:6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*0.7,vz:big?rand(160,280):rand(80,150),age:0,spin:rand(0,TAU),own:own|0});};
   for(let i=0;i<fives;i++)push(5);for(let i=0;i<ones;i++)push(1);
 }
+/* objects and powers come out of a shuffled bag; when it is empty (long endless runs) it is refilled */
+function poolPop(){if(!run.pool||!run.pool.length){run.poolN=(run.poolN|0)+1;const ks=Object.keys(ITEMS);run.pool=run.daily?withSeed(hashStr('cb-'+run.daily+'-'+run.poolN),()=>shuffle(ks)):shuffle(ks);}return run.pool.splice(-1,1)[0];}
+function actPop(){if(!run.actPool||!run.actPool.length){run.actN=(run.actN|0)+1;const ks=ACTIVE_IDS.slice();run.actPool=run.daily?withSeed(hashStr('cb-a'+run.daily+'-'+run.actN),()=>shuffle(ks)):shuffle(ks);}return run.actPool.splice(-1,1)[0];}
 function addGold(n){
   run.goldFrac=(run.goldFrac||0)+n*(P.goldMul||1)*DF().gold;const w=Math.floor(run.goldFrac+1e-6);
   if(w>0){run.goldFrac-=w;run.gold+=w;save.gold=(save.gold||0)+w;bump('goldEarned',w);persist();}
@@ -4770,7 +4780,7 @@ function updateCoin(p,dt){
   const dx=P.x-p.x,dy=P.y-p.y,d=Math.hypot(dx,dy)||1,vac=run.room.cleared&&p.age>1;
   if(p.age>0.35&&(d<P.magnet||vac||modFor(P,'magnet'))){const st=Math.min(d,(vac?220:280)*dt);p.x+=dx/d*st;p.y+=dy/d*st;}
   if(p.age>0.2&&Math.hypot(P.x-p.x,P.y-p.y)<P.r+6){
-    {const gv=p.val*(P.greed?2:1);addGold(gv*COIN_K);pst(P).g+=gv;}run.floats.push({x:p.x,y:p.y-10,text:'+'+p.val,t:0.6,col:'#f5c542'});sfx('coin');spark(p.x,p.y-3,'245,197,66',3,60,0.3);return true;
+    {const gv=p.val*(P.greed?2:1);giveGold(P,gv*COIN_K);pst(P).g+=gv;}if(!P.isRemote){run.floats.push({x:p.x,y:p.y-10,text:'+'+p.val,t:0.6,col:'#f5c542'});sfx('coin');}spark(p.x,p.y-3,'245,197,66',3,60,0.3);return true;
   }
   return false;
 }
@@ -4874,8 +4884,8 @@ function playerDown(pl){
 const fmtDmg=v=>v>=10?String(Math.round(v)):String(Math.round(v*10)/10).replace('.',',');
 function dmgNum(e,dmg){
   if(!save.dmgNums||!(dmg>0))return;const f=e.dnf;
-  if(f&&f.t>0.4&&run.floats.includes(f)){f.val+=dmg;f.text=fmtDmg(f.val);f.t=0.62;f.big=Math.min(1,(f.big||0)+0.25);return;}
-  if(run.floats.length>40)return;const nf={x:e.x+rand(-6,6),y:e.y-e.z-e.r-9,text:fmtDmg(dmg),val:dmg,t:0.62,col:e.boss||e.elite?'#ffd68c':'#fff6e2',dmg:true,big:0};run.floats.push(nf);e.dnf=nf;
+  if(f&&f.t>0.4&&run.time-(f.born||0)<0.45&&run.floats.includes(f)){f.val+=dmg;f.text=fmtDmg(f.val);f.t=0.62;f.big=Math.min(1,(f.big||0)+0.25);return;}
+  if(run.floats.length>40)return;const nf={x:e.x+rand(-6,6),y:e.y-e.z-e.r-9,text:fmtDmg(dmg),val:dmg,t:0.62,born:run.time,col:e.boss||e.elite?'#ffd68c':'#fff6e2',dmg:true,big:0};run.floats.push(nf);e.dnf=nf;
 }
 let DMG_BY=null;
 function pst(pl){return pl?(pl.st||(pl.st={k:0,d:0,g:0,rv:0,h:0})):{k:0,d:0,g:0,rv:0,h:0};}
@@ -4883,7 +4893,7 @@ function damageEnemy(e,dmg,kx,ky){
   if(!run.guest){const by=DMG_BY||P;pst(by).d+=Math.min(dmg,Math.max(0,e.hp));e.lastBy=by;}
   if(e.armored){spark(e.x,e.y-e.z-4,'225,235,245',3,90,0.2);return;}
   if(e.af==='blinde'){dmg*=0.5;spark(e.x,e.y-e.z-4,'210,220,235',2,80,0.2);}
-  dmgNum(e,Math.min(dmg,Math.max(0,e.hp)));
+  {const rd=Math.min(dmg,Math.max(0,e.hp));dmgNum(e,rd);if(NET&&NET.role==='host')e.dacc=(e.dacc||0)+rd;}
   e.hp-=dmg;e.flash=0.09;e.hitAt=run.time;sfx('hit');
   if(!e.boss&&!e.fixed){const kb=e.elite?2:5;e.x+=kx*kb;e.y+=ky*kb;if(!e.fly)pushOutRocks(e);clampWalls(e);}
   spark(e.x,e.y-e.z,'255,241,214',4,110,0.25);
@@ -4929,7 +4939,7 @@ function killEnemy(e,credit){
   if(!credit)return;
   run.kills++;
   if(e.giant)spawnCoins(e.x,e.y,30+floorNo()*10,true);
-  if(run.sur&&run.sur.k==='chance'&&run.sur.room===run.room&&!e.boss){addGold(4+floorNo()*2);gainXP(6+floorNo()*2,e.x,e.y);}
+  if(run.sur&&run.sur.k==='chance'&&run.sur.room===run.room&&!e.boss){teamGold(4+floorNo()*2);gainXP(6+floorNo()*2,e.x,e.y);}
   save.kills[e.id]=(save.kills[e.id]||0)+1;
   if(!save.seen[e.id]){save.seen[e.id]=true;run.newEntries.push(e.id);toast('Nouveau dans le Bestiaire',SPECIES[e.id].name);}
   persist();
@@ -4937,7 +4947,7 @@ function killEnemy(e,credit){
   gainXP(Math.round((XP[e.id]||2)*(e.elite?4:1)*(e.af?1.5:1)*(1+run.floor*0.25+(run.loop|0)*1.25)*(P.xpMul||1)),e.x,e.y-e.z);
   chargeActives(e.boss?3:e.elite?2:1);
   if(e.elite){run.room.eliteDone=true;save.stats.elites=(save.stats.elites|0)+1;persist();unlockAch('elite');
-    spawnCoins(e.x,e.y,10+run.floor*5);const q=nearestFree(e.x,e.y),id=Math.random()<0.6?run.pool.pop():null;
+    spawnCoins(e.x,e.y,10+run.floor*5);const q=nearestFree(e.x,e.y),id=Math.random()<0.6?poolPop():null;
     if(id)run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});else{run.room.pickups.push({kind:'chest',x:q.x,y:q.y+8,open:false});const h=nearestFree(e.x+30,e.y);run.room.pickups.push({kind:'heart',half:false,x:h.x,y:h.y});}
     ringFx(e.x,e.y,e.r*5,'245,197,66',0.8);announce('Bravo !','Mini-boss vaincu');}
   if(!e.boss&&Math.random()<0.03){const p=nearestFree(e.x,e.y);run.room.pickups.push({kind:'bomb',x:p.x,y:p.y});}
@@ -4945,7 +4955,7 @@ function killEnemy(e,credit){
   else{const r=Math.random(),small=(XP[e.id]||2)<=1,n=small?(r<0.4?1:0):(r<0.15?0:r<0.75?1:2);if(n)spawnCoins(e.x,e.y,n);}
   if(P.abil.vampire&&P.hp<P.maxHp&&Math.random()<[0,0.08,0.14,0.2][P.abil.vampire]){P.hp+=1;burst(P.x,P.y,'#dc4a34',8,70);sfx('heal');run.floats.push({x:P.x,y:P.y-20,text:'+½ cœur',t:0.9,col:'#ff8a7a'});}
   if(e.id==='voleur'){spawnCoins(e.x,e.y,18+run.floor*6);announce('Bravo !','Voleur attrapé');unlockAch('voleur');ringFx(e.x,e.y,e.r*5,'245,197,66',0.8);}
-  if(e.id==='mimic'){spawnCoins(e.x,e.y,8+run.floor*3);unlockAch('mimic');const q=nearestFree(e.x,e.y),id=Math.random()<0.65?run.pool.pop():null;
+  if(e.id==='mimic'){spawnCoins(e.x,e.y,8+run.floor*3);unlockAch('mimic');const q=nearestFree(e.x,e.y),id=Math.random()<0.65?poolPop():null;
     if(id)run.room.pickups.push({kind:'item',id,x:q.x,y:q.y});else{const h=nearestFree(e.x+26,e.y);run.room.pickups.push({kind:'heart',half:false,x:h.x,y:h.y});}
     ringFx(e.x,e.y,e.r*5,'245,197,66',0.8);}
   if(e.id==='duplasme'){for(const s of[-1,1]){const m=makeEnemy('gloupinet',clamp(e.x+s*10,8,RW-8),e.y);m.spawnT=0;m.vx=s*120;run.enemies.push(m);}}
@@ -5247,9 +5257,9 @@ function updatePets(dt){
       else pt.cd=0.2;}}
     else if(pt.id==='golem'){pt.cd=(pt.cd||0)-dt;if(pt.cd<=0){for(const s2 of run.eshots){if(!s2.dead&&Math.hypot(s2.x-pt.x,s2.y-3-pt.y)<(petEvo(pt.lv)?19:12)){s2.dead=true;spark(pt.x,pt.y,'225,215,195',8,120,0.3);
         if(petEvo(pt.lv)>=2){ringFx(pt.x,pt.y,46,'225,215,195',0.4);netFx(0,pt.x,pt.y,46);withP(pl,()=>{for(const e of run.enemies){if(e.dead||e.spawnT>0||e.intangible)continue;const dx=e.x-pt.x,dy=e.y-pt.y,d=Math.hypot(dx,dy)||1;if(d<46+e.r)damageEnemy(e,Math.max(3,pl.dmg),dx/d,dy/d);}});}pt.cd=Math.max(0.35,2-0.17*pt.lv);pt.flash=0.15;break;}}}}
-    else if(pt.id==='tirelire'){const ev=petEvo(pt.lv);if(ev&&!run.room.cleared){pt.cd=(pt.cd||0)-dt;if(pt.cd<=0){pt.cd=ev>=2?9:14;spawnCoins(pt.x,pt.y,1);pt.flash=0.2;sfx('coin');}}
-      if(ev>=2){pt.hcd=(pt.hcd==null?40:pt.hcd)-dt;if(pt.hcd<=0){pt.hcd=45;const q=nearestFree(pt.x,pt.y+10);run.room.pickups.push({kind:'heart',x:q.x,y:q.y,half:true});ringFx(pt.x,pt.y,30,'255,158,199',0.5);}}
-      const R2=55+8*pt.lv;for(const c of run.room.pickups){if(c.kind!=='coin'||(c.age||0)<0.3)continue;if(Math.hypot(c.x-pt.x,c.y-pt.y)<R2){const k=Math.min(1,dt*7);c.x+=(pl.x-c.x)*k;c.y+=(pl.y-c.y)*k;}}}
+    else if(pt.id==='tirelire'){const ev=petEvo(pt.lv);if(ev&&!run.room.cleared){pt.cd=(pt.cd||0)-dt;if(pt.cd<=0){pt.cd=ev>=2?9:14;spawnCoins(pt.x,pt.y,1,false,run.pl?plBit(pl):0);pt.flash=0.2;sfx('coin');}}
+      if(ev>=2){pt.hcd=(pt.hcd==null?40:pt.hcd)-dt;if(pt.hcd<=0){pt.hcd=45;const q=nearestFree(pt.x,pt.y+10);run.room.pickups.push({kind:'heart',x:q.x,y:q.y,half:true,own:run.pl?plBit(pl):0});ringFx(pt.x,pt.y,30,'255,158,199',0.5);}}
+      const R2=55+8*pt.lv;for(const c of run.room.pickups){if(c.kind!=='coin'||(c.age||0)<0.3||!canGrab(c,pl))continue;if(Math.hypot(c.x-pt.x,c.y-pt.y)<R2){const k=Math.min(1,dt*7);c.x+=(pl.x-c.x)*k;c.y+=(pl.y-c.y)*k;}}}
   }
 }
 function drawPet(c,id,t,o){
@@ -5546,7 +5556,7 @@ function updateGame(dt){
   for(const pt of run.room.pots||[])if(!pt.broken&&alive.some(pl=>Math.hypot(pt.x-pl.x,pt.y-pl.y)<pl.r+7))breakPot(pt);
   if(run.room.pots)run.room.pots=run.room.pots.filter(pt=>!pt.broken);
   for(let i=ps.length-1;i>=0;i--){const p=ps[i];
-    if(p.kind==='coin'){const pl=nearestAlive(p.x,p.y)||P;if(withP(pl,()=>updateCoin(p,dt)))ps.splice(i,1);continue;}
+    if(p.kind==='coin'){const pl=coinTaker(p);if(!pl){if(!coinWanted(p))ps.splice(i,1);continue;}if(withP(pl,()=>updateCoin(p,dt))&&!ownGrab(p,pl))ps.splice(i,1);continue;}
     if(p.kind==='dais')continue;
     for(const pl of alive){
       const d=Math.hypot(p.x-pl.x,p.y-pl.y);
@@ -5555,9 +5565,9 @@ function updateGame(dt){
       if(p.kind==='cursed'){if(d<pl.r+13){ps.splice(i,1);triggerCurse(p);break;}continue;}
       if(p.kind==='fountain'){if(!p.used&&d<pl.r+18)useFountain(p,pl);continue;}
       if(p.kind==='shop')continue;
-      if(p.kind==='bomb'){if(d<pl.r+9&&(pl.bombs|0)<9){pl.bombs=(pl.bombs|0)+1;ps.splice(i,1);sfx('coin');if(!pl.isRemote)run.floats.push({x:p.x,y:p.y-14,text:'+1 bombe',t:0.8,col:'#ece0c8'});break;}continue;}
+      if(p.kind==='bomb'){if(d<pl.r+9&&(pl.bombs|0)<9&&canGrab(p,pl)){pl.bombs=(pl.bombs|0)+1;if(!ownGrab(p,pl))ps.splice(i,1);sfx('coin');if(!pl.isRemote)run.floats.push({x:p.x,y:p.y-14,text:'+1 bombe',t:0.8,col:'#ece0c8'});break;}continue;}
       if(p.kind==='active'){if(d<pl.r+12&&!(p.cd>run.time)&&!p.choice&&canGrab(p,pl)){if(!ownGrab(p,pl))ps.splice(i,1);giveActive(pl,p.id,p.x+28,p.y);break;}continue;}
-      if(p.kind==='heart'&&d<pl.r+8&&pl.hp<pl.maxHp&&!pl.greed){pl.hp=Math.min(pl.maxHp,pl.hp+(p.half?1:2));ps.splice(i,1);sfx('heal');burst(p.x,p.y,'#dc4a34',8,80);break;}
+      if(p.kind==='heart'&&d<pl.r+8&&pl.hp<pl.maxHp&&!pl.greed&&canGrab(p,pl)){pl.hp=Math.min(pl.maxHp,pl.hp+(p.half?1:2));if(!ownGrab(p,pl))ps.splice(i,1);sfx('heal');burst(p.x,p.y,'#dc4a34',8,80);break;}
       else if(p.kind==='item'&&d<pl.r+12&&!p.choice&&canGrab(p,pl)){const it=ITEMS[p.id];it.apply(pl);pl.items.push(p.id);const stay=ownGrab(p,pl);if(!stay)ps.splice(i,1);sfx('item');
         const mate=stay?'Ton ami a pris : '+it.name:'Ton ami a pris : '+it.name,mDesc=stay?'Il y en a un pour toi aussi : va le prendre !':it.desc;
         if(run.local)toast(plName(pl)+' prend : '+it.name,stay?'L\'autre joueur peut prendre le sien.':itemDesc(p.id));
@@ -5565,7 +5575,7 @@ function updateGame(dt){
         burst(p.x,p.y-14,'#f2a23a',20,120);flashFx(p.x,p.y-14,50);ringFx(p.x,p.y-10,60,'255,215,140',0.6);break;}
       else if(p.kind==='portal'&&d<18&&!run.trans&&!run.won){run.trans={t:0,half:0.6,nextFloor:true,toSecret:!p.fin,toFinal:!!p.fin,done:false};if(p.fin){const a='Le Cœur de la Crypte',b='Étage final : le Dévoreur t\'attend…';banner(a,b,2.6);netEv('b',a,b);}sfx('descend');flashFx(p.x,p.y,80);break;}
       else if(p.kind==='exit'&&d<16&&!run.trans&&!run.won){run.won=true;run.endT=1.2;banner('Victoire !','Tu sors de la crypte',2.5);sfx('item');break;}
-      else if(p.kind==='hole'&&d<15&&!run.trans&&!run.won){const bonus=5*floorNo();addGold(bonus);toast("Bonus d'étage",'+'+bonus+' or');netEv('t',"Bonus d'étage",'+'+bonus+' or');run.trans={t:0,half:0.55,nextFloor:true,done:false};sfx('descend');break;}
+      else if(p.kind==='hole'&&d<15&&!run.trans&&!run.won){const bonus=5*floorNo();teamGold(bonus);toast("Bonus d'étage",'+'+bonus+' or');netEv('t',"Bonus d'étage",'+'+bonus+' or');run.trans={t:0,half:0.55,nextFloor:true,done:false};sfx('descend');break;}
     }
   }
   updateParticles(dt);updateSurprise(dt);
@@ -5650,6 +5660,7 @@ function drawTorches(pal,t){
 function grabbedByMe(p){return!!(run&&run.pl&&run.pl.length>1&&!run.local&&!canGrab(p,P));}
 function takenLabel(p){const mine=(p.by|0)&plBit(P),tx=mine?'Pris ✓':"À ton ami";ctx.font='700 11px Grenze, Georgia, serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle=INK;ctx.strokeText(tx,p.x,p.y+25);ctx.fillStyle=mine?'#7ee07e':'#c9b6ff';ctx.fillText(tx,p.x,p.y+25);}
 function drawPickup(p,t,pal){
+  if((p.kind==='coin'||p.kind==='heart'||p.kind==='bomb')&&grabbedByMe(p))return;
   if(p.kind==='wheel'){drawWheel(p,t);return;}
   if(p.kind==='candy'){const b=Math.sin(t*4+p.x)*1.5,cols=['#f08a2a','#a35bd8','#5bd87a'];ctx.save();ctx.translate(p.x,p.y-5+b);ctx.rotate(0.4);
     ctx.beginPath();ctx.ellipse(0,9,6,2,0,0,TAU);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fill();
@@ -5658,8 +5669,8 @@ function drawPickup(p,t,pal){
   if(p.kind==='coin'){ctx.beginPath();ctx.ellipse(p.x,p.y+1,3.5,1.4,0,0,TAU);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fill();drawCoin(ctx,p.x,p.y-3-p.z,p.val>=5?4.6:3.4,Math.cos(t*6+p.spin));return;}
   if(p.kind==='chest'){drawChest(p);return;}
   if(p.kind==='cursed'){drawCursed(p,t);return;}
-  if(p.kind==='fountain'){drawFountain(p,t);return;}
-  if(p.kind==='altar'){drawAltar(p,t);return;}
+  if(p.kind==='fountain'){drawFountain(grabbedByMe(p)?Object.assign({},p,{used:true}):p,t);return;}
+  if(p.kind==='altar'){drawAltar(grabbedByMe(p)?Object.assign({},p,{used:true}):p,t);return;}
   if(p.kind==='bomb'){drawShadow(p.x,p.y-2,6,0,1);drawBomb(ctx,p.x,p.y-6+Math.sin(t*4+p.x)*1.2,6.5,false);return;}
   if(p.kind==='active'){const tk=grabbedByMe(p);drawPedestal(p.x,p.y);ctx.save();if(tk)ctx.globalAlpha=0.35;ctx.translate(p.x,p.y-15+Math.sin(t*3)*2.5);drawActiveIcon(ctx,p.id,9);ctx.restore();if(tk)takenLabel(p);return;}
   if(p.kind==='shop'){
@@ -5870,7 +5881,8 @@ function drawMinimap(){
   const M=L.map,head=M.head?22:0,nx=maxx-minx+1,ny=maxy-miny+1;
   const cw=Math.max(8,Math.min(28,(M.maxW-16)/nx,(M.maxH-head-16)/(ny*0.7))),ch=cw*0.7,gap=Math.max(2,cw*0.16);
   const gw=nx*cw,gh=ny*ch,pw=Math.max(gw+16,head?Math.min(196,M.maxW):0),ph=gh+16+head;
-  const px=M.center!=null?M.center-pw/2:M.right-pw,py=M.top;
+  const nm=run.pl?run.pl.filter(q=>q&&q!==P).length:0,band=WALL*L.s;
+  const px=M.center!=null?M.center-pw/2:M.right-pw,py=L.overlay&&nm?Math.max(M.top,L.ry+(nm-1)*(band-2)+band+4):M.top;
   if(M.fade){let near=false;for(const pl of players()){const sx=L.ox+pl.x*L.s,sy=L.oy+pl.y*L.s;if(sx>px-36&&sx<px+pw+36&&sy>py-36&&sy<py+ph+36)near=true;}
     M.a+=((near?0.22:0.88)-M.a)*0.18;ctx.globalAlpha=M.a;}
   ctx.fillStyle='rgba(22,15,11,0.92)';rrect(ctx,px,py,pw,ph,6);ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#6a5444';ctx.stroke();
@@ -5935,7 +5947,7 @@ function renderLighting(){
   if(quality==='high')for(const sh of run.eshots)lt(sh.x,sh.y,18,0.28);
   for(const b of run.bombs||[])lt(b.x,b.y-10,34,0.5);
   if(run.room.type==='shop')lt(RW/2,RH/2-70,90,0.8);
-  for(const p of run.room.pickups){if(p.kind==='coin')lt(p.x,p.y-3,14,0.3);else if(p.kind==='chest')lt(p.x,p.y-8,40,0.5);else lt(p.x,p.y-8,p.kind==='item'||p.kind==='portal'?75:p.kind==='hole'?60:28,p.kind==='heart'?0.35:0.75);}
+  for(const p of run.room.pickups){if((p.kind==='coin'||p.kind==='heart'||p.kind==='bomb')&&grabbedByMe(p))continue;if(p.kind==='coin')lt(p.x,p.y-3,14,0.3);else if(p.kind==='chest')lt(p.x,p.y-8,40,0.5);else lt(p.x,p.y-8,p.kind==='item'||p.kind==='portal'?75:p.kind==='hole'?60:28,p.kind==='heart'?0.35:0.75);}
   for(const e of run.enemies){
     if(e.spawnT>0)lt(e.x,e.y,50,0.7*e.spawnT/0.7);
     else if(e.id==='fournaise')lt(e.x,e.y,100,0.85);
@@ -6092,6 +6104,7 @@ function renderGame(){
   for(const pl of players())if(pl.abil&&pl.abil.aura&&!run.dead&&!pl.down)glowAt(ctx,pl.x,pl.y,[0,36,46,58][pl.abil.aura]*1.3,'255,120,40',0.4);
   for(const p of run.room.pickups){
     if(p.kind==='item'){const iy=p.y-15+Math.sin(t*3)*2.5,g=ctx.createLinearGradient(0,p.y-80,0,p.y+4);g.addColorStop(0,'rgba(255,215,140,0)');g.addColorStop(1,'rgba(255,215,140,0.28)');ctx.globalAlpha=1;ctx.fillStyle=g;ctx.fillRect(p.x-9,p.y-80,18,84);glowAt(ctx,p.x,iy,26,'255,215,140',0.55+0.15*Math.sin(t*4));}
+    else if((p.kind==='heart'||p.kind==='coin')&&grabbedByMe(p))continue;
     else if(p.kind==='heart')glowAt(ctx,p.x,p.y-4,14,'220,74,52',0.4);
     else if(p.kind==='hole')glowAt(ctx,p.x,p.y,40,pal.light,0.35+0.15*Math.sin(t*4));
     else if(p.kind==='coin')glowAt(ctx,p.x,p.y-3-p.z,8,'245,197,66',0.35);
@@ -6526,16 +6539,16 @@ function spawnWave(w){
 function updateArena(dt){
   if(run.raid){
     if(run.raidT>0){run.raidT-=dt;if(run.raidT<=0){const id=run.reine?'reinecitrouille':'colosse',b=makeEnemy(id,RW/2,RH*0.3),n=players().length;if(run.reine)toughen(b,35+n*10);else{b.hp=b.maxHp=b.maxHp*n*DF().hp;toughen(b,40+n*25);}b.spawnT=1;run.enemies.push(b);run.roomActive=true;showBossCard(id,run.reine?'Boss d\'Halloween':'Boss de raid');sfx('boss');}return;}
-    if(run.reine&&!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=2;addGold(200);const today=save.reineDay!==dateKey();save.reineDay=dateKey();if(today)addCandy(25,P.x,P.y);save.trophies.reine=(save.trophies.reine|0)+1;unlockAch('reine');persist();
+    if(run.reine&&!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=2;teamGold(200);const today=save.reineDay!==dateKey();save.reineDay=dateKey();if(today)addCandy(25,P.x,P.y);save.trophies.reine=(save.trophies.reine|0)+1;unlockAch('reine');persist();
       const a='🎃 Reine Citrouille vaincue !',b='+200 or'+(today?' et +25 bonbons':'');banner(a,b,3);toast(a,b);sfx('item');return;}
-    if(!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=3;addGold(250);
+    if(!run.won&&!run.dead&&!run.raidDone&&!run.enemies.some(e=>!e.dead)){run.raidDone=1;run.won=true;run.endT=3.2;run.rushBeat=3;teamGold(250);
       const a='Raid réussi !',b='Le Colosse est vaincu · +250 or et un butin';banner(a,b,3);toast(a,b);netEv('t',a,b);unlockAch('raid');sfx('item');}
     return;}
   if(!run.surv||run.dead)return;
   if(run.enemies.some(e=>!e.dead)||run.bossDying){run.svWait=0;return;}
-  if(!run.svWait){const w=run.wave|0,g=3*w;run.svDone=w;bump('survWaves');addGold(g);run.svWait=3.2;run.rushBeat=Math.min(3,Math.floor(w/5));
+  if(!run.svWait){const w=run.wave|0,g=3*w;run.svDone=w;bump('survWaves');teamGold(g);run.svWait=3.2;run.rushBeat=Math.min(3,Math.floor(w/5));
     if(w>(save.survBest|0)){save.survBest=w;persist();}
-    if(w%5===0){const q=nearestFree(RW/2-30,RH/2),id=run.pool.pop();run.room.pickups.push({kind:'heart',x:q.x,y:q.y});if(id){const q2=nearestFree(RW/2+30,RH/2);run.room.pickups.push({kind:'item',id,x:q2.x,y:q2.y});}}
+    if(w%5===0){const q=nearestFree(RW/2-30,RH/2),id=poolPop();run.room.pickups.push({kind:'heart',x:q.x,y:q.y});if(id){const q2=nearestFree(RW/2+30,RH/2);run.room.pickups.push({kind:'item',id,x:q2.x,y:q2.y});}}
     const a='Vague '+w+' terminée !',b='+'+g+' or'+(w%5===0?' · un cœur et un objet sont apparus':'');toast(a,b);netEv('t',a,b);
     if(w>=10)unlockAch('survie10');
     return;}
@@ -6992,7 +7005,7 @@ function modAction(a){
     case 'gold':save.gold=(save.gold||0)+1000;persist();sfx('coin');setMsg('modMsg','+1000 or ajoutés. Tu as maintenant '+save.gold+' or.','ok');break;
     case 'heal':for(const pl of players()){pl.down=false;pl.hp=pl.maxHp;pl.inv=1;}sfx('heal');setMsg('modMsg','Tout le monde est soigné.','ok');break;
     case 'level':run.xp=0;run.lvl++;run.pendingLv++;mateLv(1);sfx('level');setMsg('modMsg','Niveau '+run.lvl+' ! Tu choisiras ta capacité en reprenant la partie.','ok');break;
-    case 'item':{let id=run.pool.pop();if(!id){const ks=Object.keys(ITEMS);id=ks[randi(0,ks.length-1)];}
+    case 'item':{let id=poolPop();if(!id){const ks=Object.keys(ITEMS);id=ks[randi(0,ks.length-1)];}
       ITEMS[id].apply(P);P.items.push(id);sfx('item');setMsg('modMsg','Objet reçu : '+ITEMS[id].name+' ('+ITEMS[id].desc.toLowerCase()+').','ok');break;}
     case 'kill':{const es=run.enemies.filter(e=>!e.dead&&e.spawnT<=0.7);
       if(!es.length){setMsg('modMsg',"Il n'y a pas d'ennemi dans cette salle.",'bad');break;}
@@ -7010,7 +7023,7 @@ function giveBag(){
   const pls=(run.local&&run.pl)?run.pl:[P];
   save.bag.forEach((x,i)=>{
     let id=x;
-    if(id==='?')id=run.pool.pop();else{const k=run.pool.indexOf(id);if(k>=0)run.pool.splice(k,1);}
+    if(id==='?')id=poolPop();else{const k=run.pool.indexOf(id);if(k>=0)run.pool.splice(k,1);}
     if(!id||!ITEMS[id])return;
     const pl=pls[i%pls.length];ITEMS[id].apply(pl);pl.items.push(id);
     toast(run.local?'Cadeau pour '+plName(pl):'Cadeau !',ITEMS[id].name+' : '+ITEMS[id].desc);
@@ -9116,8 +9129,8 @@ function shopNear(){
   if(state!=='play'||!run||!run.room||run.dead||run.won||run.trans||performance.now()<shopHold)return null;
   const pls=(NET&&NET.role==='guest')?[P]:players().filter(pl=>pl&&!pl.isRemote);
   let best=null,bd=1e9;
-  for(const p of run.room.pickups){if(p.kind!=='shop'&&!(p.kind==='wheel'&&(p.left|0)>0&&!(p.spin>0))&&!(p.kind==='altar'&&!p.used)&&!(p.choice&&(p.kind==='item'||p.kind==='active')))continue;
-    for(const pl of pls){if(!pl||pl.down)continue;const d=Math.hypot(p.x-pl.x,p.y-pl.y);if(d<pl.r+18&&d<bd){bd=d;best={p,pl,k:shopKey(p)};}}}
+  for(const p of run.room.pickups){if(p.kind!=='shop'&&!(p.kind==='wheel'&&!(p.spin>0))&&!(p.kind==='altar'&&!p.used)&&!(p.choice&&(p.kind==='item'||p.kind==='active')))continue;
+    for(const pl of pls){if(!pl||pl.down)continue;if(p.kind==='wheel'&&wheelLeft(p,pl)<=0)continue;if(p.kind==='altar'&&!canGrab(p,pl))continue;const d=Math.hypot(p.x-pl.x,p.y-pl.y);if(d<pl.r+18&&d<bd){bd=d;best={p,pl,k:shopKey(p)};}}}
   return best;
 }
 function takeChoice(p,pl){
@@ -9133,7 +9146,7 @@ function takeChoice(p,pl){
   else if(ACTIVES[p.id])giveActive(pl,p.id,p.x+28,p.y);
 }
 function shopInfo(p){
-  if(p.kind==='wheel')return['Roue de la chance','Paie '+p.price+' or et fais tourner la roue : tu peux tout perdre… ou gagner jusqu\'à 5 fois plus ! Encore '+(p.left|0)+' essai'+((p.left|0)>1?'s':'')+'.'];
+  if(p.kind==='wheel')return['Roue de la chance','Paie '+p.price+' or et fais tourner la roue : tu peux tout perdre… ou gagner jusqu\'à 5 fois plus ! Encore '+wheelLeft(p,P)+' essai'+(wheelLeft(p,P)>1?'s':'')+'.'];
   if(p.kind==='altar')return['Autel du sang',"Donne 1 cœur de ta vie maximum pour cette partie. En échange, tu choisis 1 objet rare parmi 2."];
   if(p.kind==='item'&&ITEMS[p.id])return[ITEMS[p.id].name,itemDesc(p.id)];
   if(p.kind==='active'&&ACTIVES[p.id])return[ACTIVES[p.id].name,ACTIVES[p.id].desc+' C\'est un pouvoir : il se lance avec le bouton rond.'];
@@ -9147,15 +9160,22 @@ function shopInfo(p){
 function plBit(pl){return 1<<((pl&&pl.slot)|0);}
 /* objects on the ground, in chests and in treasure rooms: each player can take their own copy once.
    p.by = who already took it, p.own = only these players may take it (the one who paid at the altar) */
+/* a coin collected on one phone of a local game (two players, one phone) counts once: same wallet */
 function canGrab(p,pl){const b=plBit(pl);return!((p.by|0)&b)&&(!p.own||((p.own|0)&b));}
+function coinTaker(p){let b=null,bd=1e9;for(const q of players()){if(!q||q.down||!canGrab(p,q))continue;const d=Math.hypot(q.x-p.x,q.y-p.y);if(d<bd){bd=d;b=q;}}return b;}
+function coinWanted(p){return players().some(q=>q&&canGrab(p,q));}
+/* gold: each player gets their own, with their own bonuses (Bourse, charm, difficulty) */
+function localPl(){return run&&run.pl?run.pl.find(q=>q&&!q.isRemote)||P:P;}
+function giveGold(pl,n){if(!(n>0))return;if(pl&&pl.isRemote)netEv('gold',+n.toFixed(3),'',pl);else withP(pl||localPl(),()=>addGold(n));}
+function teamGold(n){withP(localPl(),()=>addGold(n));if(run.pl&&!run.local)for(const q of run.pl)if(q&&q.isRemote)netEv('gold',n,'',q);}
 function grabMask(p){if(p.own)return p.own|0;let m=0;for(const q of run.pl)m|=plBit(q);return m;}
-function ownGrab(p,pl){if(!(run.pl&&run.pl.length>1))return false;p.by=(p.by|0)|plBit(pl);const m=grabMask(p);return((p.by|0)&m)!==m;}
+function ownGrab(p,pl){if(!(run.pl&&run.pl.length>1)||(run.local&&p.kind==='coin'))return false;p.by=(p.by|0)|plBit(pl);const m=grabMask(p);return((p.by|0)&m)!==m;}
 function shopSold(p,pl){if(run.pl&&run.pl.length>1){p.by=(p.by|0)|plBit(pl);let m=0;for(const q of run.pl)m|=plBit(q);if((p.by&m)!==m)return;}const i=run.room.pickups.indexOf(p);if(i>=0)run.room.pickups.splice(i,1);}
 function shopBlock(p,pl){
   if(p.choice)return canGrab(p,pl)?'':((p.by|0)&plBit(pl))?'Tu as déjà choisi ton objet':"C'est l'objet de ton ami";
   if(p.kind==='wheel'){if(p.spin>0)return'Ça tourne…';const lack=p.price-(save.gold|0);return lack>0?'Il te manque '+lack+' or':'';}
   if(p.kind==='shop'&&run.pl&&((p.by|0)&plBit(pl)))return"Tu l'as déjà acheté";
-  if(p.kind==='altar')return pl.maxHp<=2?'Il te faut au moins 2 cœurs':'';
+  if(p.kind==='altar')return!canGrab(p,pl)?'Tu as déjà donné un cœur':pl.maxHp<=2?'Il te faut au moins 2 cœurs':'';
   if(p.what==='heart'&&pl.hp>=pl.maxHp)return'Tu es déjà en pleine forme !';
   if(p.what==='bomb'&&(pl.bombs|0)>=9)return'Tu as déjà 9 bombes';
   const lack=p.price-(save.gold|0);if(lack>0)return'Il te manque '+lack+' or';
@@ -9258,26 +9278,26 @@ function buildSnap(){
   for(const G of NET.gs||[]){const Q=G.pl;s.gp[G.id]={sl:G.slot,en:[R(Q.entX==null?Q.x:Q.entX),R(Q.entY==null?Q.y:Q.entY)],gi:Q.items.slice(0,24),lo:G.lo||0,
     g:[Q.hp,Q.maxHp,Q.down?1:0,Q.hurtSeq|0,Q.shield?1:0,R(Q.speed),Q.bombs|0,ACTIVE_IDS.indexOf(Q.active),Q.charge|0,Q.ironT>0?1:0,Math.round((Q.revT||0)*10),Q.tornT>0?1:0,Q.guard?1:0]};}
   for(const x of run.map.rooms.values())if(x.known)s.mp.push([x.gx,x.gy,RTYPES.indexOf(x.type),x.visited?1:0,doorBits(x.doors),roomMark(x)]);
-  for(const e of run.enemies){if(e.dead)continue;s.e.push([e.uid,ORDER.indexOf(e.id),R(e.x),R(e.y),R(e.z),R(clamp(e.hp/e.maxHp,0,1)*100),(e.spawnT>0?1:0)|(e.flash>0?2:0)|(e.intangible?4:0)|(e.airborne?8:0)|(e.elite?16:0)|(e.poisonT>0?32:0)|(e.enraged?64:0)|(e.dying!=null?128:0)|(Math.max(0,AF_IDS.indexOf(e.af||''))<<8)|(e.warn?2048:0),R((e.alpha==null?1:e.alpha)*10),R(e.lx*10),R(e.ly*10),R((e.sq||0)*100),R(((e.puff||0)+(e.charge||0))*10)]);}
+  for(const e of run.enemies){if(e.dead)continue;s.e.push([e.uid,ORDER.indexOf(e.id),R(e.x),R(e.y),R(e.z),R(clamp(e.hp/e.maxHp,0,1)*100),(e.spawnT>0?1:0)|(e.flash>0?2:0)|(e.intangible?4:0)|(e.airborne?8:0)|(e.elite?16:0)|(e.poisonT>0?32:0)|(e.enraged?64:0)|(e.dying!=null?128:0)|(Math.max(0,AF_IDS.indexOf(e.af||''))<<8)|(e.warn?2048:0),R((e.alpha==null?1:e.alpha)*10),R(e.lx*10),R(e.ly*10),R((e.sq||0)*100),R(((e.puff||0)+(e.charge||0))*10),(()=>{const v=e.dacc>0?Math.round(e.dacc*10)/10:0;e.dacc=0;return v;})()]);}
   for(const x of run.shots)s.sh.push([R(x.x),R(x.y),R(x.vx/10),R(x.vy/10),R(x.r*10),Math.max(0,SIDS.indexOf(x.sid)),x.fx|0]);
   for(const x of run.eshots)if(!x.dead)s.es.push(x.r>=8?[R(x.x),R(x.y),R(x.vx/10),R(x.vy/10),R(x.r)]:[R(x.x),R(x.y),R(x.vx/10),R(x.vy/10)]);
   for(const p of r.pickups){
-    if(p.kind==='heart')s.pk.push([0,R(p.x),R(p.y),p.half?1:0]);
+    if(p.kind==='heart')s.pk.push([0,R(p.x),R(p.y),p.half?1:0,p.by|0,p.own|0]);
     else if(p.kind==='item')s.pk.push([1,R(p.x),R(p.y),ITEM_IDS.indexOf(p.id),p.choice?1:0,p.by|0,p.own|0]);
     else if(p.kind==='hole')s.pk.push([2,R(p.x),R(p.y),p.endless?1:0]);
     else if(p.kind==='exit')s.pk.push([9,R(p.x),R(p.y)]);
-    else if(p.kind==='coin')s.pk.push([3,R(p.x),R(p.y),p.val,R(p.z)]);
+    else if(p.kind==='coin')s.pk.push([3,R(p.x),R(p.y),p.val,R(p.z),p.by|0,p.own|0]);
     else if(p.kind==='chest')s.pk.push([4,R(p.x),R(p.y),p.open?1:0]);
     else if(p.kind==='shop')s.pk.push([5,R(p.x),R(p.y),SHOP_WHAT.indexOf(p.what),p.price|0,p.what==='item'?ITEM_IDS.indexOf(p.id):p.what==='active'?ACTIVE_IDS.indexOf(p.id):-1,p.by|0]);
     else if(p.kind==='dais')s.pk.push([6,R(p.x),R(p.y),R((p.prog||0)*100)]);
-    else if(p.kind==='bomb')s.pk.push([7,R(p.x),R(p.y)]);
+    else if(p.kind==='bomb')s.pk.push([7,R(p.x),R(p.y),p.by|0,p.own|0]);
     else if(p.kind==='active')s.pk.push([8,R(p.x),R(p.y),ACTIVE_IDS.indexOf(p.id),p.choice?1:0,p.by|0,p.own|0]);
     else if(p.kind==='cursed')s.pk.push([10,R(p.x),R(p.y)]);
     else if(p.kind==='portal')s.pk.push([12,R(p.x),R(p.y),p.fin?1:0]);
     else if(p.kind==='candy')s.pk.push([14,R(p.x),R(p.y),p.c|0]);
-    else if(p.kind==='wheel')s.pk.push([15,R(p.x),R(p.y),Math.round((p.ang||0)*100)%629,p.price|0,p.left|0,p.spin>0?1:0]);
-    else if(p.kind==='fountain')s.pk.push([11,R(p.x),R(p.y),p.used?1:0]);
-    else if(p.kind==='altar')s.pk.push([13,R(p.x),R(p.y),p.used?1:0]);
+    else if(p.kind==='wheel')s.pk.push([15,R(p.x),R(p.y),Math.round((p.ang||0)*100)%629,p.price|0,p.left|0,p.spin>0?1:0].concat((p.uses||[0,0,0,0]).map(v=>v|0)));
+    else if(p.kind==='fountain')s.pk.push([11,R(p.x),R(p.y),p.used?1:0,p.by|0]);
+    else if(p.kind==='altar')s.pk.push([13,R(p.x),R(p.y),p.used?1:0,p.by|0]);
   }
   for(const p of r.pots||[])s.pt.push([R(p.x),R(p.y)]);
   s.br=(r.barrels||[]).filter(b=>!b.dead).map(b=>[R(b.x),R(b.y),b.fuse>0?1:0]);
@@ -9469,7 +9489,7 @@ function applySnap(s,ph){
   }
   if(me&&Array.isArray(me.gi))P.items=me.gi.filter(id=>Object.prototype.hasOwnProperty.call(ITEMS,id));
   if(Array.isArray(s.lv)){run.lvl=(s.lv[0]|0)||1;run.xp=s.lv[1]|0;}
-  if(typeof s.gd==='number'){if(NET.gd!=null&&s.gd>NET.gd){const d=s.gd-NET.gd;save.gold=(save.gold||0)+d;bump('goldEarned',d);NET.goldEarned+=d;run.gold=NET.goldEarned;persist();sfx('coin');run.floats.push({x:P.x,y:P.y-18,text:'+'+d,t:0.6,col:'#f5c542'});}NET.gd=s.gd;}
+  /* gold comes through 'gold' events: each player gets their own, with their own bonuses */
   if(Array.isArray(s.md)){run.surv=s.md[0]===1?1:0;run.raid=s.md[0]===2?1:0;run.duel=s.md[0]===3?1:0;if(run.duel&&s.md[3]!==-2&&!run.duelSeen){run.duelSeen=1;run.duelWin=s.md[3];if(run.duelWin===(P.slot|0)){unlockAch('duel');save.trophies.duel=(save.trophies.duel|0)+1;persist();}}run.wave=s.md[1]|0;run.svDone=s.md[2]|0;run.rushBeat=run.raid?3:Math.min(3,Math.floor(run.svDone/5));}
   run.kills=s.k|0;NET.tm=s.tm|0;if(Array.isArray(s.ts))NET.ts=s.ts.filter(Array.isArray).slice(0,4);if(typeof s.df==='number')run.diff=clamp(s.df|0,0,3);
   const seen=new Set();
@@ -9480,6 +9500,7 @@ function applySnap(s,ph){
     m.tx=+a[2]||0;m.ty=+a[3]||0;m.z=+a[4]||0;m.hp=+a[5]||0;m.spawnT=(a[6]&1)?0.35:0;if(a[6]&2){if(!(m.flash>0))m.hitAt=run.time;m.flash=0.09;}m.intangible=!!(a[6]&4);m.airborne=!!(a[6]&8);m.poisonT=(a[6]&32)?1:0;m.enraged=!!(a[6]&64);m.dying=(a[6]&128)?1:null;m.warn=!!(a[6]&2048);{const af=AF_IDS[((a[6]|0)>>8)&7]||'';if(af!==(m.af||'')){m.af=af;if(af==='geant'&&!m.elite)m.r=Math.min(m.fly?18:17,Math.round(SPECIES[id].r*1.35));}}
     m.alpha=(+a[7]||0)/10;m.lx=(+a[8]||0)/10;m.ly=(+a[9]||0)/10;m.sq=(+a[10]||0)/100;m.puff=m.charge=(+a[11]||0)/10;
     if(Math.hypot(m.tx-m.x,m.ty-m.y)>80){m.x=m.tx;m.y=m.ty;}
+    if(+a[12]>0)dmgNum(m,+a[12]);
   }
   for(const m of run.enemies)if(!seen.has(m.uid)){m.dead=true;mirrorKill(m);NET.emap.delete(m.uid);}
   run.enemies=run.enemies.filter(m=>!m.dead);
@@ -9487,9 +9508,9 @@ function applySnap(s,ph){
   run.shots=(s.sh||[]).map(a=>{const st=shOf(a[5]);return{x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:(+a[4]||45)/10,col:st.shot,core:st.core,life:1,sid:SIDS[a[5]|0]||'braisot',fx:clamp(a[6]|0,0,SHOTFX.length)};});
   run.eshots=(s.es||[]).map(a=>({x:+a[0]||0,y:+a[1]||0,vx:(+a[2]||0)*10,vy:(+a[3]||0)*10,r:+a[4]||5}));
   run.room.pickups=(s.pk||[]).filter(Array.isArray).map(a=>a[0]===5?{kind:'shop',by:a[6]|0,x:+a[1],y:+a[2],what:SHOP_WHAT[a[3]]||'heart',price:a[4]|0,id:SHOP_WHAT[a[3]]==='item'?(ITEM_IDS[a[5]]||'croc'):(ACTIVE_IDS[a[5]]||'fiole')}
-    :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3]}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2]}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}
-    :a[0]===15?{kind:'wheel',x:+a[1],y:+a[2],ang:(+a[3]||0)/100,price:a[4]|0,left:a[5]|0,spin:a[6]?1:0}:a[0]===14?{kind:'candy',x:+a[1],y:+a[2],c:clamp(a[3]|0,0,2)}:a[0]===12?{kind:'portal',x:+a[1],y:+a[2],fin:!!a[3]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3]}
-    :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3]}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
+    :a[0]===13?{kind:'altar',x:+a[1],y:+a[2],used:!!a[3],by:a[4]|0}:a[0]===6?{kind:'dais',x:+a[1],y:+a[2],prog:(+a[3]||0)/100}:a[0]===7?{kind:'bomb',x:+a[1],y:+a[2],by:a[3]|0,own:a[4]|0}:a[0]===8?{kind:'active',x:+a[1],y:+a[2],id:ACTIVE_IDS[a[3]]||'fiole',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}
+    :a[0]===15?{kind:'wheel',x:+a[1],y:+a[2],ang:(+a[3]||0)/100,price:a[4]|0,left:a[5]|0,spin:a[6]?1:0,uses:[a[7]|0,a[8]|0,a[9]|0,a[10]|0]}:a[0]===14?{kind:'candy',x:+a[1],y:+a[2],c:clamp(a[3]|0,0,2)}:a[0]===12?{kind:'portal',x:+a[1],y:+a[2],fin:!!a[3]}:a[0]===10?{kind:'cursed',x:+a[1],y:+a[2]}:a[0]===11?{kind:'fountain',x:+a[1],y:+a[2],used:!!a[3],by:a[4]|0}
+    :a[0]===0?{kind:'heart',x:+a[1],y:+a[2],half:!!a[3],by:a[4]|0,own:a[5]|0}:a[0]===1?{kind:'item',x:+a[1],y:+a[2],id:ITEM_IDS[a[3]]||'croc',choice:a[4]?'c':'',by:a[5]|0,own:a[6]|0}:a[0]===2?{kind:'hole',x:+a[1],y:+a[2],endless:!!a[3]}:a[0]===9?{kind:'exit',x:+a[1],y:+a[2]}:a[0]===3?{kind:'coin',x:+a[1],y:+a[2],val:(a[3]|0)||1,z:+a[4]||0,spin:((a[1]|0)*7+(a[2]|0)*3)%6,by:a[5]|0,own:a[6]|0}:{kind:'chest',x:+a[1],y:+a[2],open:!!a[3]});
   const pots=(s.pt||[]).filter(Array.isArray).map(a=>({x:+a[0]||0,y:+a[1]||0,broken:false})),keys=new Set(pots.map(q=>q.x+','+q.y));
   if(NET.potKeys)for(const k of NET.potKeys)if(!keys.has(k)){bump('pots');const xy=k.split(',').map(Number);chunks(xy[0],xy[1]-6,'#b5683f',10,110);smoke(xy[0],xy[1]-4,3,'160,120,90',0.8);sfx('pot');addDecal(run.room,xy[0],xy[1],5,'#6b3a22');}
   NET.potKeys=keys;run.room.pots=pots;
@@ -9505,6 +9526,7 @@ function applySnap(s,ph){
     else if(ev[1]==='b'){banner(String(ev[2]),String(ev[3]),2.2);if(ev[3]==='Malédiction brisée'){bump('curses');unlockAch('maudit');}if(ev[2]==='Fontaine de vie'&&ev[3]==='Cœurs remplis !')bump('fountains');if(ev[2]==='Mini-boss')sfx('boss');}
     else if(ev[1]==='candy')addCandy(1,P.x,P.y-10);
     else if(ev[1]==='m'){const mq=NET.mates&&NET.mates[(+ev[3]||0)];if(mq)bubble(mq,+ev[2]||0);}
+    else if(ev[1]==='gold'){const b0=save.gold|0;addGold(Math.max(0,+ev[2]||0));const d=(save.gold|0)-b0;NET.goldEarned=(NET.goldEarned|0)+d;if(d>0){sfx('coin');run.floats.push({x:P.x,y:P.y-18,text:'+'+d,t:0.6,col:'#f5c542'});}}
     else if(ev[1]==='pay'){save.gold=Math.max(0,(save.gold||0)-(+ev[2]||0));save.stats.bought=(save.stats.bought|0)+1;persist();sfx('buy');run.floats.push({x:P.x,y:P.y-26,text:'-'+(+ev[2]||0)+' or',t:1,col:'#f5c542'});}}
   if((ph==='lvg'||ph==='lvh')&&Array.isArray(LO)&&LO[0]!==NET.lvDone&&state==='play'){const opts=LO.slice(1).filter(hasAb);if(opts.length){NET.loSeq=LO[0];showChoices(opts,'Niveau '+run.lvl+' !','Choisis ta capacité (touche-la, puis touche-la encore). '+(run.pl.length>2?'Tes amis choisissent la leur.':(run.mateName||'Ton ami')+' choisit la sienne.'));}}
   if(state==='levelup'&&!(Array.isArray(LO)&&LO[0]===NET.loSeq)){state='play';show(null);pauseBtn.hidden=false;}
