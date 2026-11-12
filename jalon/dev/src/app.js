@@ -1,4 +1,4 @@
-/* ---------- Jalon : l'application ---------- */
+/* ---------- Lunavia : l'application ---------- */
 (function () {
   'use strict';
   const G = J.geo, F = J.fmt, fr = J.fr, ic = J.ic;
@@ -393,7 +393,7 @@
       h += rows.length ? rows.join('') : '';
       h += '<p class="empty">' + (S.mode === 'demo' ? 'Dans la démo, essaie « boulangerie », « gare » ou « 12 rue Voltaire ».' : 'Tape une adresse, un lieu ou un commerce.') + '</p>';
     } else if (S.results === null) h += '<p class="empty">Recherche…</p>';
-    else if (!S.results.length) h += '<p class="empty">' + (S.searchErr ? 'La recherche ne répond pas. Vérifie ta connexion et réessaie.' : 'Aucun résultat pour « ' + esc(q) + ' ».' + (S.mode === 'demo' ? ' La démo ne connaît que Val-Jalon et Saint-Aubin-les-Bornes.' : '')) + '</p>';
+    else if (!S.results.length) h += '<p class="empty">' + (S.searchErr ? 'La recherche ne répond pas. Vérifie ta connexion et réessaie.' : 'Aucun résultat pour « ' + esc(q) + ' ».' + (S.mode === 'demo' ? ' La démo ne connaît que Val-Lunavia et Saint-Aubin-les-Bornes.' : '')) + '</p>';
     else h += S.results.map(p => row(p)).join('');
     $('#results-in').innerHTML = h;
   }
@@ -572,7 +572,7 @@
     let h = head('Vers ' + esc(d.name), S.origin ? 'Départ : ' + esc(S.origin.name) + ' · <button type="button" class="link inl" data-act="origin-reset">repartir de ma position</button>' : (S.pos ? 'Départ : ma position' : ''));
     h += '<div class="seg" role="tablist" aria-label="Moyen de transport">' + Object.keys(MODES).map(k => '<button type="button" role="tab" aria-selected="' + (S.travel === k) + '" data-act="mode" data-k="' + k + '">' + ic(MODES[k].icon) + MODES[k].label + '</button>').join('') + '</div>';
     if (S.routeErr === 'nopos') return h + '<p class="empty">Je n’ai pas encore ta position. Touche le bouton de position en bas à droite, ou choisis un point de départ.</p><div class="actions"><button type="button" class="btn big" data-act="pick-origin">' + ic('flag') + 'Choisir un départ</button></div>';
-    if (S.routeErr === 'far') return h + '<p class="empty">La démo calcule seulement les trajets dans Val-Jalon et Saint-Aubin-les-Bornes.</p>';
+    if (S.routeErr === 'far') return h + '<p class="empty">La démo calcule seulement les trajets dans Val-Lunavia et Saint-Aubin-les-Bornes.</p>';
     if (S.routeErr) return h + '<p class="empty">Aucun itinéraire trouvé. Vérifie ta connexion, ou essaie un autre moyen de transport.</p><div class="actions"><button type="button" class="btn big" data-act="retry">Réessayer</button></div>';
     if (S.loading || !S.routes.length) return h + '<p class="empty">Calcul de l’itinéraire…</p>';
     h += '<div class="alts" role="radiogroup" aria-label="Trajets proposés">' + S.routes.map(altCard).join('') + '</div>';
@@ -811,13 +811,13 @@
       '<label class="field" for="set-prix">Prix du carburant<span><input id="set-prix" type="number" inputmode="decimal" step="0.01" min="0.3" max="5" value="' + s.prix + '" data-set="prix">€/L</span></label>' +
       '<label class="field" for="set-fuel">Mon carburant<select id="set-fuel" data-set="fuel">' + Object.keys(FUELS).map(k => '<option value="' + k + '"' + (s.fuel === k ? ' selected' : '') + '>' + FUELS[k] + '</option>').join('') + '</select></label>' +
       '<h3>Mes lieux</h3>' + (places ? '<div class="list">' + places + '</div>' : '<p class="note">Aucun lieu enregistré. Ouvre un lieu puis touche « Enregistrer ».</p>') +
-      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Jalon sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version __VERSION__.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Jalon mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
+      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Lunavia sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version __VERSION__.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Lunavia mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
       (S.mode === 'live' ? '<div class="actions">' + (S.wipe ? '<button type="button" class="btn danger" data-act="wipe-yes">Oui, tout effacer</button><button type="button" class="btn" data-act="wipe-no">Annuler</button>' : '<button type="button" class="btn danger" data-act="wipe">' + ic('trash') + 'Effacer mes données</button>') + '</div>' : '') + '</div>';
   }
   function vAbout() {
     // dans l'aperçu de Claude, la vraie carte ne peut pas s'afficher : on montre le chemin vers son adresse
     const out = S.demoWhy === 'policy' && HOME;
-    return head('Mode démonstration', '') + '<div class="about"><p>La carte en ligne et le GPS ne sont pas accessibles ici. Jalon affiche donc <b>Val-Jalon</b>, une petite ville inventée, pour te laisser essayer toutes les fonctions : recherche, itinéraires, guidage, signalements, prix des carburants.</p>' +
+    return head('Mode démonstration', '') + '<div class="about"><p>La carte en ligne et le GPS ne sont pas accessibles ici. Lunavia affiche donc <b>Val-Lunavia</b>, une petite ville inventée, pour te laisser essayer toutes les fonctions : recherche, itinéraires, guidage, signalements, prix des carburants.</p>' +
       (out ? '<p>La vraie carte, avec le monde entier, ta position et les vraies adresses, s’ouvre à sa propre adresse :<br><b class="sel addr">' + esc(HOME_TXT) + '</b></p><div class="actions"><a class="btn primary big" href="' + esc(HOME) + '" target="_blank" rel="noopener">' + ic('globe') + 'Ouvrir la vraie carte</a></div><div class="actions"><button type="button" class="btn" data-act="demo-trip">' + ic('play') + 'Lancer le trajet d’essai ici</button></div></div>'
         : '<p class="note">Une fois l’appli mise en ligne à sa propre adresse, la carte du monde réel, ta position et les vraies adresses remplacent la démo, sans rien changer d’autre.</p><div class="actions"><button type="button" class="btn primary big" data-act="demo-trip">' + ic('play') + 'Lancer le trajet d’essai</button>' + (S.demoWhy === 'guess' || S.demoWhy === 'asked' ? '<button type="button" class="btn" data-act="reload">Ouvrir la vraie carte</button>' : '') + '</div></div>');
   }
@@ -828,7 +828,7 @@
     sheet.hidden = v === 'search';
     $('#results').hidden = v !== 'search';
     $('#sb-lead').innerHTML = v === 'search' ? ic('back') : J.logo;
-    $('#sb-lead').setAttribute('aria-label', v === 'search' ? 'Retour' : 'Jalon');
+    $('#sb-lead').setAttribute('aria-label', v === 'search' ? 'Retour' : 'Lunavia');
     $('#sb-set').hidden = v === 'search';
     $('#sb-clear').hidden = !(v === 'search' && S.q);
     app.classList.toggle('navon', !!S.nav);
@@ -1086,5 +1086,5 @@
     render();
   }
   J.app = { S, get map() { return map; }, get db() { return db; }, get D() { return D; }, ACT, go };
-  boot().catch(e => { try { console.error(e); } catch (x) { /* rien */ } if (!map) fail('Jalon n’a pas pu démarrer. Recharge la page.'); });
+  boot().catch(e => { try { console.error(e); } catch (x) { /* rien */ } if (!map) fail('Lunavia n’a pas pu démarrer. Recharge la page.'); });
 })();

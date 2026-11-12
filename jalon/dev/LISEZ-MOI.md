@@ -1,4 +1,4 @@
-# Jalon : atelier
+# Lunavia : atelier
 
 Ce dossier contient de quoi modifier et reconstruire l'appli. Le site lui-même est dans le dossier parent (`jalon/`).
 
@@ -17,7 +17,7 @@ Ce dossier contient de quoi modifier et reconstruire l'appli. Le site lui-même 
 
 ## Deux modes
 
-Jalon tente de charger le fond de carte en ligne au démarrage. S'il y parvient, tout passe par les services réels.
+Lunavia tente de charger le fond de carte en ligne au démarrage. S'il y parvient, tout passe par les services réels.
 Si la page qui l'héberge interdit le réseau (l'aperçu dans Claude), elle bascule sur la ville de démonstration,
 et propose d'ouvrir la vraie carte à son adresse.
 

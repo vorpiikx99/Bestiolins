@@ -1,4 +1,4 @@
-/* ---------- Jalon : services en ligne (carte du monde réel) ----------
+/* ---------- Lunavia : services en ligne (carte du monde réel) ----------
    Fond de carte : OpenFreeMap (données OpenStreetMap) · Photos aériennes : IGN Géoplateforme
    Recherche : Photon (komoot) et Base Adresse Nationale · Itinéraires, voies et limitations : Valhalla, secours OSRM (serveurs FOSSGIS)
    Lieux utiles : Overpass · Prix des carburants : données ouvertes du ministère de l'Économie · Météo : Open-Meteo */

@@ -97,7 +97,7 @@ const m2 = await page.evaluate(() => ({ titre: document.title, mode: J.app.S.mod
 await sleep(9000); // le second coup de ménage, demandé par la page, part 6 s après le chargement
 const e2 = await E();
 show('   carte', m2); show('   réserves après ménage', e2);
-check('la carte s’ouvre en vraie carte dès la première visite', m2.titre === 'Jalon' && m2.mode === 'live' && !m2.echec);
+check('la carte s’ouvre en vraie carte dès la première visite', m2.titre === 'Lunavia' && m2.mode === 'live' && !m2.echec);
 check('la page gardée par le jeu est bien celle du jeu', e2.index === 'jeu' && e2.racine === 'jeu', 'index=' + e2.index + ' racine=' + e2.racine);
 check('aucun fichier de la carte ne reste chez le jeu', e2.chezLeJeu === 0, String(e2.chezLeJeu));
 check('chacun a son aide-mémoire, la carte est pilotée par le sien', e2.aides.join() === '/Bestiolins/,/Bestiolins/jalon/' && e2.pilote === '/Bestiolins/jalon/sw.js', e2.aides.join(' ') + ' | ' + e2.pilote);
@@ -115,7 +115,7 @@ const g4 = await openGame(); show('4. sans réseau, jeu', g4);
 const m4 = await openMap(); show('   sans réseau, carte', m4);
 offline = false;
 check('sans réseau : le jeu s’ouvre (et c’est le jeu)', g4.titre === 'Bestiolins' && g4.jeu);
-check('sans réseau : la carte s’ouvre (et c’est la carte)', m4.titre === 'Jalon' && m4.mode === 'live' && !m4.echec && m4.tuiles > 0, 'tuiles=' + m4.tuiles);
+check('sans réseau : la carte s’ouvre (et c’est la carte)', m4.titre === 'Lunavia' && m4.mode === 'live' && !m4.echec && m4.tuiles > 0, 'tuiles=' + m4.tuiles);
 
 /* 5. le jeu se met à jour (il retire alors tous les aide-mémoire du site, dont celui de la carte), puis on rouvre la carte */
 await openGame();
@@ -152,7 +152,7 @@ offline = true;
 const g6 = await openGame(); const m6 = await openMap();
 offline = false;
 show('6. sans réseau, jeu', g6); show('   sans réseau, carte', m6);
-check('sans réseau, après tout cela : le jeu et la carte s’ouvrent chacun chez soi', g6.titre === 'Bestiolins' && g6.jeu && m6.titre === 'Jalon' && m6.mode === 'live' && !m6.echec);
+check('sans réseau, après tout cela : le jeu et la carte s’ouvrent chacun chez soi', g6.titre === 'Bestiolins' && g6.jeu && m6.titre === 'Lunavia' && m6.mode === 'live' && !m6.echec);
 
 console.log('erreurs'.padEnd(44), logs.filter(l => !/Failed to load resource|GPU stall|net::ERR|WebSocket|sprite|Image "|could not be loaded/i.test(l)).slice(0, 6).join(' ; ') || 'aucune');
 console.log(results.every(Boolean) ? 'ok   voisinage : le jeu et la carte cohabitent' : 'FAIL voisinage');

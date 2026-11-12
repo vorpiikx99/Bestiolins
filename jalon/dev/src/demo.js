@@ -1,4 +1,4 @@
-/* ---------- Jalon : ville de démonstration (Val-Jalon), générée sur place, sans aucune donnée réseau ----------
+/* ---------- Lunavia : ville de démonstration (Val-Lunavia), générée sur place, sans aucune donnée réseau ----------
    Sert quand la carte en ligne est inaccessible (aperçu dans Claude) : même interface, mêmes fonctions,
    mais sur une petite ville fictive avec son réseau de rues, son calcul d'itinéraire et ses lieux. */
 J.demo = (function () {
@@ -57,7 +57,7 @@ J.demo = (function () {
       return pts;
     }
 
-    /* --- Val-Jalon --- */
+    /* --- Val-Lunavia --- */
     const AH = ['Rocade Sud', 'Rue des Lilas', 'Rue Pasteur', 'Boulevard Victor-Hugo', 'Rue du Moulin', 'Rue des Écoles', 'Rue de la Fontaine', 'Rocade Nord'];
     const AV = ['Rocade Ouest', 'Rue du Stade', 'Rue Voltaire', 'Rue des Tilleuls', 'Avenue de la République', 'Rue du Marché', 'Rue Molière', 'Rue Émile-Zola', 'Rocade Est'];
     const A = grid('A', 0, 0, 9, 8, 280, (dir, idx, seg) => {
@@ -107,7 +107,7 @@ J.demo = (function () {
         edge(p, cur, props); p = cur;
       }
     }
-    bez(A.at(32, 28), [1430, 1040], M1, 6, { cls: 'link', speed: 50, town: 'Val-Jalon' });
+    bez(A.at(32, 28), [1430, 1040], M1, 6, { cls: 'link', speed: 50, town: 'Val-Lunavia' });
     bez(M2, [4030, 1300], B.at(0, 8), 6, { cls: 'link', speed: 50, town: 'Saint-Aubin-les-Bornes' });
     const ext = (xa, xb) => { const c = []; for (let x = xa; x <= xb; x += 220) c.push(ll(x, yM(x))); c.push(ll(xb, yM(xb))); return c; };
     F('road', 'LineString', ext(-3600, 1560), { cls: 'motorway', r: 6 });
@@ -164,14 +164,14 @@ J.demo = (function () {
 
     /* --- lieux --- */
     const pois = [];
-    const poi = (name, cat, type, p, extra) => pois.push({ id: 'd' + pois.length, name, cat, kind: cat, sub: type + ' · ' + (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Jalon'), ll: p, extra: extra || {} });
-    poi('Mairie de Val-Jalon', 'other', 'Mairie', A.P(4, 3, 26, 30));
+    const poi = (name, cat, type, p, extra) => pois.push({ id: 'd' + pois.length, name, cat, kind: cat, sub: type + ' · ' + (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Lunavia'), ll: p, extra: extra || {} });
+    poi('Mairie de Val-Lunavia', 'other', 'Mairie', A.P(4, 3, 26, 30));
     poi('Café de la Mairie', 'food', 'Café', A.P(4, 3, -28, 34), { hours: '7 h – 20 h' });
     poi('Le Bistrot des Bornes', 'food', 'Restaurant', A.P(5, 3, 40, -26), { hours: '12 h – 14 h 30 et 19 h – 22 h' });
     poi('Crêperie La Bolée', 'food', 'Crêperie', A.P(3, 4, -30, 60), { hours: '11 h 30 – 22 h' });
     poi('Pizzeria Chez Gino', 'food', 'Pizzeria', A.P(6, 2, 34, 90), { hours: '18 h 30 – 23 h' });
-    poi('Boulangerie Au Bon Jalon', 'shop', 'Boulangerie', A.P(4, 4, 28, 70), { hours: '6 h 30 – 19 h 30' });
-    poi('Super Jalon Marché', 'shop', 'Supermarché', A.P(7, 5, 60, 40), { hours: '8 h 30 – 20 h' });
+    poi('Boulangerie Au Bon Lunavia', 'shop', 'Boulangerie', A.P(4, 4, 28, 70), { hours: '6 h 30 – 19 h 30' });
+    poi('Super Lunavia Marché', 'shop', 'Supermarché', A.P(7, 5, 60, 40), { hours: '8 h 30 – 20 h' });
     poi('Épicerie des Tilleuls', 'shop', 'Épicerie', A.P(2, 2, 30, 50), { hours: '8 h – 21 h' });
     poi('Pharmacie du Parc', 'pharma', 'Pharmacie', A.P(5, 5, 40, 28), { hours: '9 h – 19 h 30' });
     poi('Pharmacie de la Gare', 'pharma', 'Pharmacie', A.P(4, 0, 30, -80), { hours: '8 h 30 – 19 h' });
@@ -182,10 +182,10 @@ J.demo = (function () {
     poi('Parking République', 'parking', '180 places, payant', A.P(4, 2, -34, 95));
     poi('Parking de la Gare', 'parking', '90 places, gratuit', A.P(4, 0, -36, -170));
     poi('Parking du Parc', 'parking', '60 places, gratuit', A.P(5, 4, -30, -40));
-    poi('Gare de Val-Jalon', 'other', 'Gare', ll(stn[0], stn[1] - 18));
+    poi('Gare de Val-Lunavia', 'other', 'Gare', ll(stn[0], stn[1] - 18));
     poi('Parc des Jalons', 'other', 'Parc', A.P(6, 4, -40, 130));
     poi('Musée de la Borne', 'other', 'Musée', A.P(3, 3, -40, 40), { hours: '10 h – 18 h, fermé le lundi' });
-    poi('Hôpital de Val-Jalon', 'other', 'Hôpital', A.P(1, 5, 60, 60));
+    poi('Hôpital de Val-Lunavia', 'other', 'Hôpital', A.P(1, 5, 60, 60));
     poi('Lycée Marie-Curie', 'other', 'Lycée', A.P(6, 1, 50, 50));
     poi('Cinéma Le Phare', 'other', 'Cinéma', A.P(3, 2, 36, -30));
     poi('Stade municipal', 'other', 'Stade', A.P(1, 2, 80, 120));
@@ -202,10 +202,10 @@ J.demo = (function () {
     const streets = new Map();
     edges.forEach(e => { if (!e.name) return; if (!streets.has(e.name)) streets.set(e.name, []); streets.get(e.name).push(e); });
     const mid = e => [(nodes[e.a].ll[0] + nodes[e.b].ll[0]) / 2, (nodes[e.a].ll[1] + nodes[e.b].ll[1]) / 2];
-    const townOf = p => (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Jalon');
+    const townOf = p => (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Lunavia');
 
     const labels = [
-      { ll: A.P(4, 3, 150, 150), text: 'Val-Jalon', cls: 'town' },
+      { ll: A.P(4, 3, 150, 150), text: 'Val-Lunavia', cls: 'town' },
       { ll: B.P(1, 1, 120, 120), text: 'Saint-Aubin-les-Bornes', cls: 'village' },
       { ll: A.P(6, 4, -60, 190), text: 'Parc des Jalons', cls: 'green' },
       { ll: ll(xR(-1100) + 4, -1100), text: 'La Jalonne', cls: 'water', rot: 82 },
@@ -321,7 +321,7 @@ J.demo = (function () {
     /* --- recherche, adresse inverse, catégories, limitation --- */
     const index = pois.map(p => ({ p, n: norm(p.name + ' ' + p.sub) }));
     streets.forEach((es, name) => { const e = es[Math.floor(es.length / 2)], p = mid(e); index.push({ p: { id: 's' + name, name, sub: 'Rue · ' + townOf(p), ll: p, kind: 'street', cat: 'street', extra: {} }, n: norm(name), st: es }); });
-    index.push({ p: { id: 't1', name: 'Val-Jalon', sub: 'Ville de démonstration', ll: A.P(4, 3), kind: 'town', cat: 'town', extra: {} }, n: 'val jalon ville' });
+    index.push({ p: { id: 't1', name: 'Val-Lunavia', sub: 'Ville de démonstration', ll: A.P(4, 3), kind: 'town', cat: 'town', extra: {} }, n: 'val jalon ville' });
     index.push({ p: { id: 't2', name: 'Saint-Aubin-les-Bornes', sub: 'Village de démonstration', ll: B.P(1, 1), kind: 'town', cat: 'town', extra: {} }, n: 'saint aubin les bornes village st' });
     function search(q, near) {
       const m = String(q).match(/^\s*(\d{1,3})\s*(?:bis|ter)?[ ,]+(.+)$/i), num = m ? +m[1] : 0, toks = norm(m ? m[2] : q).split(' ').filter(Boolean);
@@ -394,10 +394,10 @@ J.demo = (function () {
       style, labels,
       center: A.P(4, 3, 40, 60), zoom: 14.2,
       start: { ll: startNode.ll, heading: 180 },
-      home: { id: 'ex-home', name: '14 Rue Molière', sub: 'Adresse · Val-Jalon', ll: nodes[A.at(24, 6)].ll, kind: 'home', cat: 'address', extra: {} },
+      home: { id: 'ex-home', name: '14 Rue Molière', sub: 'Adresse · Val-Lunavia', ll: nodes[A.at(24, 6)].ll, kind: 'home', cat: 'address', extra: {} },
       work: Object.assign({}, byName('Mairie de Saint-Aubin-les-Bornes')),
       trip: byName('Auberge des Bornes'),
-      recents: [byName('Boulangerie Au Bon Jalon'), byName('Gare de Val-Jalon')],
+      recents: [byName('Boulangerie Au Bon Lunavia'), byName('Gare de Val-Lunavia')],
       reports: [
         { id: 'x1', type: 'works', ll: nodes[A.at(22, 12)].ll, t: Date.now() - 52 * 60000, ex: true },
         { id: 'x2', type: 'jam', ll: nodes[A.at(16, 17)].ll, t: Date.now() - 6 * 60000, ex: true },

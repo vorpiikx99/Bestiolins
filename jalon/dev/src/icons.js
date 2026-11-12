@@ -1,4 +1,4 @@
-/* ---------- Jalon : pictogrammes (traits simples), panneaux et flèches de manœuvre ---------- */
+/* ---------- Lunavia : pictogrammes (traits simples), panneaux et flèches de manœuvre ---------- */
 J.ic = (function () {
   const P = {
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',

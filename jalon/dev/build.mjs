@@ -1,4 +1,4 @@
-// Assemble Jalon : une page pour l'aperçu dans Claude (dist/jalon.html) et un site installable (dist/site/).
+// Assemble Lunavia : une page pour l'aperçu dans Claude (dist/jalon.html) et un site installable (dist/site/).
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,7 +24,7 @@ if (/<\/style/i.test(css + mlcss)) throw new Error('la feuille de style contient
 
 /* ---------- 1. page pour l'aperçu dans Claude (artifact) ---------- */
 const artifact = [
-  '<title>Jalon</title>',
+  '<title>Lunavia</title>',
   '<meta name="claude:viewport-fit-sides" content="cover">',
   '<link rel="stylesheet" href="' + FONTS + '">',
   '<style>\n' + mlcss + '\n' + css + '</style>',
@@ -42,13 +42,13 @@ const head = [
   '<head>',
   '<meta charset="utf-8">',
   '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
-  '<title>Jalon</title>',
+  '<title>Lunavia</title>',
   '<meta name="generator" content="jalon:carte">', // signature de la page, lue par sw.js (« bon voisinage »)
-  '<meta name="description" content="Jalon, la carte qui réunit le meilleur des applis de navigation : recherche, itinéraires, guidage vocal, signalements, prix des carburants.">',
+  '<meta name="description" content="Lunavia, la carte qui réunit le meilleur des applis de navigation : recherche, itinéraires, guidage vocal, signalements, prix des carburants.">',
   '<meta name="theme-color" content="#0F4C8A">',
   '<meta name="mobile-web-app-capable" content="yes">',
   '<meta name="apple-mobile-web-app-capable" content="yes">',
-  '<meta name="apple-mobile-web-app-title" content="Jalon">',
+  '<meta name="apple-mobile-web-app-title" content="Lunavia">',
   '<meta name="apple-mobile-web-app-status-bar-style" content="default">',
   '<link rel="manifest" href="manifest.webmanifest">',
   '<link rel="icon" href="icons/icon.svg" type="image/svg+xml">',
@@ -61,7 +61,7 @@ const head = [
   '</head>',
   '<body>'
 ].join('\n');
-// L'aide-mémoire hors ligne (sw.js). Si la page a été servie par celui d'un autre site (Jalon logé dans un dossier
+// L'aide-mémoire hors ligne (sw.js). Si la page a été servie par celui d'un autre site (Lunavia logé dans un dossier
 // de ce site), on redemande au nôtre un coup de ménage quelques secondes après son installation : voir sw.js.
 const swBoot = [
   '<script>',

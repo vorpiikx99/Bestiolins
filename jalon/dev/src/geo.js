@@ -1,4 +1,4 @@
-/* ---------- Jalon : outils géographiques, format des nombres, textes de guidage ---------- */
+/* ---------- Lunavia : outils géographiques, format des nombres, textes de guidage ---------- */
 window.J = window.J || {};
 J.geo = (function () {
   const R = 6371008.8, rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;

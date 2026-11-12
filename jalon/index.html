@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jalon</title>
+<title>Lunavia</title>
 <meta name="generator" content="jalon:carte">
-<meta name="description" content="Jalon, la carte qui réunit le meilleur des applis de navigation : recherche, itinéraires, guidage vocal, signalements, prix des carburants.">
+<meta name="description" content="Lunavia, la carte qui réunit le meilleur des applis de navigation : recherche, itinéraires, guidage vocal, signalements, prix des carburants.">
 <meta name="theme-color" content="#0F4C8A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Jalon">
+<meta name="apple-mobile-web-app-title" content="Lunavia">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -355,13 +355,13 @@ a.btn{text-decoration:none}
   <div id="ui">
     <div id="top">
       <form id="searchbar" role="search" autocomplete="off">
-        <button type="button" class="iconbtn" id="sb-lead" data-act="lead" aria-label="Jalon"></button>
+        <button type="button" class="iconbtn" id="sb-lead" data-act="lead" aria-label="Lunavia"></button>
         <input id="q" type="search" enterkeyhint="search" placeholder="Où va-t-on ?" aria-label="Rechercher une adresse ou un lieu" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button type="button" class="iconbtn" id="sb-clear" data-act="clear" aria-label="Effacer la recherche" data-ic="close" hidden></button>
         <button type="button" class="iconbtn" id="sb-set" data-act="settings" aria-label="Réglages" data-ic="gear"></button>
       </form>
       <div id="chips" role="toolbar" aria-label="Lieux utiles"></div>
-      <button type="button" id="demoflag" data-act="about" hidden><b>Démo</b><span>Val-Jalon, ville fictive</span></button>
+      <button type="button" id="demoflag" data-act="about" hidden><b>Démo</b><span>Val-Lunavia, ville fictive</span></button>
     </div>
 
     <div id="navsign" class="sign blue" hidden>
@@ -400,7 +400,7 @@ a.btn{text-decoration:none}
 </div>
 <script src="vendor/maplibre-gl.js?v=4.7.1"></script>
 <script>
-/* ---------- Jalon : outils géographiques, format des nombres, textes de guidage ---------- */
+/* ---------- Lunavia : outils géographiques, format des nombres, textes de guidage ---------- */
 window.J = window.J || {};
 J.geo = (function () {
   const R = 6371008.8, rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
@@ -654,7 +654,7 @@ J.mkRoute = function (o) {
   return { geom: o.geom, cum: c, dist, time, steps, toll: !!o.toll, highway: !!o.highway, ferry: !!o.ferry, src: o.src || '', limits: o.limits || null };
 };
 
-/* ---------- Jalon : pictogrammes (traits simples), panneaux et flèches de manœuvre ---------- */
+/* ---------- Lunavia : pictogrammes (traits simples), panneaux et flèches de manœuvre ---------- */
 J.ic = (function () {
   const P = {
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
@@ -754,7 +754,7 @@ J.lane = function (l) {
   return '<span class="ln' + (l.on === 2 ? ' on' : l.on === 1 ? ' ok' : '') + '">' + J.arrow({ type: 'turn', mod: l.d === 'straight' ? '' : l.d }) + '</span>';
 };
 
-/* ---------- Jalon : ville de démonstration (Val-Jalon), générée sur place, sans aucune donnée réseau ----------
+/* ---------- Lunavia : ville de démonstration (Val-Lunavia), générée sur place, sans aucune donnée réseau ----------
    Sert quand la carte en ligne est inaccessible (aperçu dans Claude) : même interface, mêmes fonctions,
    mais sur une petite ville fictive avec son réseau de rues, son calcul d'itinéraire et ses lieux. */
 J.demo = (function () {
@@ -813,7 +813,7 @@ J.demo = (function () {
       return pts;
     }
 
-    /* --- Val-Jalon --- */
+    /* --- Val-Lunavia --- */
     const AH = ['Rocade Sud', 'Rue des Lilas', 'Rue Pasteur', 'Boulevard Victor-Hugo', 'Rue du Moulin', 'Rue des Écoles', 'Rue de la Fontaine', 'Rocade Nord'];
     const AV = ['Rocade Ouest', 'Rue du Stade', 'Rue Voltaire', 'Rue des Tilleuls', 'Avenue de la République', 'Rue du Marché', 'Rue Molière', 'Rue Émile-Zola', 'Rocade Est'];
     const A = grid('A', 0, 0, 9, 8, 280, (dir, idx, seg) => {
@@ -863,7 +863,7 @@ J.demo = (function () {
         edge(p, cur, props); p = cur;
       }
     }
-    bez(A.at(32, 28), [1430, 1040], M1, 6, { cls: 'link', speed: 50, town: 'Val-Jalon' });
+    bez(A.at(32, 28), [1430, 1040], M1, 6, { cls: 'link', speed: 50, town: 'Val-Lunavia' });
     bez(M2, [4030, 1300], B.at(0, 8), 6, { cls: 'link', speed: 50, town: 'Saint-Aubin-les-Bornes' });
     const ext = (xa, xb) => { const c = []; for (let x = xa; x <= xb; x += 220) c.push(ll(x, yM(x))); c.push(ll(xb, yM(xb))); return c; };
     F('road', 'LineString', ext(-3600, 1560), { cls: 'motorway', r: 6 });
@@ -920,14 +920,14 @@ J.demo = (function () {
 
     /* --- lieux --- */
     const pois = [];
-    const poi = (name, cat, type, p, extra) => pois.push({ id: 'd' + pois.length, name, cat, kind: cat, sub: type + ' · ' + (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Jalon'), ll: p, extra: extra || {} });
-    poi('Mairie de Val-Jalon', 'other', 'Mairie', A.P(4, 3, 26, 30));
+    const poi = (name, cat, type, p, extra) => pois.push({ id: 'd' + pois.length, name, cat, kind: cat, sub: type + ' · ' + (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Lunavia'), ll: p, extra: extra || {} });
+    poi('Mairie de Val-Lunavia', 'other', 'Mairie', A.P(4, 3, 26, 30));
     poi('Café de la Mairie', 'food', 'Café', A.P(4, 3, -28, 34), { hours: '7 h – 20 h' });
     poi('Le Bistrot des Bornes', 'food', 'Restaurant', A.P(5, 3, 40, -26), { hours: '12 h – 14 h 30 et 19 h – 22 h' });
     poi('Crêperie La Bolée', 'food', 'Crêperie', A.P(3, 4, -30, 60), { hours: '11 h 30 – 22 h' });
     poi('Pizzeria Chez Gino', 'food', 'Pizzeria', A.P(6, 2, 34, 90), { hours: '18 h 30 – 23 h' });
-    poi('Boulangerie Au Bon Jalon', 'shop', 'Boulangerie', A.P(4, 4, 28, 70), { hours: '6 h 30 – 19 h 30' });
-    poi('Super Jalon Marché', 'shop', 'Supermarché', A.P(7, 5, 60, 40), { hours: '8 h 30 – 20 h' });
+    poi('Boulangerie Au Bon Lunavia', 'shop', 'Boulangerie', A.P(4, 4, 28, 70), { hours: '6 h 30 – 19 h 30' });
+    poi('Super Lunavia Marché', 'shop', 'Supermarché', A.P(7, 5, 60, 40), { hours: '8 h 30 – 20 h' });
     poi('Épicerie des Tilleuls', 'shop', 'Épicerie', A.P(2, 2, 30, 50), { hours: '8 h – 21 h' });
     poi('Pharmacie du Parc', 'pharma', 'Pharmacie', A.P(5, 5, 40, 28), { hours: '9 h – 19 h 30' });
     poi('Pharmacie de la Gare', 'pharma', 'Pharmacie', A.P(4, 0, 30, -80), { hours: '8 h 30 – 19 h' });
@@ -938,10 +938,10 @@ J.demo = (function () {
     poi('Parking République', 'parking', '180 places, payant', A.P(4, 2, -34, 95));
     poi('Parking de la Gare', 'parking', '90 places, gratuit', A.P(4, 0, -36, -170));
     poi('Parking du Parc', 'parking', '60 places, gratuit', A.P(5, 4, -30, -40));
-    poi('Gare de Val-Jalon', 'other', 'Gare', ll(stn[0], stn[1] - 18));
+    poi('Gare de Val-Lunavia', 'other', 'Gare', ll(stn[0], stn[1] - 18));
     poi('Parc des Jalons', 'other', 'Parc', A.P(6, 4, -40, 130));
     poi('Musée de la Borne', 'other', 'Musée', A.P(3, 3, -40, 40), { hours: '10 h – 18 h, fermé le lundi' });
-    poi('Hôpital de Val-Jalon', 'other', 'Hôpital', A.P(1, 5, 60, 60));
+    poi('Hôpital de Val-Lunavia', 'other', 'Hôpital', A.P(1, 5, 60, 60));
     poi('Lycée Marie-Curie', 'other', 'Lycée', A.P(6, 1, 50, 50));
     poi('Cinéma Le Phare', 'other', 'Cinéma', A.P(3, 2, 36, -30));
     poi('Stade municipal', 'other', 'Stade', A.P(1, 2, 80, 120));
@@ -958,10 +958,10 @@ J.demo = (function () {
     const streets = new Map();
     edges.forEach(e => { if (!e.name) return; if (!streets.has(e.name)) streets.set(e.name, []); streets.get(e.name).push(e); });
     const mid = e => [(nodes[e.a].ll[0] + nodes[e.b].ll[0]) / 2, (nodes[e.a].ll[1] + nodes[e.b].ll[1]) / 2];
-    const townOf = p => (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Jalon');
+    const townOf = p => (p[0] > LON0 + 3000 / MX ? 'Saint-Aubin-les-Bornes' : 'Val-Lunavia');
 
     const labels = [
-      { ll: A.P(4, 3, 150, 150), text: 'Val-Jalon', cls: 'town' },
+      { ll: A.P(4, 3, 150, 150), text: 'Val-Lunavia', cls: 'town' },
       { ll: B.P(1, 1, 120, 120), text: 'Saint-Aubin-les-Bornes', cls: 'village' },
       { ll: A.P(6, 4, -60, 190), text: 'Parc des Jalons', cls: 'green' },
       { ll: ll(xR(-1100) + 4, -1100), text: 'La Jalonne', cls: 'water', rot: 82 },
@@ -1077,7 +1077,7 @@ J.demo = (function () {
     /* --- recherche, adresse inverse, catégories, limitation --- */
     const index = pois.map(p => ({ p, n: norm(p.name + ' ' + p.sub) }));
     streets.forEach((es, name) => { const e = es[Math.floor(es.length / 2)], p = mid(e); index.push({ p: { id: 's' + name, name, sub: 'Rue · ' + townOf(p), ll: p, kind: 'street', cat: 'street', extra: {} }, n: norm(name), st: es }); });
-    index.push({ p: { id: 't1', name: 'Val-Jalon', sub: 'Ville de démonstration', ll: A.P(4, 3), kind: 'town', cat: 'town', extra: {} }, n: 'val jalon ville' });
+    index.push({ p: { id: 't1', name: 'Val-Lunavia', sub: 'Ville de démonstration', ll: A.P(4, 3), kind: 'town', cat: 'town', extra: {} }, n: 'val jalon ville' });
     index.push({ p: { id: 't2', name: 'Saint-Aubin-les-Bornes', sub: 'Village de démonstration', ll: B.P(1, 1), kind: 'town', cat: 'town', extra: {} }, n: 'saint aubin les bornes village st' });
     function search(q, near) {
       const m = String(q).match(/^\s*(\d{1,3})\s*(?:bis|ter)?[ ,]+(.+)$/i), num = m ? +m[1] : 0, toks = norm(m ? m[2] : q).split(' ').filter(Boolean);
@@ -1150,10 +1150,10 @@ J.demo = (function () {
       style, labels,
       center: A.P(4, 3, 40, 60), zoom: 14.2,
       start: { ll: startNode.ll, heading: 180 },
-      home: { id: 'ex-home', name: '14 Rue Molière', sub: 'Adresse · Val-Jalon', ll: nodes[A.at(24, 6)].ll, kind: 'home', cat: 'address', extra: {} },
+      home: { id: 'ex-home', name: '14 Rue Molière', sub: 'Adresse · Val-Lunavia', ll: nodes[A.at(24, 6)].ll, kind: 'home', cat: 'address', extra: {} },
       work: Object.assign({}, byName('Mairie de Saint-Aubin-les-Bornes')),
       trip: byName('Auberge des Bornes'),
-      recents: [byName('Boulangerie Au Bon Jalon'), byName('Gare de Val-Jalon')],
+      recents: [byName('Boulangerie Au Bon Lunavia'), byName('Gare de Val-Lunavia')],
       reports: [
         { id: 'x1', type: 'works', ll: nodes[A.at(22, 12)].ll, t: Date.now() - 52 * 60000, ex: true },
         { id: 'x2', type: 'jam', ll: nodes[A.at(16, 17)].ll, t: Date.now() - 6 * 60000, ex: true },
@@ -1166,7 +1166,7 @@ J.demo = (function () {
   return { build, norm };
 })();
 
-/* ---------- Jalon : services en ligne (carte du monde réel) ----------
+/* ---------- Lunavia : services en ligne (carte du monde réel) ----------
    Fond de carte : OpenFreeMap (données OpenStreetMap) · Photos aériennes : IGN Géoplateforme
    Recherche : Photon (komoot) et Base Adresse Nationale · Itinéraires, voies et limitations : Valhalla, secours OSRM (serveurs FOSSGIS)
    Lieux utiles : Overpass · Prix des carburants : données ouvertes du ministère de l'Économie · Météo : Open-Meteo */
@@ -1559,7 +1559,7 @@ J.live = (function () {
   return { style, search, reverse, route, limits, weather, pois, speedLimit, ORTHO, _t: { frDefault, guessWay, inFrance, photonPlace, banPlace, vTrip, oRoute, poiPlace, parseMax, frLabels, lanes } };
 })();
 
-/* ---------- Jalon : l'application ---------- */
+/* ---------- Lunavia : l'application ---------- */
 (function () {
   'use strict';
   const G = J.geo, F = J.fmt, fr = J.fr, ic = J.ic;
@@ -1954,7 +1954,7 @@ J.live = (function () {
       h += rows.length ? rows.join('') : '';
       h += '<p class="empty">' + (S.mode === 'demo' ? 'Dans la démo, essaie « boulangerie », « gare » ou « 12 rue Voltaire ».' : 'Tape une adresse, un lieu ou un commerce.') + '</p>';
     } else if (S.results === null) h += '<p class="empty">Recherche…</p>';
-    else if (!S.results.length) h += '<p class="empty">' + (S.searchErr ? 'La recherche ne répond pas. Vérifie ta connexion et réessaie.' : 'Aucun résultat pour « ' + esc(q) + ' ».' + (S.mode === 'demo' ? ' La démo ne connaît que Val-Jalon et Saint-Aubin-les-Bornes.' : '')) + '</p>';
+    else if (!S.results.length) h += '<p class="empty">' + (S.searchErr ? 'La recherche ne répond pas. Vérifie ta connexion et réessaie.' : 'Aucun résultat pour « ' + esc(q) + ' ».' + (S.mode === 'demo' ? ' La démo ne connaît que Val-Lunavia et Saint-Aubin-les-Bornes.' : '')) + '</p>';
     else h += S.results.map(p => row(p)).join('');
     $('#results-in').innerHTML = h;
   }
@@ -2133,7 +2133,7 @@ J.live = (function () {
     let h = head('Vers ' + esc(d.name), S.origin ? 'Départ : ' + esc(S.origin.name) + ' · <button type="button" class="link inl" data-act="origin-reset">repartir de ma position</button>' : (S.pos ? 'Départ : ma position' : ''));
     h += '<div class="seg" role="tablist" aria-label="Moyen de transport">' + Object.keys(MODES).map(k => '<button type="button" role="tab" aria-selected="' + (S.travel === k) + '" data-act="mode" data-k="' + k + '">' + ic(MODES[k].icon) + MODES[k].label + '</button>').join('') + '</div>';
     if (S.routeErr === 'nopos') return h + '<p class="empty">Je n’ai pas encore ta position. Touche le bouton de position en bas à droite, ou choisis un point de départ.</p><div class="actions"><button type="button" class="btn big" data-act="pick-origin">' + ic('flag') + 'Choisir un départ</button></div>';
-    if (S.routeErr === 'far') return h + '<p class="empty">La démo calcule seulement les trajets dans Val-Jalon et Saint-Aubin-les-Bornes.</p>';
+    if (S.routeErr === 'far') return h + '<p class="empty">La démo calcule seulement les trajets dans Val-Lunavia et Saint-Aubin-les-Bornes.</p>';
     if (S.routeErr) return h + '<p class="empty">Aucun itinéraire trouvé. Vérifie ta connexion, ou essaie un autre moyen de transport.</p><div class="actions"><button type="button" class="btn big" data-act="retry">Réessayer</button></div>';
     if (S.loading || !S.routes.length) return h + '<p class="empty">Calcul de l’itinéraire…</p>';
     h += '<div class="alts" role="radiogroup" aria-label="Trajets proposés">' + S.routes.map(altCard).join('') + '</div>';
@@ -2372,13 +2372,13 @@ J.live = (function () {
       '<label class="field" for="set-prix">Prix du carburant<span><input id="set-prix" type="number" inputmode="decimal" step="0.01" min="0.3" max="5" value="' + s.prix + '" data-set="prix">€/L</span></label>' +
       '<label class="field" for="set-fuel">Mon carburant<select id="set-fuel" data-set="fuel">' + Object.keys(FUELS).map(k => '<option value="' + k + '"' + (s.fuel === k ? ' selected' : '') + '>' + FUELS[k] + '</option>').join('') + '</select></label>' +
       '<h3>Mes lieux</h3>' + (places ? '<div class="list">' + places + '</div>' : '<p class="note">Aucun lieu enregistré. Ouvre un lieu puis touche « Enregistrer ».</p>') +
-      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Jalon sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version 1.0.3.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Jalon mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
+      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Lunavia sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version 1.1.0.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Lunavia mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
       (S.mode === 'live' ? '<div class="actions">' + (S.wipe ? '<button type="button" class="btn danger" data-act="wipe-yes">Oui, tout effacer</button><button type="button" class="btn" data-act="wipe-no">Annuler</button>' : '<button type="button" class="btn danger" data-act="wipe">' + ic('trash') + 'Effacer mes données</button>') + '</div>' : '') + '</div>';
   }
   function vAbout() {
     // dans l'aperçu de Claude, la vraie carte ne peut pas s'afficher : on montre le chemin vers son adresse
     const out = S.demoWhy === 'policy' && HOME;
-    return head('Mode démonstration', '') + '<div class="about"><p>La carte en ligne et le GPS ne sont pas accessibles ici. Jalon affiche donc <b>Val-Jalon</b>, une petite ville inventée, pour te laisser essayer toutes les fonctions : recherche, itinéraires, guidage, signalements, prix des carburants.</p>' +
+    return head('Mode démonstration', '') + '<div class="about"><p>La carte en ligne et le GPS ne sont pas accessibles ici. Lunavia affiche donc <b>Val-Lunavia</b>, une petite ville inventée, pour te laisser essayer toutes les fonctions : recherche, itinéraires, guidage, signalements, prix des carburants.</p>' +
       (out ? '<p>La vraie carte, avec le monde entier, ta position et les vraies adresses, s’ouvre à sa propre adresse :<br><b class="sel addr">' + esc(HOME_TXT) + '</b></p><div class="actions"><a class="btn primary big" href="' + esc(HOME) + '" target="_blank" rel="noopener">' + ic('globe') + 'Ouvrir la vraie carte</a></div><div class="actions"><button type="button" class="btn" data-act="demo-trip">' + ic('play') + 'Lancer le trajet d’essai ici</button></div></div>'
         : '<p class="note">Une fois l’appli mise en ligne à sa propre adresse, la carte du monde réel, ta position et les vraies adresses remplacent la démo, sans rien changer d’autre.</p><div class="actions"><button type="button" class="btn primary big" data-act="demo-trip">' + ic('play') + 'Lancer le trajet d’essai</button>' + (S.demoWhy === 'guess' || S.demoWhy === 'asked' ? '<button type="button" class="btn" data-act="reload">Ouvrir la vraie carte</button>' : '') + '</div></div>');
   }
@@ -2389,7 +2389,7 @@ J.live = (function () {
     sheet.hidden = v === 'search';
     $('#results').hidden = v !== 'search';
     $('#sb-lead').innerHTML = v === 'search' ? ic('back') : J.logo;
-    $('#sb-lead').setAttribute('aria-label', v === 'search' ? 'Retour' : 'Jalon');
+    $('#sb-lead').setAttribute('aria-label', v === 'search' ? 'Retour' : 'Lunavia');
     $('#sb-set').hidden = v === 'search';
     $('#sb-clear').hidden = !(v === 'search' && S.q);
     app.classList.toggle('navon', !!S.nav);
@@ -2647,7 +2647,7 @@ J.live = (function () {
     render();
   }
   J.app = { S, get map() { return map; }, get db() { return db; }, get D() { return D; }, ACT, go };
-  boot().catch(e => { try { console.error(e); } catch (x) { /* rien */ } if (!map) fail('Jalon n’a pas pu démarrer. Recharge la page.'); });
+  boot().catch(e => { try { console.error(e); } catch (x) { /* rien */ } if (!map) fail('Lunavia n’a pas pu démarrer. Recharge la page.'); });
 })();
 </script>
 <script>
