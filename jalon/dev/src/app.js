@@ -259,13 +259,13 @@
     else if (whole) { if (n.lim) { const v = limitAt(n); if (v !== S.limit) { S.limit = v; limitUI(); } } }
     else {
       // hors guidage (ou si le trajet n'a pas pu être renseigné) : on demande la limitation de la route où l'on roule
-      const ask = S.mode === 'demo' ? now - limT > 900 : (now - limT > 20000 && (!limAt || G.hav(limAt, f.ll) > 150) && (f.speed || 0) > 3);
+      const ask = S.mode === 'demo' ? now - limT > 900 : (now - limT > 12000 && (!limAt || G.hav(limAt, f.ll) > 120) && (f.speed || 0) > 2);
       if (ask) {
         limT = now; limAt = f.ll;
         P.speedLimit(f.show || f.ll).then(v => { if (v !== undefined && !(S.nav && S.nav.lim)) { S.limit = v; limitUI(); } }).catch(() => { /* limite inconnue */ });
       }
     }
-    const over = !!S.limit && kmh > S.limit + 3;
+    const over = S.limit > 0 && kmh > S.limit + 3; // une limitation estimée (négative) n'alerte pas
     $('#speedo').classList.toggle('over', over);
     if (over && !S.wasOver && db.set.beep && now - (S.beepT || 0) > 20000 && kmh > S.limit + 5) { S.beepT = now; beep(); }
     S.wasOver = over;
@@ -291,7 +291,7 @@
       n.lim = (n.lim || []).concat(list); n.limTo = to; n.limFail = 0;
     }).catch(() => { n.limFail = (n.limFail || 0) + 1; n.limWait = Date.now(); }).finally(() => { n.limBusy = false; });
   }
-  function limitUI() { const el = $('#limit'); el.hidden = !S.limit; if (S.limit) el.textContent = S.limit; }
+  function limitUI() { const el = $('#limit'); el.hidden = !S.limit; if (S.limit) { el.textContent = Math.abs(S.limit); el.classList.toggle('est', S.limit < 0); el.title = S.limit < 0 ? 'Limitation estimée d’après le type de route' : 'Limitation de vitesse'; } }
   function startSim(route) {
     stopSim();
     if (S.mode === 'live') S.real = S.pos;

@@ -86,7 +86,7 @@ function overpass(ql) {
   const ar = ql.match(/around:(\d+(?:\.\d+)?),(-?[\d.]+),(-?[\d.]+)/);
   if (!ar) return { version: 0.6, elements: [], remark: 'requête non reconnue par le banc d’essai' };
   const r = +ar[1], ll = [+ar[3], +ar[2]];
-  if (/way\(around/.test(ql) && /maxspeed/.test(ql)) {
+  if (/way\(around/.test(ql) && /maxspeed|"highway"~/.test(ql)) {
     const els = maxspeed.filter(w => { const g = w.geometry; return Math.abs(g[0].lat - ll[1]) < 0.02 && Math.abs(g[0].lon - ll[0]) < 0.03 && distToWay(ll, g) <= r; }).slice(0, 8);
     return { version: 0.6, generator: 'banc', elements: els };
   }

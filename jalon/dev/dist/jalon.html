@@ -124,6 +124,8 @@ h2,h3,p{margin:0}
 #speedo span{font:600 10px/1 var(--font);opacity:.85}
 #speedo.over{background:var(--red)}
 #limit{width:50px;height:50px;border-radius:50%;background:#fff;border:6px solid #C1121C;box-sizing:border-box;color:#111;display:grid;place-items:center;font:700 21px/1 var(--cond);box-shadow:var(--shadow-s)}
+/* limitation estimée d'après le type de route (panneau inconnu de la carte) : cercle gris, en pointillés */
+#limit.est{border:4px dashed #7A828C;color:#3B424B}
 #attrib{position:fixed;z-index:5;left:max(16px, env(safe-area-inset-left, 0px));bottom:calc(var(--sheet-h, 0px) + 6px);font:500 10.5px/1.2 var(--font);color:var(--ink);background:color-mix(in srgb, var(--surface) 80%, transparent);padding:2px 6px;border-radius:6px;max-width:calc(100% - 100px)}
 #attrib a{color:inherit;text-decoration:none}
 #toast{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(var(--sheet-h, 0px) + 78px);width:max-content;max-width:min(86vw, 420px);background:var(--asphalt);color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);text-align:center;font-weight:500}
@@ -1317,7 +1319,7 @@ J.live = (function () {
     while (i1 > i0 + 1 && c[i1 - 1] >= to) i1--;
     const pts = g.slice(i0, i1 + 1);
     if (pts.length < 2) return [];
-    const body = JSON.stringify({ encoded_polyline: G.encode(pts, 6), costing: 'auto', shape_match: 'walk_or_snap', filters: { attributes: ['edge.speed_limit', 'edge.begin_shape_index', 'edge.end_shape_index', 'shape'], action: 'include' } });
+    const body = JSON.stringify({ encoded_polyline: G.encode(pts, 6), costing: 'auto', shape_match: 'walk_or_snap', filters: { attributes: ['edge.speed_limit', 'edge.road_class', 'edge.use', 'edge.density', 'edge.begin_shape_index', 'edge.end_shape_index', 'shape'], action: 'include' } });
     const j = await getJSON(VALHALLA + '/trace_attributes', { method: 'POST', body }, 14000);
     if (!j || !Array.isArray(j.edges)) throw new Error('limits');
     const shp = j.shape ? G.decode(j.shape, 6) : pts, out = [];
@@ -1327,7 +1329,8 @@ J.live = (function () {
       if (!a || !b) return;
       const ma = G.nearest(g, c, a, hint - 3, i1 + 2), mb = G.nearest(g, c, b, ma.i, i1 + 2);
       hint = ma.i;
-      const v = e.speed_limit > 0 && e.speed_limit < 200 ? Math.round(e.speed_limit) : null; // 255 = pas de limite
+      let v = e.speed_limit > 0 && e.speed_limit < 200 ? Math.round(e.speed_limit) : null; // 255 = pas de limite
+      if (v == null && inFrance(a)) { const d = frDefault(e.use === 'living_street' ? 'living_street' : e.use === 'ramp' || e.use === 'turn_channel' ? 'link' : e.road_class, e.density > 8); if (d) v = -d; } // négatif = estimée
       if (!(mb.s > ma.s)) return;
       const last = out[out.length - 1];
       if (last && last.v === v && ma.s - last.s1 < 40) last.s1 = mb.s; else out.push({ s0: ma.s, s1: mb.s, v });
@@ -1493,24 +1496,48 @@ J.live = (function () {
     return ({ 'FR:urban': 50, 'FR:rural': 80, 'FR:motorway': 130, 'FR:zone30': 30, 'FR:zone20': 20 })[v] || null;
   }
   let busy = false;
+  /* Quand la carte ne connaît pas le panneau, on applique la règle générale française selon le type de route.
+     C'est une estimation (elle ignore les panneaux particuliers) : elle est renvoyée en négatif, et affichée en gris. */
+  const inFrance = ll => ll[0] > -5.3 && ll[0] < 9.7 && ll[1] > 41.2 && ll[1] < 51.2;
+  function frDefault(kind, urban) {
+    if (kind === 'living_street') return 20;
+    if (kind === 'motorway') return 130;
+    if (kind === 'link' || kind === 'service' || kind === 'service_other' || kind === 'track' || !kind) return null;
+    if (kind === 'trunk') return urban ? 50 : 110;
+    if (kind === 'residential') return 50;
+    return urban ? 50 : 80;
+  }
+  const ZONES = { 'FR:urban': 50, 'FR:rural': 80, 'FR:motorway': 130, 'FR:zone30': 30, 'FR:zone20': 20, 'FR:living_street': 20, 'FR:trunk': 110 };
+  function guessWay(t) {
+    const z = ZONES[t['maxspeed:type']] || ZONES[t['source:maxspeed']] || ZONES[t['zone:maxspeed']] || ZONES[t.maxspeed];
+    if (z) return z;
+    const h = String(t.highway || ''), kind = /_link$/.test(h) ? 'link' : h;
+    const urban = t.lit === 'yes' || (t.sidewalk && t.sidewalk !== 'no') || !!t['sidewalk:both'] || !!t['sidewalk:left'] || !!t['sidewalk:right'];
+    if (kind === 'trunk' && !urban) return t.oneway === 'yes' ? 110 : 80;
+    if (!/^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)$/.test(kind)) return null;
+    return frDefault(kind, urban);
+  }
   async function speedLimit(ll) {
     if (busy) return undefined;
     busy = true;
     try {
-      const j = await getJSON(OVP[0], { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent('[out:json][timeout:6];way(around:25,' + ll[1].toFixed(6) + ',' + ll[0].toFixed(6) + ')["highway"]["maxspeed"];out tags geom 8;') }, 7000);
+      const j = await getJSON(OVP[0], { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent('[out:json][timeout:6];way(around:25,' + ll[1].toFixed(6) + ',' + ll[0].toFixed(6) + ')["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)(_link)?$"];out tags geom 12;') }, 7000);
+      // la route la plus proche : son panneau s'il est connu, sinon (en France) la règle générale
       let best = null, bd = 40;
       (j.elements || []).forEach(w => {
-        const g = (w.geometry || []).map(p => [p.lon, p.lat]);
+        const g = (w.geometry || []).map(p => [p.lon, p.lat]), t = w.tags || {};
         if (g.length < 2) return;
-        const d = G.nearest(g, G.cum(g), ll, 0, g.length - 2).d, v = parseMax(w.tags && w.tags.maxspeed);
-        if (v && d < bd) { bd = d; best = v; }
+        const d = G.nearest(g, G.cum(g), ll, 0, g.length - 2).d;
+        if (d >= bd) return;
+        const v = parseMax(t.maxspeed), e = v ? 0 : (inFrance(ll) ? guessWay(t) : null);
+        if (v || e) { bd = d; best = v || -e; }
       });
       return best;
     } catch (e) { return undefined; }
     finally { busy = false; }
   }
 
-  return { style, search, reverse, route, limits, weather, pois, speedLimit, ORTHO, _t: { photonPlace, banPlace, vTrip, oRoute, poiPlace, parseMax, frLabels, lanes } };
+  return { style, search, reverse, route, limits, weather, pois, speedLimit, ORTHO, _t: { frDefault, guessWay, inFrance, photonPlace, banPlace, vTrip, oRoute, poiPlace, parseMax, frLabels, lanes } };
 })();
 
 /* ---------- Jalon : l'application ---------- */
@@ -1774,13 +1801,13 @@ J.live = (function () {
     else if (whole) { if (n.lim) { const v = limitAt(n); if (v !== S.limit) { S.limit = v; limitUI(); } } }
     else {
       // hors guidage (ou si le trajet n'a pas pu être renseigné) : on demande la limitation de la route où l'on roule
-      const ask = S.mode === 'demo' ? now - limT > 900 : (now - limT > 20000 && (!limAt || G.hav(limAt, f.ll) > 150) && (f.speed || 0) > 3);
+      const ask = S.mode === 'demo' ? now - limT > 900 : (now - limT > 12000 && (!limAt || G.hav(limAt, f.ll) > 120) && (f.speed || 0) > 2);
       if (ask) {
         limT = now; limAt = f.ll;
         P.speedLimit(f.show || f.ll).then(v => { if (v !== undefined && !(S.nav && S.nav.lim)) { S.limit = v; limitUI(); } }).catch(() => { /* limite inconnue */ });
       }
     }
-    const over = !!S.limit && kmh > S.limit + 3;
+    const over = S.limit > 0 && kmh > S.limit + 3; // une limitation estimée (négative) n'alerte pas
     $('#speedo').classList.toggle('over', over);
     if (over && !S.wasOver && db.set.beep && now - (S.beepT || 0) > 20000 && kmh > S.limit + 5) { S.beepT = now; beep(); }
     S.wasOver = over;
@@ -1806,7 +1833,7 @@ J.live = (function () {
       n.lim = (n.lim || []).concat(list); n.limTo = to; n.limFail = 0;
     }).catch(() => { n.limFail = (n.limFail || 0) + 1; n.limWait = Date.now(); }).finally(() => { n.limBusy = false; });
   }
-  function limitUI() { const el = $('#limit'); el.hidden = !S.limit; if (S.limit) el.textContent = S.limit; }
+  function limitUI() { const el = $('#limit'); el.hidden = !S.limit; if (S.limit) { el.textContent = Math.abs(S.limit); el.classList.toggle('est', S.limit < 0); el.title = S.limit < 0 ? 'Limitation estimée d’après le type de route' : 'Limitation de vitesse'; } }
   function startSim(route) {
     stopSim();
     if (S.mode === 'live') S.real = S.pos;
@@ -2326,7 +2353,7 @@ J.live = (function () {
       '<label class="field" for="set-prix">Prix du carburant<span><input id="set-prix" type="number" inputmode="decimal" step="0.01" min="0.3" max="5" value="' + s.prix + '" data-set="prix">€/L</span></label>' +
       '<label class="field" for="set-fuel">Mon carburant<select id="set-fuel" data-set="fuel">' + Object.keys(FUELS).map(k => '<option value="' + k + '"' + (s.fuel === k ? ' selected' : '') + '>' + FUELS[k] + '</option>').join('') + '</select></label>' +
       '<h3>Mes lieux</h3>' + (places ? '<div class="list">' + places + '</div>' : '<p class="note">Aucun lieu enregistré. Ouvre un lieu puis touche « Enregistrer ».</p>') +
-      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Jalon sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version 1.0.2.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Jalon mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
+      '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Jalon sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version 1.0.3.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Jalon mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
       (S.mode === 'live' ? '<div class="actions">' + (S.wipe ? '<button type="button" class="btn danger" data-act="wipe-yes">Oui, tout effacer</button><button type="button" class="btn" data-act="wipe-no">Annuler</button>' : '<button type="button" class="btn danger" data-act="wipe">' + ic('trash') + 'Effacer mes données</button>') + '</div>' : '') + '</div>';
   }
   function vAbout() {

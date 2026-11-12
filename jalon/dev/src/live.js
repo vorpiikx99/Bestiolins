@@ -170,7 +170,7 @@ J.live = (function () {
     while (i1 > i0 + 1 && c[i1 - 1] >= to) i1--;
     const pts = g.slice(i0, i1 + 1);
     if (pts.length < 2) return [];
-    const body = JSON.stringify({ encoded_polyline: G.encode(pts, 6), costing: 'auto', shape_match: 'walk_or_snap', filters: { attributes: ['edge.speed_limit', 'edge.begin_shape_index', 'edge.end_shape_index', 'shape'], action: 'include' } });
+    const body = JSON.stringify({ encoded_polyline: G.encode(pts, 6), costing: 'auto', shape_match: 'walk_or_snap', filters: { attributes: ['edge.speed_limit', 'edge.road_class', 'edge.use', 'edge.density', 'edge.begin_shape_index', 'edge.end_shape_index', 'shape'], action: 'include' } });
     const j = await getJSON(VALHALLA + '/trace_attributes', { method: 'POST', body }, 14000);
     if (!j || !Array.isArray(j.edges)) throw new Error('limits');
     const shp = j.shape ? G.decode(j.shape, 6) : pts, out = [];
@@ -180,7 +180,8 @@ J.live = (function () {
       if (!a || !b) return;
       const ma = G.nearest(g, c, a, hint - 3, i1 + 2), mb = G.nearest(g, c, b, ma.i, i1 + 2);
       hint = ma.i;
-      const v = e.speed_limit > 0 && e.speed_limit < 200 ? Math.round(e.speed_limit) : null; // 255 = pas de limite
+      let v = e.speed_limit > 0 && e.speed_limit < 200 ? Math.round(e.speed_limit) : null; // 255 = pas de limite
+      if (v == null && inFrance(a)) { const d = frDefault(e.use === 'living_street' ? 'living_street' : e.use === 'ramp' || e.use === 'turn_channel' ? 'link' : e.road_class, e.density > 8); if (d) v = -d; } // négatif = estimée
       if (!(mb.s > ma.s)) return;
       const last = out[out.length - 1];
       if (last && last.v === v && ma.s - last.s1 < 40) last.s1 = mb.s; else out.push({ s0: ma.s, s1: mb.s, v });
@@ -346,22 +347,46 @@ J.live = (function () {
     return ({ 'FR:urban': 50, 'FR:rural': 80, 'FR:motorway': 130, 'FR:zone30': 30, 'FR:zone20': 20 })[v] || null;
   }
   let busy = false;
+  /* Quand la carte ne connaît pas le panneau, on applique la règle générale française selon le type de route.
+     C'est une estimation (elle ignore les panneaux particuliers) : elle est renvoyée en négatif, et affichée en gris. */
+  const inFrance = ll => ll[0] > -5.3 && ll[0] < 9.7 && ll[1] > 41.2 && ll[1] < 51.2;
+  function frDefault(kind, urban) {
+    if (kind === 'living_street') return 20;
+    if (kind === 'motorway') return 130;
+    if (kind === 'link' || kind === 'service' || kind === 'service_other' || kind === 'track' || !kind) return null;
+    if (kind === 'trunk') return urban ? 50 : 110;
+    if (kind === 'residential') return 50;
+    return urban ? 50 : 80;
+  }
+  const ZONES = { 'FR:urban': 50, 'FR:rural': 80, 'FR:motorway': 130, 'FR:zone30': 30, 'FR:zone20': 20, 'FR:living_street': 20, 'FR:trunk': 110 };
+  function guessWay(t) {
+    const z = ZONES[t['maxspeed:type']] || ZONES[t['source:maxspeed']] || ZONES[t['zone:maxspeed']] || ZONES[t.maxspeed];
+    if (z) return z;
+    const h = String(t.highway || ''), kind = /_link$/.test(h) ? 'link' : h;
+    const urban = t.lit === 'yes' || (t.sidewalk && t.sidewalk !== 'no') || !!t['sidewalk:both'] || !!t['sidewalk:left'] || !!t['sidewalk:right'];
+    if (kind === 'trunk' && !urban) return t.oneway === 'yes' ? 110 : 80;
+    if (!/^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)$/.test(kind)) return null;
+    return frDefault(kind, urban);
+  }
   async function speedLimit(ll) {
     if (busy) return undefined;
     busy = true;
     try {
-      const j = await getJSON(OVP[0], { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent('[out:json][timeout:6];way(around:25,' + ll[1].toFixed(6) + ',' + ll[0].toFixed(6) + ')["highway"]["maxspeed"];out tags geom 8;') }, 7000);
+      const j = await getJSON(OVP[0], { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent('[out:json][timeout:6];way(around:25,' + ll[1].toFixed(6) + ',' + ll[0].toFixed(6) + ')["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)(_link)?$"];out tags geom 12;') }, 7000);
+      // la route la plus proche : son panneau s'il est connu, sinon (en France) la règle générale
       let best = null, bd = 40;
       (j.elements || []).forEach(w => {
-        const g = (w.geometry || []).map(p => [p.lon, p.lat]);
+        const g = (w.geometry || []).map(p => [p.lon, p.lat]), t = w.tags || {};
         if (g.length < 2) return;
-        const d = G.nearest(g, G.cum(g), ll, 0, g.length - 2).d, v = parseMax(w.tags && w.tags.maxspeed);
-        if (v && d < bd) { bd = d; best = v; }
+        const d = G.nearest(g, G.cum(g), ll, 0, g.length - 2).d;
+        if (d >= bd) return;
+        const v = parseMax(t.maxspeed), e = v ? 0 : (inFrance(ll) ? guessWay(t) : null);
+        if (v || e) { bd = d; best = v || -e; }
       });
       return best;
     } catch (e) { return undefined; }
     finally { busy = false; }
   }
 
-  return { style, search, reverse, route, limits, weather, pois, speedLimit, ORTHO, _t: { photonPlace, banPlace, vTrip, oRoute, poiPlace, parseMax, frLabels, lanes } };
+  return { style, search, reverse, route, limits, weather, pois, speedLimit, ORTHO, _t: { frDefault, guessWay, inFrance, photonPlace, banPlace, vTrip, oRoute, poiPlace, parseMax, frLabels, lanes } };
 })();
