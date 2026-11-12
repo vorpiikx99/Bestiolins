@@ -51,4 +51,4 @@ couvre aussi ce dossier. Jalon s'en accommode tout seul (voir « bon voisinage �
 Créer un dépôt `Jalon`, y copier le contenu de ce dossier, activer GitHub Pages, puis changer `homepage` dans
 `dev/package.json` et remonter le site. Les lieux enregistrés suivent, puisque le site reste `vorpiikx99.github.io`.
 
-Version 1.0.1-mwcuz8fg
+Version 1.0.2-mwd4qr4y

@@ -4,6 +4,8 @@
   const G = J.geo, F = J.fmt, fr = J.fr, ic = J.ic;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // écran large, ou téléphone couché : le panneau passe dans le coin bas gauche au lieu d'occuper tout le bas
+  const WIDE = window.matchMedia('(min-width:760px), (orientation:landscape) and (max-height:520px) and (min-width:560px)');
   const app = $('#app'), sheet = $('#sheet'), sheetIn = $('#sheet-in'), mapEl = $('#map'), input = $('#q');
 
   const CATS = [
@@ -93,14 +95,15 @@
   }
   const center = () => { const c = map.getCenter(); return [c.lng, c.lat]; };
   function syncInsets() {
-    const wide = window.innerWidth >= 760;
+    const wide = WIDE.matches;
     app.style.setProperty('--sheet-h', (wide || sheet.hidden ? 0 : sheet.offsetHeight) + 'px');
+    app.style.setProperty('--sheet-w', (sheet.hidden ? -16 : sheet.offsetWidth) + 'px');
   }
   function pad() {
-    const wide = window.innerWidth >= 760, H = mapEl.clientHeight || 600, Wd = mapEl.clientWidth || 360;
+    const wide = WIDE.matches, H = mapEl.clientHeight || 600, Wd = mapEl.clientWidth || 360;
     const topEl = S.nav ? $('#navsign') : $('#top');
     let top = (topEl && !topEl.hidden ? topEl.getBoundingClientRect().bottom : 0) + 18, bottom = (wide || sheet.hidden ? 0 : sheet.offsetHeight) + 26;
-    let left = wide && !sheet.hidden ? 440 : 34, right = 80;
+    let left = wide && !sheet.hidden ? Math.round(sheet.getBoundingClientRect().right) + 24 : 34, right = 80;
     if (top + bottom > H - 110) { const k = (H - 110) / (top + bottom); top *= k; bottom *= k; }
     if (left + right > Wd - 80) { left = 24; right = 24; }
     return { top: Math.max(0, top), bottom: Math.max(0, bottom), left, right };
@@ -576,7 +579,7 @@
     if (S.travel === 'car') h += '<div class="opts"><button type="button" class="chip sm" aria-pressed="' + db.set.tolls + '" data-act="opt" data-k="tolls">Éviter les péages</button><button type="button" class="chip sm" aria-pressed="' + db.set.hw + '" data-act="opt" data-k="hw">Éviter les autoroutes</button></div>';
     h += '<p class="wx" id="wx" hidden></p>';
     const simOnly = S.mode === 'demo' || !!S.origin || !S.pos;
-    h += '<div class="actions">' + (simOnly ? '<button type="button" class="btn primary big" data-act="sim">' + ic('play') + (S.mode === 'demo' ? 'Démarrer' : 'Aperçu du trajet') + '</button>' : '<button type="button" class="btn primary big" data-act="start">' + ic('nav') + 'Démarrer</button><button type="button" class="btn" data-act="sim">' + ic('play') + 'Aperçu</button>') + '</div>';
+    h += '<div class="actions go">' + (simOnly ? '<button type="button" class="btn primary big" data-act="sim">' + ic('play') + (S.mode === 'demo' ? 'Démarrer' : 'Aperçu du trajet') + '</button>' : '<button type="button" class="btn primary big" data-act="start">' + ic('nav') + 'Démarrer</button><button type="button" class="btn" data-act="sim">' + ic('play') + 'Aperçu</button>') + '</div>';
     const r = S.routes[S.sel];
     h += '<details class="steps"><summary>' + ic('list') + 'Feuille de route · ' + (r.steps.length - 1) + ' étapes</summary><ol>' + r.steps.map(s => '<li><span class="sa">' + J.arrow(s) + '</span><span class="st">' + esc(s.text) + '</span><span class="sd">' + (s.len > 0 ? F.dist(s.len) : '') + '</span></li>').join('') + '</ol></details>';
     return h;
@@ -686,7 +689,7 @@
     n.z = n.z == null ? zt : n.z + (zt - n.z) * 0.12;
     const brg = typeof f.heading === 'number' ? f.heading : map.getBearing();
     n.cam = n.cam == null ? brg : G.smoothAngle(n.cam, brg, f.sim ? 0.3 : 0.65);
-    const H = mapEl.clientHeight || 600, wide = window.innerWidth >= 760;
+    const H = mapEl.clientHeight || 600, wide = WIDE.matches;
     const top = Math.min(H * 0.4, 300), bottom = wide ? 40 : Math.min(sheet.offsetHeight + 20, H * 0.42);
     map.easeTo({ center: f.show || f.ll, bearing: n.cam, pitch: 50, zoom: n.z, duration: force ? 600 : f.sim ? 230 : 950, easing: t => t, essential: true, offset: [0, (top - bottom) / 2] });
   }
@@ -808,15 +811,6 @@
       '<label class="field" for="set-prix">Prix du carburant<span><input id="set-prix" type="number" inputmode="decimal" step="0.01" min="0.3" max="5" value="' + s.prix + '" data-set="prix">€/L</span></label>' +
       '<label class="field" for="set-fuel">Mon carburant<select id="set-fuel" data-set="fuel">' + Object.keys(FUELS).map(k => '<option value="' + k + '"' + (s.fuel === k ? ' selected' : '') + '>' + FUELS[k] + '</option>').join('') + '</select></label>' +
       '<h3>Mes lieux</h3>' + (places ? '<div class="list">' + places + '</div>' : '<p class="note">Aucun lieu enregistré. Ouvre un lieu puis touche « Enregistrer ».</p>') +
-      '<h3>Le meilleur de chaque appli</h3><ul class="credits">' +
-      '<li><b>Waze</b> <span>Signalements sur la route, alertes à l’approche, routes fermées contournées, prix des carburants.</span></li>' +
-      '<li><b>Google Maps</b> <span>Recherche de lieux, fiches, catégories à portée de pouce, guidage par voie, photos aériennes.</span></li>' +
-      '<li><b>Plans d’Apple</b> <span>Écran épuré, guidage lisible d’un coup d’œil, météo à l’arrivée.</span></li>' +
-      '<li><b>Mappy et ViaMichelin</b> <span>Coût du trajet, trajets sans péage, feuille de route.</span></li>' +
-      '<li><b>Coyote et TomTom</b> <span>Compteur, limitation de vitesse, alerte de dépassement.</span></li>' +
-      '<li><b>Citymapper</b> <span>Voiture, vélo ou marche comparés, calories comprises.</span></li>' +
-      '<li><b>Organic Maps</b> <span>Ni compte ni publicité, tes lieux restent sur ton appareil.</span></li></ul>' +
-      '<p class="note">Pas encore dans cette version : trafic en direct, transports en commun, signalements partagés entre utilisateurs.</p>' +
       '<h3>À propos</h3><p class="note">' + (S.mode === 'live' ? 'Carte et lieux : © les contributeurs d’OpenStreetMap, fond OpenFreeMap. Adresses : Base Adresse Nationale. Photos aériennes : IGN. Prix des carburants : données ouvertes du ministère de l’Économie. Météo : Open-Meteo. Pour installer Jalon sur ton téléphone, ouvre le menu du navigateur puis « Ajouter à l’écran d’accueil ». Version __VERSION__.' : 'Tu utilises la carte de démonstration. ' + (HOME ? 'La vraie carte, avec le monde entier, ta position et la recherche d’adresses, est en ligne à l’adresse <span class="sel addr">' + esc(HOME_TXT) + '</span>.' : 'Une fois Jalon mis en ligne, la carte du monde, ta position et la recherche d’adresses s’activent toutes seules.')) + '</p>' +
       (S.mode === 'live' ? '<div class="actions">' + (S.wipe ? '<button type="button" class="btn danger" data-act="wipe-yes">Oui, tout effacer</button><button type="button" class="btn" data-act="wipe-no">Annuler</button>' : '<button type="button" class="btn danger" data-act="wipe">' + ic('trash') + 'Effacer mes données</button>') + '</div>' : '') + '</div>';
   }
@@ -906,7 +900,7 @@
     alt(el) { S.sel = +el.dataset.i; drawRoutes(false); render(); },
     start() { startNav(false); },
     sim() { startNav(true); },
-    stop() { endNav(); if (S.routes.length && S.dest) { go('route'); drawRoutes(true); } else { clearRoute(); setDest(null); go('home'); } },
+    stop() { if (!S.nav) return; endNav(); if (S.routes.length && S.dest) { go('route'); drawRoutes(true); } else { clearRoute(); setDest(null); go('home'); } },
     voice() { db.set.voice = !db.set.voice; save(); if (!db.set.voice) { try { speechSynthesis.cancel(); } catch (e) { /* rien */ } } else say('Voix activée'); render(); },
     'sim-pause'() { if (S.sim) { S.sim.paused = !S.sim.paused; render(); } },
     'sim-speed'() { if (S.sim) { S.sim.mult = S.sim.mult >= 4 ? 1 : S.sim.mult * 2; render(); } },
@@ -990,7 +984,21 @@
       if (e.key === 'Enter') { e.preventDefault(); if (S.results && S.results[0]) choose(S.results[0]); }
       else if (e.key === 'Escape') exitSearch();
     });
-    window.addEventListener('resize', syncInsets);
+    // Téléphone tourné : on recale tout (panneaux, carte). Sur iPhone, une appli installée peut garder l'ancienne
+    // géométrie quelques instants après la rotation, et les boutons ne répondent plus là où on les voit : on recale donc
+    // plusieurs fois de suite, et on remet la page tout en haut.
+    const settle = () => { syncInsets(); try { window.scrollTo(0, 0); } catch (e) { /* rien */ } if (map) { try { map.resize(); } catch (e) { /* carte pas prête */ } } };
+    const turned = () => { settle(); setTimeout(settle, 350); setTimeout(settle, 1000); };
+    window.addEventListener('resize', turned);
+    window.addEventListener('orientationchange', turned);
+    if (WIDE.addEventListener) WIDE.addEventListener('change', turned);
+    // « Arrêter » doit toujours répondre : si le toucher n'est pas suivi du clic habituel, on arrête quand même
+    document.addEventListener('touchend', e => {
+      const el = e.target && e.target.closest ? e.target.closest('[data-act="stop"]') : null;
+      if (!el) return;
+      const t = setTimeout(() => ACT.stop(), 450);
+      document.addEventListener('click', () => clearTimeout(t), { once: true, capture: true });
+    }, { passive: true });
     if (window.ResizeObserver) new ResizeObserver(syncInsets).observe(sheet);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.nav) wake(true); });
     const themed = () => { setBase(); };
@@ -1004,7 +1012,7 @@
       D.labels.forEach(l => mk(esc(l.text), 'lbl ' + l.cls, l.rot != null ? { rotation: l.rot, rotationAlignment: 'map', pitchAlignment: 'map' } : {}).setLngLat(l.ll).addTo(map));
       onFix({ ll: D.start.ll, acc: 5, speed: 0, heading: D.start.heading, t: Date.now(), sim: true }, true);
       // premier cadrage : la position de départ et le centre-ville dans la partie visible
-      map.easeTo({ center: [(D.start.ll[0] + D.center[0]) / 2, (D.start.ll[1] + D.center[1]) / 2], zoom: window.innerWidth >= 760 ? 14.6 : 14.1, offset: off(), duration: 0 });
+      map.easeTo({ center: [(D.start.ll[0] + D.center[0]) / 2, (D.start.ll[1] + D.center[1]) / 2], zoom: WIDE.matches ? 14.6 : 14.1, offset: off(), duration: 0 });
     } else {
       startGPS(false);
       openShared();
